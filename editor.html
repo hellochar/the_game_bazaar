@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="editor.js"></script>
+        <style>
+            #canvas-container {
+                margin: 0px auto;
+                border: 1px solid black;
+                width: 800px;
+                height: 800px;
+            }
+            #buttons {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id='canvas-container'>
+            <canvas id="editor-canvas" width=800 height=800>You need canvas!</canvas>
+        </div>
+        <div id='buttons'>
+            <input id='save-button' type="button" value="Save"><br>
+            <input type="radio" name="player" value="0" checked="yes">Player 0<br>
+            <input type="radio" name="player" value="1">Player 1<br>
+            Map id: <input id='load-id' type='text'> <input id='load-button' type='button' value='Load'><br>
+        </div>
+    </body>
+
+
+</html>

@@ -1,10 +1,13 @@
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
+import sdjango
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+	url(r'^socket.io', include(sdjango.urls)),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),
@@ -15,3 +18,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 )
+
+urlpatterns += staticfiles_urlpatterns()
+

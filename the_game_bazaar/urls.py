@@ -7,7 +7,7 @@ import sdjango
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^socket.io', include(sdjango.urls)),
+	url(r'^socket.io', include('sdjango.urls')),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),

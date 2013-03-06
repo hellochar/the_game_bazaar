@@ -16,10 +16,6 @@ Map.prototype.addUnit = function(player, position) {
     player.units.push({init_pos : position});
 }
 
-Map.prototype.toJSON = function() {
-    return JSON.stringify(this);
-}
-
 Map.prototype.getPlayerById = function(id) {
     return this.players[id];
 }
@@ -40,7 +36,7 @@ Map.fromJSON = function(json) {
 function saveMap(map) {
     $.post(
             'map',          //todo: MAP ID?
-            map.toJSON(),
+            JSON.stringify(map),
             function(data, textStatus, jqXHR) {
                 //handle error messages
             },
@@ -72,8 +68,8 @@ $(function() {
     });
 
     $('#load-button').click(function() {
-        loadMap($('#load-id').val(), function () {
-            console.log(arguments);
+        loadMap($('#load-id').val(), function (data) {
+            window.map = Map.fromJSON(data);
         });
     });
 
@@ -85,7 +81,11 @@ $(function() {
         map.players.forEach(function (player) {
             context.fillStyle = player.fillStyle();
             player.units.forEach(function (unit) {
-                context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
+                // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
+                context.beginPath();
+                context.arc(unit.init_pos.x, unit.init_pos.y, 10, 0, Math.PI*2, true);
+                context.closePath();
+                context.fill();
             });
         });
     }

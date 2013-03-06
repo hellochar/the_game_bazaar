@@ -1,10 +1,10 @@
 from django.http import HttpResponse
 from socketio import socketio_manage
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from models import ChatNamespace
 
 SOCKETIO_NS = {'/chat': ChatNamespace}
+
 
 @csrf_exempt
 def socketio(request):

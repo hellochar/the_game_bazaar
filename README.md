@@ -5,6 +5,7 @@ local virtualenv install
 postgresql
 
 Installation Instructions
+=============
 To set up the local database for development, perform the following steps after installing postgres.
 
 1. psql -Upostgres
@@ -13,7 +14,6 @@ To set up the local database for development, perform the following steps after 
 4. \q
 5. ???
 6. Profit!
-=============
 
 
 To run locally:

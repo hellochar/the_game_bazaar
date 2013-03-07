@@ -4,7 +4,7 @@ function Player(id) {
 }
 Player.prototype.fillStyle = function() {
     return ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'][this.id];
-};
+}
 
 function Map(id) {
      //todo: oh god don't do this
@@ -14,15 +14,15 @@ function Map(id) {
 
 Map.prototype.addUnit = function(player, position) {
     player.units.push({init_pos : position});
-};
+}
 
 Map.prototype.getPlayerById = function(id) {
     return this.players[id];
-};
+}
 
 Map.fromJSON = function(json) {
     //todo: handle incomplete/bad json
-
+    
     var map = new Map(json.id);
     json.players.forEach(function (playerObject) {
         var player = map.getPlayerById(playerObject.id);
@@ -31,46 +31,50 @@ Map.fromJSON = function(json) {
         });
     });
     return map;
-};
-
-function saveMap(map) {
-    $.post(
-            'map',          //todo: MAP ID?
-            JSON.stringify(map),
-            function(data, textStatus, jqXHR) {
-                //handle error messages
-            },
-            'json'
-          );
-}
-
-function loadMap(map_id, success_callback) {
-    $.getJSON(
-            'map',
-            {map_id: map_id}
-         ).success(success_callback);
 }
 
 $(function() {
-    window.map = new Map();
+    function saveMap() {
+        $.post(
+                'map',          //todo: MAP ID?
+                JSON.stringify(window.map),
+                function(data, textStatus, jqXHR) {
+                    //handle error messages
+                },
+                'json'
+              );
+    }
+
+    function loadMap(map_id) {
+        $.getJSON(
+            'map',
+            {map_id: map_id}
+            ).success(function (data) {
+                window.map = Map.fromJSON(data);
+            });
+    }
+
+    if(window.location.hash != "") {
+        //hash exists; load the map
+        loadMap(window.location.hash.substring(1));
+    } else {
+        //load new map
+        window.map = new Map();
+    }
 
     function currentPlayer() {
-        return map.players[$('input[name=player]:checked').val()];
+        return window.map.players[$('input[name=player]:checked').val()];
     }
 
     $('#editor-canvas').mousedown(function (evt) {
-        map.addUnit(currentPlayer(), {x: evt.offsetX, y: evt.offsetY});
+        window.map.addUnit(currentPlayer(), {x: evt.offsetX, y: evt.offsetY});
         render();
     });
 
-    $('#save-button').click(function() {
-        saveMap(map);
-    });
+    $('#save-button').click(saveMap);
 
     $('#load-button').click(function() {
-        loadMap($('#load-id').val(), function (data) {
-            window.map = Map.fromJSON(data);
-        });
+        loadMap($('#load-id').val());
     });
 
     function render() {
@@ -78,7 +82,7 @@ $(function() {
         var context = canvas.getContext('2d');
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        map.players.forEach(function (player) {
+        window.map.players.forEach(function (player) {
             context.fillStyle = player.fillStyle();
             player.units.forEach(function (unit) {
                 // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
@@ -92,3 +96,4 @@ $(function() {
 
 
 });
+

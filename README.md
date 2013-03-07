@@ -6,7 +6,7 @@ postgresql
 
 Installation Instructions
 =============
-To set up the local database for development, perform the following steps after installing postgres.
+To set up the local database for development, perform the following commands in the terminal after installing postgres.
 
 1. psql -Upostgres
 2. CREATE USER tgb_db_admin with PASSWORD ilovetgb

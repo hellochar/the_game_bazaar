@@ -27,7 +27,7 @@ socket.on('announcement', function (msg) {
 socket.on('nicknames', function (nicknames) {
     $('#nicknames').empty().append($('<span>Online: </span>'));
     for (var i in nicknames) {
-	  $('#nicknames').append($('<b>').text(nicknames[i]));
+        $('#nicknames').append($('<b>').text(nicknames[i]));
     }
 });
 
@@ -64,11 +64,11 @@ $(function () {
     });
 
     $('#send-message').submit(function () {
-	    message('me', $('#message').val());
-	    socket.emit('user message', $('#message').val());
-	    clear();
-	    $('#lines').get(0).scrollTop = 10000000;
-	    return false;
+        message('me', $('#message').val());
+        socket.emit('user message', $('#message').val());
+        clear();
+        $('#lines').get(0).scrollTop = 10000000;
+        return false;
     });
 
     function clear () {

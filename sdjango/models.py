@@ -24,6 +24,9 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def on_user_message(self, msg):
         self.emit_to_room('main_room', 'msg_to_room',
             self.socket.session['nickname'], msg)
+    
+    def on_user_start(self, msg):
+        self.broadcast_event('msg_to_room', '%s' % msg)
 
     def recv_message(self, message):
         print "PING!!!", message

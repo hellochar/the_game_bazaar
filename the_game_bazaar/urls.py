@@ -1,13 +1,14 @@
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
-import sdjango
+from the_game_bazaar import views
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^socket.io', include('sdjango.urls')),
+    url(r'^$', views.index),
+    url(r'^socket.io/', include('game.urls'))
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),

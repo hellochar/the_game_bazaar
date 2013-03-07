@@ -2,6 +2,7 @@ from django.db import models
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 
+
 # Create your models here.
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def on_nickname(self, nickname):
@@ -22,9 +23,10 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.disconnect(silent=True)
 
     def on_user_message(self, msg):
-        self.emit_to_room('main_room', 'msg_to_room',
+        self.emit_to_room(
+            'main_room', 'msg_to_room',
             self.socket.session['nickname'], msg)
-    
+
     def on_user_start(self, msg):
         self.broadcast_event('msg_to_room', '%s' % msg)
 

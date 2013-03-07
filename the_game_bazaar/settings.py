@@ -17,16 +17,16 @@ DATABASES = {}
 if ('IS_ON_HEROKU' in os.environ):
     # Parse database configuration from $DATABASE_URL
     import dj_database_url
-    DATABASES['default'] =  dj_database_url.config()
+    DATABASES['default'] = dj_database_url.config()
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'tgb_db',                      # Or path to database file if using sqlite3.
-            'USER': 'tgb_db_admin',                      # Not used with sqlite3.
-            'PASSWORD': 'ilovetgb',                  # Not used with sqlite3.
-            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'tgb_db',                                    # Or path to database file if using sqlite3.
+            'USER': 'tgb_db_admin',                              # Not used with sqlite3.
+            'PASSWORD': 'ilovetgb',                              # Not used with sqlite3.
+            'HOST': '',                                          # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                                          # Set to empty string for default. Not used with sqlite3.
         }
     }
 

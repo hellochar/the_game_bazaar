@@ -31,17 +31,3 @@ def list_games(request):
     return render(request, 'the_game_bazaar/play.html', context)
 
 
-# /game/host
-def host_game(request):
-    context = {
-        'isHost': True
-    }
-    return render(request, 'the_game_bazaar/game.html', context)
-
-
-# /game/join
-def join_game(request, num):
-    context = {
-        'isHost': False
-    }
-    return render(request, 'the_game_bazaar/game.html', context)

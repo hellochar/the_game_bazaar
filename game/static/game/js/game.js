@@ -35,24 +35,6 @@ socket.on('user_input', function (timestamp, player_id, player_input) {
     // Update the game state.
 });
 
-
-//---------------------------------------------
-//SOCKET.IO ERROR CATCHING
-//---------------------------------------------
-socket.on('reconnect', function () {
-    message('System', 'Reconnected to the server');
-});
-
-socket.on('reconnecting', function () {
-    message('System', 'Attempting to re-connect to the server');
-});
-
-socket.on('error', function (e) {
-    message('System', e ? e : 'An unknown error occurred');
-});
-
-
-
 //---------------------------------------------
 // LOBBY FUNCTIONS
 //---------------------------------------------

@@ -17,9 +17,10 @@ urlpatterns = patterns('',
     # Game related
     url(r'^play/', views.play),
     url(r'^edit/', views.edit),
+    url(r'^editor/', include('editor.urls')),
     # url(r'^', 'lauth.views.login_user'),
     url(r'^game/', include('game.urls')),
-    url(r'^lobby/', include('lobby.urls', namespace="lobby")),
+    url(r'^map', views.map),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),

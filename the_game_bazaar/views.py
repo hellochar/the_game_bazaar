@@ -39,8 +39,6 @@ def list_games(request):
 
 @csrf_exempt
 def map(request):
-
-
     if request.method == 'GET':
         if 'map_id' not in request.GET:
             return HttpResponse(json.dumps({'success': False, 'reason': "No map id supplied!"}), mimetype='application/json')
@@ -74,9 +72,11 @@ def map(request):
     else:
         pass # handle weird verbs
 
+
 def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)
+
 
 @require_http_methods(["POST"])
 def ajax_login(request):
@@ -89,7 +89,7 @@ def ajax_login(request):
     }
     if user is not None and user.is_active:
         # the password verified for the user
-        auth_login(request, user)
+        auth_login(request, user)   
         resp['success'] = True
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
@@ -110,3 +110,7 @@ def ajax_register(request):
         pass
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+@require_http_methods(["POST"])
+def ajax_logout(request):
+    logout(request)

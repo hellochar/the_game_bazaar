@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^login/', views.login),
     url(r'^auth/login', views.ajax_login),
     url(r'^auth/register', views.ajax_register),
+    url(r'^auth/logout', views.ajax_logout),
     # Game related
     url(r'^play/', views.play),
     url(r'^edit/', views.edit),

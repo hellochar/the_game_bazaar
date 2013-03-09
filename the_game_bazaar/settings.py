@@ -128,8 +128,6 @@ INSTALLED_APPS = (
     'the_game_bazaar',
     'game',
     'editor',
-    'lobby',
-    'lauth',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

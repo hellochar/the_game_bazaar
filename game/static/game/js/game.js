@@ -32,10 +32,10 @@ $(function() {
     //---------------------------------------------
     //CANVAS FUNCTIONS
     //---------------------------------------------
-      
-    var requestAnimationFrame = window.requestAnimationFrame || 
+
+    var requestAnimationFrame = window.requestAnimationFrame ||
                             window.mozRequestAnimationFrame ||
-                            window.webkitRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame ||
                             window.msRequestAnimationFrame;
 
     window.requestAnimationFrame = requestAnimationFrame;
@@ -88,12 +88,13 @@ $(function() {
     //---------------------------------------------
     //MANAGING LOBBY STATE
     //---------------------------------------------
-    
+
     //join the lobby as soon as we connect
     App.socket.on('connect', function () {
         // PUT IN HERE STUFF THAT SHOULD HAPPEN AFTER YOU ARE CONNECTED
+        game_id = $("#game-id").attr("val");
         data = {
-            'game_id': 'GAME_ID'
+            'game_id': game_id
         };
         console.log("Connected!");
         App.connectionState = "connected";
@@ -101,7 +102,7 @@ $(function() {
         App.socket.emit('join', data);
 
         $(window).bind("beforeunload", function() {
-            App.socket.emit('leave', 'GAME_ID');
+            App.socket.emit('leave', game_id);
             App.socket.disconnect();
         });
 
@@ -115,13 +116,13 @@ $(function() {
     App.socket.on('join', function (data){
         console.log("Joined Game at: ", data.timestamp);
         // TODO: Add data.player_id to game state
-    })
+    });
 
     // Starting a Game
     App.socket.on('start', function (data) {
         console.log("Timestamp: ", data.timestamp);
-        $('#game-container').show();
         $('#lobby-container').hide();
+        $('#game-container').show();
     });
 
     //---------------------------------------------
@@ -132,7 +133,7 @@ $(function() {
         data = {
             'x': x,
             'y': y,
-            'game_id': 'GAME_ID'
+            'game_id': $("#game-id").attr("val")
         };
         App.socket.emit('input', data);
     };
@@ -140,25 +141,24 @@ $(function() {
     App.socket.on('input', function (data) {
         // Update the game state.
         // TODO: FILL IN HERE
-        timestamp = data['timestamp']
-        player_id = data['player_id']
-        player_input = data['player_input']
+        timestamp = data['timestamp'];
+        player_id = data['player_id'];
+        player_input = data['player_input'];
     });
-
 
     //---------------------------------------------
     //SOCKET.IO ERROR CATCHING
     //---------------------------------------------
     App.socket.on('reconnect', function () {
-        message('System', 'Reconnected to the server');
+        // message('System', 'Reconnected to the server');
     });
 
     App.socket.on('reconnecting', function () {
-        message('System', 'Attempting to re-connect to the server');
+        // message('System', 'Attempting to re-connect to the server');
     });
 
     App.socket.on('error', function (e) {
-        message('System', e ? e : 'An unknown error occurred');
+        // message('System', e ? e : 'An unknown error occurred');
     });
 
     //---------------------------------------------
@@ -167,11 +167,11 @@ $(function() {
     App.start_game = function() {
         //TODO: Use a real game ID
         data = {
-            'game_id': 'GAME_ID'
+            'game_id': $("#game-id").attr("val")
         };
-        App.socket.emit('start', data); 
+        App.socket.emit('start', data);
         //don't really need a message
-    }
+    };
 
     // DOM manipulation
     $().ready(function() {
@@ -180,29 +180,4 @@ $(function() {
     });
 
     requestAnimationFrame(App.refreshAll);
-});
-
-$(function () {
-    // $('#set-nickname').submit(function (ev) {
-    //     socket.emit('nickname', $('#nick').val(), function (set) {
-    //         if (!set) {
-    //             clear();
-    //             return $('#chat').addClass('nickname-set');
-    //         }
-    //         $('#nickname-err').css('visibility', 'visible');
-    //     });
-    //     return false;
-    // });
-
-    // $('#send-message').submit(function () {
-    //     message('me', $('#message').val());
-    //     socket.emit('user message', $('#message').val());
-    //     clear();
-    //     $('#lines').get(0).scrollTop = 10000000;
-    //     return false;
-    // });
-
-    // function clear () {
-    //     $('#message').val('').focus();
-    // };
 });

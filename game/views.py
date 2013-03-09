@@ -3,12 +3,10 @@ import logging
 from socketio import socketio_manage
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from game.models import ChatNamespace
 from game.models import GameNamespace
 from django.shortcuts import render
 
 SOCKETIO_NS = {
-    '/chat': ChatNamespace,
     '/game': GameNamespace
 }
 

@@ -12,7 +12,7 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         # Get the server timestamp for syncing purposes.
         timestamp = time.localtime()
         # Broadcast to the game room what the client's input was.
-        self.emit_to_room(game_name, timestamp, player_id, player_input)
+        self.emit_to_room(game_name, 'user_input', timestamp, player_id, player_input)
 
 
 # Create your models here.

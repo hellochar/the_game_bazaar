@@ -27,7 +27,7 @@ def host_game(request):
     context = {
         'isHost': True
     }
-    return render(request, 'the_game_bazaar/game.html', context)
+    return render(request, 'game/game.html', context)
 
 
 # /game/join
@@ -35,4 +35,4 @@ def join_game(request, num):
     context = {
         'isHost': False
     }
-    return render(request, 'the_game_bazaar/game.html', context)
+    return render(request, 'game/game.html', context)

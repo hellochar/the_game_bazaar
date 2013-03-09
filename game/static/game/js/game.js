@@ -5,13 +5,40 @@ $(function() {
 	App = {};
 
     //---------------------------------------------
+    //INITIALIZE CANVAS AND SOCKET.IO
+    //---------------------------------------------
+
+    console.log("Init canvas");
+    App.canvas = document.getElementById('game-canvas');
+    App.ctx = App.canvas.getContext("2d");
+    App.ctx.globalAlpha = 0.4;
+    App.ctx.textAlign = "center";
+    App.ctx.font = "14px Helvetica";
+    App.canvas.tabIndex = "0";
+    App.connectionState = "blank";
+    App.me = '#000000';
+
+    $(App.canvas).click(App.onClick);
+
+    App.socket = io.connect('/game');
+
+    console.log("Attemting to connect");
+
+    App.socket.on('connecting', function() {
+        console.log("Connecting...");
+        App.connectionState = "connecting";
+    });
+
+    //---------------------------------------------
     //CANVAS FUNCTIONS
     //---------------------------------------------
       
-    App.requestAnimationFrame = window.requestAnimationFrame || 
-                                window.mozRequestAnimationFrame ||
-                                window.webkitRequestAnimationFrame || 
-                                window.msRequestAnimationFrame;
+    var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+
+    window.requestAnimationFrame = requestAnimationFrame;
 
     App.randomColor = function() {
         return "#" + Math.random().toString(16).slice(2, 8);
@@ -55,33 +82,8 @@ $(function() {
             App.ctx.fillStyle = "Black";
             App.ctx.fillText("Nothing...", 400, 200);
         }
-        App.requestAnimationFrame(App.refreshAll);
+        requestAnimationFrame(App.refreshAll);
     };
-
-    //---------------------------------------------
-    //INITIALIZE CANVAS AND SOCKET.IO
-    //---------------------------------------------
-
-    console.log("Init canvas");
-    App.canvas = document.getElementById('game-canvas');
-    App.ctx = App.canvas.getContext("2d");
-    App.ctx.globalAlpha = 0.4;
-    App.ctx.textAlign = "center";
-    App.ctx.font = "14px Helvetica";
-    App.canvas.tabIndex = "0";
-    App.connectionState = "blank";
-    App.me = '#000000';
-
-    $(App.canvas).click(App.onClick);
-
-    App.socket = io.connect('/game');
-
-    console.log("Attemting to connect");
-
-    App.socket.on('connecting', function() {
-        console.log("Connecting...");
-        App.connectionState = "connecting";
-    });
 
     //---------------------------------------------
     //MANAGING LOBBY STATE
@@ -105,7 +107,7 @@ $(function() {
 
         $('#start-game').click(function() {
             console.log("start game");
-            start_game();
+            App.start_game();
         });
     });
 
@@ -147,27 +149,27 @@ $(function() {
     //---------------------------------------------
     //SOCKET.IO ERROR CATCHING
     //---------------------------------------------
-    socket.on('reconnect', function () {
+    App.socket.on('reconnect', function () {
         message('System', 'Reconnected to the server');
     });
 
-    socket.on('reconnecting', function () {
+    App.socket.on('reconnecting', function () {
         message('System', 'Attempting to re-connect to the server');
     });
 
-    socket.on('error', function (e) {
+    App.socket.on('error', function (e) {
         message('System', e ? e : 'An unknown error occurred');
     });
 
     //---------------------------------------------
     // LOBBY FUNCTIONS
     //---------------------------------------------
-    function start_game() {
+    App.start_game = function() {
         //TODO: Use a real game ID
         data = {
             'game_id': 'GAME_ID'
         };
-        socket.emit('start', data); 
+        App.socket.emit('start', data); 
         //don't really need a message
     }
 
@@ -177,7 +179,7 @@ $(function() {
         $('#lobby-container').show();
     });
 
-    App.requestAnimationFrame(App.refreshAll);
+    requestAnimationFrame(App.refreshAll);
 });
 
 $(function () {

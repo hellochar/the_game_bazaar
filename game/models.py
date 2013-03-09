@@ -1,6 +1,18 @@
 from django.db import models
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
+import time
+
+
+class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
+    # The method that handles user input
+    def on_user_input(self, game_id, player_id, player_input):
+        # Find out which room we are broadcasting to.
+        game_name = 'game_' + game_id
+        # Get the server timestamp for syncing purposes.
+        timestamp = time.localtime()
+        # Broadcast to the game room what the client's input was.
+        self.emit_to_room(game_name, timestamp, player_id, player_input)
 
 
 # Create your models here.

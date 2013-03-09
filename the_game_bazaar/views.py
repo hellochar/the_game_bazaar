@@ -3,10 +3,10 @@ from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate
-from the_game_bazaar.models import *
-from django.views.decorators.csrf import *
-
-
+from django.contrib.auth.models import User
+from the_game_bazaar.models import Map
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login as auth_login
 
 # /
 def index(request):
@@ -89,6 +89,7 @@ def ajax_login(request):
     }
     if user is not None and user.is_active:
         # the password verified for the user
+        auth_login(request, user)
         resp['success'] = True
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
@@ -98,5 +99,14 @@ def ajax_register(request):
     username = request.POST['username']
     password = request.POST['password']
     email = request.POST['email']
+    resp = {
+        "success":False
+    }
+    
+    try:
+        user = User.objects.create_user(username, email, password)
+        resp['success'] = True
+    except:
+        pass
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")

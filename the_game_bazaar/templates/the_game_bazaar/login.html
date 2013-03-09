@@ -8,15 +8,29 @@
 </head>
 
 <body>
-	<div class="container">
-		<form class="form-signin">
+	<div class="container" id="login_page">
+		<div class="form-toggle">
+			<a class="register-link" id="register">Not registered?</a>
+		</div>
+		<form class="form-signin" id="signin-form">
 			<h2 class="form-signin-heading">Please Sign In</h2>
 			<input type="text" class="input-block-level" placeholder="username" id="username">
 			<input type="password" class="input-block-level" placeholder="password" id="password">
 			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
-			<br />
 		</form>
-		<a class="register">Not registered?</a>
+	</div>
+
+	<div class="container" id="register_page">
+		<div class="form-toggle">
+			<a class="register-link" id="login">Already registered?</a>
+		</div>
+		<form class="form-signin" id="register-form">
+			<h2 class="form-signin-heading">Sign Up Instantly!</h2>
+			<input type="text" class="input-block-level" placeholder="username" id="username-reg">
+			<input type="password" class="input-block-level" placeholder="password" id="password-reg">
+			<input type="text" class="input-block-level" placeholder="email" id="email-reg">
+			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
+		</form>
 	</div>
 
 </body>

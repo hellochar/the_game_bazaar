@@ -29,10 +29,13 @@ body {
   padding: 7px 9px;
 }
 
-.register {
-  position: relative;
-  top: -20px;
-  left: 58%;
+.form-toggle {
   max-width: 300px;
   margin: 0 auto 20px;
+}
+
+.register-link {
+  float: right;
+  cursor: pointer;
+  position: relative;
 }

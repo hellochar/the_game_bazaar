@@ -4,11 +4,18 @@ WEB_SOCKET_DEBUG = true;
 var socket = io.connect('/game');
 
 $(window).bind("beforeunload", function() {
+    socket.emit('leave lobby', 'GAME_ID');
     socket.disconnect();
 });
 
+//join the lobby as soon as we connect
 socket.on('connect', function () {
+    socket.emit('join lobby', 'GAME_ID');
 });
+
+socket.on('join_message', function (timestamp){
+    console.log("Joined Game at: ", timestamp);
+})
 
 socket.on('user_input', function (timestamp, player_id, player_input) {
     // Update the game state.
@@ -37,7 +44,7 @@ socket.on('game_start', function (timestamp) {
 // LOBBY FUNCTIONS
 //-----------------------------------------------------------------------
 function start_game(){
-    socket.emit('start_game', 'GAME_ID'); 
+    socket.emit('start game', 'GAME_ID'); 
     //don't really need a message
 };
 

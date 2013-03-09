@@ -1,5 +1,11 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+from django.utils import simplejson as json
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate
 from the_game_bazaar.models import *
+from django.views.decorators.csrf import *
+
 
 
 # /
@@ -31,11 +37,9 @@ def list_games(request):
     context = {}
     return render(request, 'the_game_bazaar/play.html', context)
 
-from django.views.decorators.csrf import *
 @csrf_exempt
 def map(request):
-    from django.http import HttpResponse
-    import json
+
 
     if request.method == 'GET':
         if 'map_id' not in request.GET:
@@ -69,3 +73,30 @@ def map(request):
         return HttpResponse(json.dumps({'success': True, 'map_id' : map.id}), mimetype='application/json')
     else:
         pass # handle weird verbs
+
+def login(request):
+    context = {}
+    return render(request, 'the_game_bazaar/login.html', context)
+
+@require_http_methods(["POST"])
+def ajax_login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+
+    resp = {
+        "success":False,
+    }
+    if user is not None and user.is_active:
+        # the password verified for the user
+        resp['success'] = True
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+@require_http_methods(["POST"])
+def ajax_register(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    email = request.POST['email']
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")

@@ -10,12 +10,16 @@ urlpatterns = patterns('',
     url(r'^$', views.index),
     url(r'^socket.io/', include('game.urls')),
     url(r'^home/', views.home),
+    # Loggin In, Registering, Loggin Out
+    url(r'^login/', views.login),
+    url(r'^auth/login', views.ajax_login),
+    url(r'^auth/register', views.ajax_register),
+    # Game related
     url(r'^play/', views.play),
     url(r'^edit/', views.edit),
     url(r'^editor/', include('editor.urls')),
     # url(r'^', 'lauth.views.login_user'),
     url(r'^game/', include('game.urls')),
-    url(r'^lobby', include('lobby.urls', namespace="lobby")),
     url(r'^map', views.map),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),

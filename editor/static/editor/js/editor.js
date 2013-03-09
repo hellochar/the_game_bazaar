@@ -7,12 +7,12 @@ Player.prototype.fillStyle = function() {
 }
 
 function Map(id) {
-     //todo: oh god don't do this
-     this.id = id || Math.round(Math.random() * 100000);
-     this.players = [new Player(0), new Player(1)];
- }
+    //todo: oh god don't do this
+    this.id = id;
+    this.players = [new Player(0), new Player(1)];
+}
 
- Map.prototype.addUnit = function(player, position) {
+Map.prototype.addUnit = function(player, position) {
     player.units.push({init_pos : position});
 }
 
@@ -20,11 +20,15 @@ Map.prototype.getPlayerById = function(id) {
     return this.players[id];
 }
 
+Map.prototype.toJSON = function() {
+    return {players: this.players}; // will have to eventually turn this into more
+}
+
 Map.fromJSON = function(json) {
     //todo: handle incomplete/bad json
-    
-    var map = new Map(json.id);
-    json.players.forEach(function (playerObject) {
+
+    var map = new Map(json.map_id);
+    json.map_data.players.forEach(function (playerObject) {
         var player = map.getPlayerById(playerObject.id);
         playerObject.units.forEach(function (unitObject) {
             map.addUnit(player, unitObject.init_pos);
@@ -34,23 +38,34 @@ Map.fromJSON = function(json) {
 }
 
 $(function() {
+    function setEditingMap(map) {
+        window.map = map;
+        $('#map-id')[0].innerHTML = map.id;
+        render();
+    }
     function saveMap() {
         $.post(
-                'map',          //todo: MAP ID?
-                JSON.stringify(window.map),
-                function(data, textStatus, jqXHR) {
-                    //handle error messages
-                },
-                'json'
-              );
+            '/map',
+            {map_id : window.map.id, map_data : JSON.stringify(window.map)},
+            function(data, textStatus, jqXHR) {
+            },
+            'json'
+            ).success(function (response_json) {
+                window.map.id = response_json.map_id;
+                setEditingMap(window.map);
+            });
     }
 
+    //Load a map from the server with the given map id
     function loadMap(map_id) {
         $.getJSON(
-            'map',
-            {map_id: map_id}
-            ).success(function (data) {
-                window.map = Map.fromJSON(data);
+            '/map',
+            {map_id : map_id},
+            function(data, textStatus, jqXHR) {
+                window.temp_data = data;
+            }
+            ).success(function (data_json) {
+                setEditingMap( Map.fromJSON(data_json) );
             });
     }
 
@@ -59,7 +74,7 @@ $(function() {
         loadMap(window.location.hash.substring(1));
     } else {
         //load new map
-        window.map = new Map();
+        setEditingMap(new Map());
     }
 
     function currentPlayer() {

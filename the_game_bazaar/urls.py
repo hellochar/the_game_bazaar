@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^edit/', views.edit),
     # url(r'^', 'lauth.views.login_user'),
     url(r'^game/host', views.host_game),
-    url(r'^game/join', views.join_game),
+    url(r'^game/join/(?P<num>\d+)/$', views.join_game),
     url(r'^lobby', include('lobby.urls', namespace="lobby")),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),

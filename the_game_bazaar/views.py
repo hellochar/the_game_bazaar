@@ -40,7 +40,7 @@ def host_game(request):
 
 
 # /game/join
-def join_game(request):
+def join_game(request, num):
     context = {
         'isHost': False
     }

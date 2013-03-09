@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from game.models import GameNamespace
 from django.shortcuts import render
+from the_game_bazaar.models import Game
 
 SOCKETIO_NS = {
     '/game': GameNamespace
@@ -22,8 +23,12 @@ def socketio(request):
 
 # /game/host
 def host_game(request):
+    game = Game()
+    game.save()
+    print game.id
     context = {
-        'isHost': True
+        'isHost': True,
+        'game_id': game.id
     }
     return render(request, 'game/game.html', context)
 

@@ -30,15 +30,14 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def on_start_game(self, game_id):
         timestamp = time.localtime()
-        game_name = 'game_' + game_id
-        self.emit_to_room(game_name, 'game_start', str(timestamp))
+        self.broadcast_to_room(game_id, 'game_start', str(timestamp))
 
     def on_join_lobby(self, game_id):
         self.join(game_id)
         timestamp = time.localtime()
         self.broadcast_to_room(game_id, 'join_message', str(timestamp))
 
-    def on_leave_lobb(self, game_id):
+    def on_leave_lobby(self, game_id):
         self.leave(game_id)
         timestamp = time.localtime()
         self.broadcast_to_room(game_id, 'leave_message', str(timestamp))

@@ -159,8 +159,6 @@ $(function() {
         message('System', e ? e : 'An unknown error occurred');
     });
 
-
-
     //---------------------------------------------
     // LOBBY FUNCTIONS
     //---------------------------------------------

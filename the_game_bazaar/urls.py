@@ -8,12 +8,15 @@ from the_game_bazaar import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index),
+    url(r'^socket.io/', include('game.urls')),
+    url(r'^home/', views.home),
+    url(r'^play/', views.play),
+    url(r'^edit/', views.edit),
+    # url(r'^', 'lauth.views.login_user'),
     url(r'^game/host', views.host_game),
     url(r'^game/join', views.join_game),
     url(r'^lobby', include('lobby.urls', namespace="lobby")),
-    # url(r'^', 'lauth.views.login_user'),
     url(r'^list', views.list_games),
-    url(r'^socket.io', include('game.urls'))
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),

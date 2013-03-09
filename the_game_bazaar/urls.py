@@ -16,7 +16,6 @@ urlpatterns = patterns('',
     url(r'^game/host', views.host_game),
     url(r'^game/join', views.join_game),
     url(r'^lobby', include('lobby.urls', namespace="lobby")),
-    url(r'^list', views.list_games),
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),
     # url(r'^the_game_bazaar/', include('the_game_bazaar.foo.urls')),

@@ -28,7 +28,7 @@ def edit(request):
 # /list
 def list_games(request):
     context = {}
-    return render(request, 'the_game_bazaar/games.html', context)
+    return render(request, 'the_game_bazaar/play.html', context)
 
 
 # /game/host

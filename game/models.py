@@ -14,6 +14,11 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         # Broadcast to the game room what the client's input was.
         self.emit_to_room(game_name, 'user_input', timestamp, player_id, player_input)
 
+    def on_start_game(self, game_id):
+        timestamp = time.localtime()
+        game_name = 'game_' + game_id
+        self.emit_to_room(game_name, 'game_start', timestamp);
+
 
 # Create your models here.
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):

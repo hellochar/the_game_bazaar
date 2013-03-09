@@ -26,7 +26,33 @@ socket.on('error', function (e) {
     message('System', e ? e : 'An unknown error occurred');
 });
 
+// Starting a Game
+socket.on('game_start', function (timestamp) {
+    console.log("Timestamp: ", timestamp);
+    $('#game-container').show();
+    $('#lobby-container').hide();
+});
+
+//-----------------------------------------------------------------------
+// LOBBY FUNCTIONS
+//-----------------------------------------------------------------------
+function start_game(){
+    socket.emit('start_game', 'GAME_ID'); 
+    //don't really need a message
+};
+
 // DOM manipulation
+$().ready(function(){
+    $('#game-container').hide();
+    $('#lobby-container').show();
+
+
+    $('#start-game').click(function(){
+        console.log("start game");
+        start_game();
+    });
+});
+
 $(function () {
     // $('#set-nickname').submit(function (ev) {
     //     socket.emit('nickname', $('#nick').val(), function (set) {

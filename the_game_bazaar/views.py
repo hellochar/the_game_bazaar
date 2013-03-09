@@ -23,3 +23,25 @@ def play(request):
 def edit(request):
     context = {}
     return render(request, 'the_game_bazaar/edit.html', context)
+
+
+# /list
+def list_games(request):
+    context = {}
+    return render(request, 'the_game_bazaar/games.html', context)
+
+
+# /game/host
+def host_game(request):
+    context = {
+        'isHost': True
+    }
+    return render(request, 'the_game_bazaar/game.html', context)
+
+
+# /game/join
+def join_game(request):
+    context = {
+        'isHost': False
+    }
+    return render(request, 'the_game_bazaar/game.html', context)

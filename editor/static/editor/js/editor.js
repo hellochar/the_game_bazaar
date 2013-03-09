@@ -8,11 +8,11 @@ Player.prototype.fillStyle = function() {
 
 function Map(id) {
      //todo: oh god don't do this
-    this.id = id || Math.round(Math.random() * 100000);
-    this.players = [new Player(0), new Player(1)];
-}
+     this.id = id || Math.round(Math.random() * 100000);
+     this.players = [new Player(0), new Player(1)];
+ }
 
-Map.prototype.addUnit = function(player, position) {
+ Map.prototype.addUnit = function(player, position) {
     player.units.push({init_pos : position});
 };
 
@@ -41,14 +41,14 @@ function saveMap(map) {
                 //handle error messages
             },
             'json'
-          );
+            );
 }
 
 function loadMap(map_id, success_callback) {
     $.getJSON(
-            'map',
-            {map_id: map_id}
-         ).success(success_callback);
+        'map',
+        {map_id: map_id}
+        ).success(success_callback);
 }
 
 $(function() {

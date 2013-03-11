@@ -1,23 +1,46 @@
 <html>
     <head>
-        <link href="/static/the_game_bazaar/css/home.css" rel="stylesheet">
+        <link href="/static/the_game_bazaar/css/bootstrap.css" rel="stylesheet">
     </head>
     <body>
-        <div class="header">
-            TODO: This is the header
-        </div>
-        <div class="halves_container">
-            <div class="play_half">
-                <form action="/play" method="get">
-                    <input type="submit" value="Play a Game!">
-                    </input>
-                </form>
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <a href="#" class="brand">The Game Bazaar</a>
+                <ul class="nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
             </div>
-            <div class="edit_half">
-                <form action="/edit" method="get">
-                    <input type="submit" value="Edit a Map!">
-                    </input>
+            {% if user.is_authenticated %}
+                <form class="navbar-form pull-right">
+                    <button type="submit" class="btn">Logout</button> 
                 </form>
+            {% else %}
+                <input type="text" class="span2" placeholder="username">
+                <input type="password" class="span2" placeholder="password">
+                <button type="submit" class="btn">Submit</button>
+            {% endif %}
+        </div>
+        <div class="container">
+            <div class="page-header"><h1><small>Welcome to</small> The Game Bazaar!</h1></div>
+            <div class="row">
+                <div class="span10">
+                    <div class="row">
+                        <div class="span5">
+                            <form action="/play" method="get">
+                                <input type="submit" value="Play a Game!">
+                                </input>
+                            </form>
+                        </div>
+                        <div class="span5">
+                            <form action="/edit" method="get">
+                                <input type="submit" value="Edit a Map!">
+                                </input>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

@@ -10,7 +10,9 @@ from django.contrib.auth import login as auth_login
 
 # /
 def index(request):
-    context = {}
+    context = {
+        "user": request.user,
+    }
     return render(request, 'the_game_bazaar/home.html', context)
 
 

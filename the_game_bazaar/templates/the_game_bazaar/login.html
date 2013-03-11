@@ -13,6 +13,7 @@
 			<a class="register-link" id="register">Not registered?</a>
 		</div>
 		<form class="form-signin" id="signin-form">
+			{% csrf_token %}
 			<h2 class="form-signin-heading">Please Sign In</h2>
 			<input type="text" class="input-block-level" placeholder="username" id="username">
 			<input type="password" class="input-block-level" placeholder="password" id="password">
@@ -25,6 +26,7 @@
 			<a class="register-link" id="login">Already registered?</a>
 		</div>
 		<form class="form-signin" id="register-form">
+			{% csrf_token %}
 			<h2 class="form-signin-heading">Sign Up Instantly!</h2>
 			<input type="text" class="input-block-level" placeholder="username" id="username-reg">
 			<input type="password" class="input-block-level" placeholder="password" id="password-reg">

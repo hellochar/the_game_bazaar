@@ -1,6 +1,9 @@
 <html>
     <head>
         <link href="/static/the_game_bazaar/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="/static/the_game_bazaar/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="/static/the_game_bazaar/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/static/the_game_bazaar/js/navbar.js"></script>
     </head>
     <body>
         <div class="navbar navbar-static-top">
@@ -11,16 +14,20 @@
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
+                {% if user.is_authenticated %}
+                    <form id="navbar-logout" class="navbar-form pull-right">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">Logout</button> 
+                    </form>
+                {% else %}
+                    <form id="navbar-login" class="navbar-form pull-right">
+                        {% csrf_token %}
+                        <input type="text" class="span2" placeholder="username">
+                        <input type="password" class="span2" placeholder="password">
+                        <button type="submit" class="btn">Submit</button>
+                    </form>
+                {% endif %}
             </div>
-            {% if user.is_authenticated %}
-                <form class="navbar-form pull-right">
-                    <button type="submit" class="btn">Logout</button> 
-                </form>
-            {% else %}
-                <input type="text" class="span2" placeholder="username">
-                <input type="password" class="span2" placeholder="password">
-                <button type="submit" class="btn">Submit</button>
-            {% endif %}
         </div>
         <div class="container">
             <div class="page-header"><h1><small>Welcome to</small> The Game Bazaar!</h1></div>

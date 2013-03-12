@@ -65,16 +65,23 @@ $(function() {
     };
 
     App.refreshAll = function() {
+        $(window).bind("beforeunload", function() {
+            App.socket.emit('leave', game_id);
+            App.socket.disconnect();
+        });
+
+
         App.clear();
         if (App.connectionState == "connected") {
             // TODO: However you build your game state updater,
             // change the rendering logic here.
-            for ( var player in Players) {
-                if (Players.hasOwnProperty(player)) {
-                    player = Players[player];
-                    App.drawCircle(player.x, player.y, 20, player.color);
-                }
-            }
+
+            // for (var player in Players) {
+            //     if (Players.hasOwnProperty(player)) {
+            //         player = Players[player];
+            //         App.drawCircle(player.x, player.y, 20, player.color);
+            //     }
+            // }
         } else if (App.connectionState == "connecting") {
             App.ctx.fillStyle = "Black";
             App.ctx.fillText("Connecting...", 400, 200);
@@ -91,20 +98,21 @@ $(function() {
 
     //join the lobby as soon as we connect
     App.socket.on('connect', function () {
-        // PUT IN HERE STUFF THAT SHOULD HAPPEN AFTER YOU ARE CONNECTED
+        // These two divs are set in the context.
         game_id = $("#game-id").attr("val");
-        data = {
-            'game_id': game_id
-        };
+        map_id = $("#map-id").attr("val");
+        player_id = $("#player-id").attr("val");
+        // Set up the gamestate with a quick ajax call.
+        App.instantiateGameState();
+
+
         console.log("Connected!");
         App.connectionState = "connected";
 
+        data = {
+            'game_id': game_id
+        };
         App.socket.emit('join', data);
-
-        $(window).bind("beforeunload", function() {
-            App.socket.emit('leave', game_id);
-            App.socket.disconnect();
-        });
 
         $('#start-game').click(function() {
             console.log("start game");
@@ -128,6 +136,44 @@ $(function() {
     //---------------------------------------------
     //MANAGING GAME STATE
     //---------------------------------------------
+
+    App.instantiateGameState = function() {
+        App.gamestate = false;
+        $.ajax({
+            type: "GET",
+            url: "/map",
+            data: {
+                "map_id": parseInt(map_id, 10)
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                if(data['success'] === true){
+                    console.log("putting the following into window.map_data: " + data.map_data);
+                    window.map_data = data.map_data;
+                    App.gamestate = GameState(data.map_data);
+                    App.populatePlayerNames();
+                }
+                else {
+                    $("#game-id").innerHTML = 'ERROR: Could not load that map id';
+                    App.gamestate = true;
+                }
+                return false;
+            }
+        });
+    };
+
+    App.populatePlayerNames = function() {
+        // TODO
+        console.log("Populating player names");
+        usernames = $("#player-usernames");
+        username_list = [];
+        for (var index in usernames.children()) {
+            username_list.push(usernames[index].innerHTML);
+        }
+        App.gamestate.populatePlayerNames(username_list);
+    };
 
     App.playerMovement = function(x, y) {
         data = {

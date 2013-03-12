@@ -11,5 +11,7 @@ class Map(models.Model):
 
 
 class Game(models.Model):
-    # There is nothing here but an id.
+    # The map id of this game.
+    map_id = models.ForeignKey(Map, related_name="+")
+    players = models.TextField()
     pass

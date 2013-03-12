@@ -3,8 +3,8 @@ from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 import time
 
-class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
+class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def broadcast_to_room(self, room, event, *args):
         """This is sent to all in the room (in this particular Namespace)"""
         pkt = dict(type="event",

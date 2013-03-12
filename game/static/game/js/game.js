@@ -98,40 +98,55 @@ $(function() {
 
     //join the lobby as soon as we connect
     App.socket.on('connect', function () {
-        // These two divs are set in the context.
-        game_id = $("#game-id").attr("val");
-        map_id = $("#map-id").attr("val");
-        player_id = $("#player-id").attr("val");
-        // Set up the gamestate with a quick ajax call.
-        App.instantiateGameState();
+        // These divs are set in the context
+        App.player_id = parseInt($("#player-id").attr("val"), 10);
+        App.game_id = parseInt($("#game-id").attr("val"), 10);
+        App.map_id = parseInt($("#map-id").attr("val"), 10);
 
-
+        // Do some connecting and make sure we cleanup correctly.
         console.log("Connected!");
         App.connectionState = "connected";
-
-        data = {
-            'game_id': game_id
-        };
-        App.socket.emit('join', data);
-
         $(window).bind("beforeunload", function() {
             data = {
-                'game_id': game_id
+                'game_id': App.game_id
             },
             App.socket.emit('leave', data);
             App.socket.disconnect();
         });
 
-        $('#start-game').click(function() {
-            console.log("start game");
-            App.start_game();
-        });
+        // Join the room of the game_id
+        App.socket.join(App.game_id.toString());
+
+        // Set up the gamestate with an ajax call.
+        // This method calls finishInitialization() once the ajax call succeeds.
+        App.instantiateGameState();
     });
 
     // Let client know someone has joined
     App.socket.on('join', function (data){
-        console.log("Joined Game at: ", data.timestamp);
+        console.log("Someone joined the game at: ", data.timestamp);
         // TODO: Add data.player_id to game state
+        $.ajax({
+            type: "GET",
+            url: "/game/userlist",
+            data: {
+                "game_id": parseInt(App.map_id, 10)
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                if(data['success'] === true){
+                    App.updatePlayerList(data);
+                    App.populatePlayerNames();
+                }
+                else {
+                    $("#game-id").innerHTML = 'ERROR: Could not load the user list';
+                    App.gamestate = true;
+                }
+                return false;
+            }
+        });
     });
 
     // Starting a Game
@@ -145,13 +160,28 @@ $(function() {
     //MANAGING GAME STATE
     //---------------------------------------------
 
+    App.finishInitialization = function() {
+        // If this player is not the game owner, then broadcast a join.
+        if (parseInt(App.player_id, 10) !== 0) {
+            data = {
+                'game_id': App.game_id
+            };
+            App.socket.emit('join', data);
+        }
+
+        $('#start-game').click(function() {
+            console.log("start game");
+            App.start_game();
+        });
+    };
+
     App.instantiateGameState = function() {
         App.gamestate = false;
         $.ajax({
             type: "GET",
             url: "/map",
             data: {
-                "map_id": parseInt(map_id, 10)
+                "map_id": parseInt(App.map_id, 10)
             },
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
@@ -162,6 +192,7 @@ $(function() {
                     window.map_data = data.map_data;
                     App.gamestate = GameState(data.map_data);
                     App.populatePlayerNames();
+                    App.finishInitialization();
                 }
                 else {
                     $("#game-id").innerHTML = 'ERROR: Could not load that map id';
@@ -172,8 +203,18 @@ $(function() {
         });
     };
 
+    App.updatePlayerList = function(player_list) {
+        console.log("Updating player names");
+        parent = $("#player_usernames");
+        parent.empty();
+        for (var index in player_list) {
+            elem = $(document.createElement("li"));
+            elem.innerHTML = player_list[index];
+            parent.append(elem);
+        }
+    };
+
     App.populatePlayerNames = function() {
-        // TODO
         console.log("Populating player names");
         usernames = $("#player-usernames");
         username_list = [];

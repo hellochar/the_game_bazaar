@@ -34,7 +34,7 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         del data['game_id']
         self.join(game_id)
         data['timestamp'] = time.mktime(time.localtime())
-        self.broadcast_to_room(game_id, 'join', data)
+        self.emit_to_room(game_id, 'join', data)
 
     def on_leave(self, data):
         game_id = data['game_id']

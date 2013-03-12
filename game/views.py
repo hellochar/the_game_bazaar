@@ -13,6 +13,7 @@ SOCKETIO_NS = {
     '/game': GameNamespace
 }
 
+
 @csrf_exempt
 def socketio(request):
     try:
@@ -73,4 +74,4 @@ def join_game(request):
 def user_list(request):
     game_id = request.GET['game_id']
     game = Game.objects.get(pk=game_id)
-    return HttpResponse(game.players, mimetype="application/json")
+    return HttpResponse(json.loads(game.players), mimetype="application/json")

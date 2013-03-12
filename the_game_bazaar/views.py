@@ -8,6 +8,9 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
+from the_game_bazaar.models import Map
+from django.views.decorators.csrf import csrf_exempt
+
 
 # /
 def index(request):
@@ -53,21 +56,21 @@ def map(request):
 
         try:
             map = Map.objects.get(id=request.GET['map_id'])
-            return HttpResponse(json.dumps({'success': True, 'map_id' : map.id, 'map_data': json.loads(map.data)}), mimetype='application/json')
+            return HttpResponse(json.dumps({'success': True, 'map_id': map.id, 'map_data': json.loads(map.data)}), mimetype='application/json')
         except Map.DoesNotExist:
             return HttpResponse(json.dumps({'success': False, 'reason': "No map exists with given map id!"}), mimetype='application/json')
 
     elif request.method == 'POST':
         if 'map_id' not in request.POST:
-            creator_id = User.objects.get(pk=1) #todo: make not bad
-            num_players = 2 #uh oh
+            creator_id = User.objects.get(pk=1)  # todo: make not bad
+            num_players = 2  # uh oh
             map_name = "qwer"
             map = Map(
-                    creator_id=creator_id,
-                    num_players=num_players,
-                    data=request.POST['map_data'],
-                    map_name=map_name
-                    )
+                creator_id=creator_id,
+                num_players=num_players,
+                data=request.POST['map_data'],
+                map_name=map_name
+            )
         else:
             try:
                 map = Map.objects.get(id=request.POST['map_id'])
@@ -76,9 +79,9 @@ def map(request):
                 return HttpResponse(json.dumps({'success': False, 'reason': "No map exists with given map id!"}), mimetype='application/json')
 
         map.save()
-        return HttpResponse(json.dumps({'success': True, 'map_id' : map.id}), mimetype='application/json')
+        return HttpResponse(json.dumps({'success': True, 'map_id': map.id}), mimetype='application/json')
     else:
-        pass # handle weird verbs
+        pass  # handle weird verbs
 
 
 @login_required(login_url='/', redirect_field_name=None)
@@ -94,14 +97,15 @@ def ajax_login(request):
     user = authenticate(username=username, password=password)
 
     resp = {
-        "success":False,
+        "success": False,
     }
     if user is not None and user.is_active:
         # the password verified for the user
-        auth_login(request, user)   
+        auth_login(request, user)
         resp['success'] = True
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
+
 
 @require_http_methods(["POST"])
 def ajax_register(request):
@@ -109,9 +113,9 @@ def ajax_register(request):
     password = request.POST['password']
     email = request.POST['email']
     resp = {
-        "success":False
+        "success": False
     }
-    
+
     try:
         User.objects.create_user(username, email, password)
         resp['success'] = True
@@ -120,11 +124,12 @@ def ajax_register(request):
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 
+
 @require_http_methods(["POST"])
 def ajax_logout(request):
     logout(request)
     resp = {
-        "success":True
+        "success": True
     }
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")

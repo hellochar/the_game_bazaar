@@ -6,8 +6,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from the_game_bazaar.models import Map
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login as auth_login
 
 # /
@@ -44,6 +42,7 @@ def list_games(request):
     context = {}
     return render(request, 'the_game_bazaar/play.html', context)
 
+
 @csrf_exempt
 def map(request):
     if request.method == 'GET':
@@ -78,6 +77,7 @@ def map(request):
         return HttpResponse(json.dumps({'success': True, 'map_id' : map.id}), mimetype='application/json')
     else:
         pass # handle weird verbs
+
 
 @login_required(login_url='/', redirect_field_name=None)
 def login(request):

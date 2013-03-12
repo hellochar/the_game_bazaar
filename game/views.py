@@ -3,21 +3,20 @@ import logging
 from socketio import socketio_manage
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from game.models import GameNamespace
+from game.gamens import GameNamespace
 from django.shortcuts import render
-from the_game_bazaar.models import Game
+from game.models import Game
 
 SOCKETIO_NS = {
     '/game': GameNamespace
 }
-
 
 @csrf_exempt
 def socketio(request):
     try:
         socketio_manage(request.environ, SOCKETIO_NS, request)
     except:
-        logging.getLogger("socketio").error("Exception while handling socketio connection", exc_info=True)
+        logging.getLogger("socketio").error("Exception while handling socketio connection" + str(request), exc_info=True)
         return HttpResponse("")
 
 

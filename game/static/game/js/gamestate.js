@@ -1,24 +1,13 @@
-function GameState(map_data) {
+function GameState(map_json, player_names) {
     // TODO
-    this.players = [];
-    for (var index in map_data.players) {
-        this.players.push(Player(map_data.players[index]));
-    }
+    this.players = map_json.players;
     // Has Players
-    this.populatePlayerNames = function(player_list) {
-        for (var index in player_list) {
-            this.players[index].username = player_list[index];
-        }
-    };
 }
 
-function Player(player_data) {
+function Player(contents_json) {
     // TODO
     this.username = "";
     this.units = [];
-    for (var index in player_data.units) {
-        this.units.push(Unit(player_data.units[index].init_pos));
-    }
     // Has Units
 }
 

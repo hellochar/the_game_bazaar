@@ -3,12 +3,16 @@
     <head>
         <script type="text/javascript" src="/static/the_game_bazaar/js/jquery-1.6.1.min.js"></script>
         <script type="text/javascript" src="/static/the_game_bazaar/js/socket.io.js"></script>
+        <script type="text/javascript" src="/static/the_game_bazaar/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/static/game/js/gamestate.js"></script>
         <script type="text/javascript" src="/static/game/js/game.js"></script>
         <link href="/static/game/css/game.css" rel="stylesheet">
     </head>
     <body>
         <!-- LOBBY CONTAINER -->
         <div id="game-id" val={{ game_id }}></div>
+        <div id="map-id" val={{ map_id }}></div>
+        <div id="player-id" val={{ player_id }}></div>
         <div id="lobby-container">
             <h1>Welcome to the lobby!</h1>
 
@@ -16,9 +20,16 @@
             {% if isHost %}
                 You are the host! and therefore have this button:
                 <button id="start-game">Start Game!</button>
+                Also, your id is {{ game_id }}
             {% else %}
                 You have joined the game!
             {% endif %}
+            <h3>And the players are..........</h3>
+            <ul id='player-usernames'>
+                {% for key, value in players.items %}
+                    <li id='player{{ key }}'>{{ value }}</li>
+                {% endfor %}
+            </ul>
             </p>
         </div>
 

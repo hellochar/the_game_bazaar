@@ -1,10 +1,10 @@
 <form action="/game/join" method="POST">
     {% csrf_token %}
-	<input name="map-id" type="text" placeholder="map-id" />
+	<input name="game-id" type="text" placeholder="game-id" />
 	<button type="submit">Join</button>
 </form>
 <form action="/game/host" method="POST">
     {% csrf_token %}
-	<input name="game-id" type="text" placeholder="game-id" />
+	<input name="map-id" type="text" placeholder="map-id" />
 	<button type="submit">Host</button>
 </form>

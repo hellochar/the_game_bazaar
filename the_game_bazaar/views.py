@@ -21,6 +21,7 @@ def index(request):
 
 
 # /home
+@login_required(login_url='/', redirect_field_name=None)
 def home(request):
     context = {}
     return render(request, 'the_game_bazaar/home.html', context)
@@ -112,7 +113,7 @@ def ajax_register(request):
     }
     
     try:
-        user = User.objects.create_user(username, email, password)
+        User.objects.create_user(username, email, password)
         resp['success'] = True
     except:
         pass

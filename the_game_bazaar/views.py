@@ -24,6 +24,7 @@ def index(request):
 
 
 # /home
+@login_required(login_url='/', redirect_field_name=None)
 def home(request):
     context = {}
     return render(request, 'the_game_bazaar/home.html', context)

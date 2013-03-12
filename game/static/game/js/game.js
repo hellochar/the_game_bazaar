@@ -102,7 +102,10 @@ $(function() {
         App.socket.emit('join', data);
 
         $(window).bind("beforeunload", function() {
-            App.socket.emit('leave', game_id);
+            data = {
+                'game_id': game_id
+            },
+            App.socket.emit('leave', data);
             App.socket.disconnect();
         });
 

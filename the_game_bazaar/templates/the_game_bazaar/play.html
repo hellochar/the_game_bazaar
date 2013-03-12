@@ -1,7 +1,10 @@
-<a href="/game/host">Host</a>
-<a href="/game/join">Join</a>
-
 <form action="/game/join" method="POST">
-	<input name="map-id" type="text" placeholder="map-id" />
+    {% csrf_token %}
+	<input name="game-id" type="text" placeholder="game-id" />
 	<button type="submit">Join</button>
+</form>
+<form action="/game/host" method="POST">
+    {% csrf_token %}
+	<input name="map-id" type="text" placeholder="map-id" />
+	<button type="submit">Host</button>
 </form>

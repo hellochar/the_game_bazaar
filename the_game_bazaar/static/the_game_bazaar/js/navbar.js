@@ -10,7 +10,7 @@ $().ready(function(){
 			},
 			success: function (data){
 				if(data['success'] === true){
-                    window.location.pathname = '/home';
+                    window.location.pathname = '/';
                 }
 			},
 		});

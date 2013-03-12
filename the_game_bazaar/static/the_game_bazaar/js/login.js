@@ -18,7 +18,7 @@ $().ready(function(){
 			success: function (data){
 				console.log(data);
                 if(data['success'] === true){
-                    window.location.pathname = '/home';
+                    window.location.pathname = '/';
                 }
 				return false;
 			},

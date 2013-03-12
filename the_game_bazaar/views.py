@@ -4,6 +4,7 @@ from django.utils import simplejson as json
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from the_game_bazaar.models import Map
 from django.views.decorators.csrf import csrf_exempt
@@ -14,7 +15,10 @@ def index(request):
     context = {
         "user": request.user,
     }
-    return render(request, 'the_game_bazaar/home.html', context)
+    if request.user.is_authenticated():
+        return render(request, 'the_game_bazaar/home.html', context)
+    else:
+        return render(request, 'the_game_bazaar/login.html', context)
 
 
 # /home
@@ -75,7 +79,7 @@ def map(request):
     else:
         pass # handle weird verbs
 
-
+@login_required(login_url='/', redirect_field_name=None)
 def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)

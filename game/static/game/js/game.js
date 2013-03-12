@@ -114,6 +114,14 @@ $(function() {
         };
         App.socket.emit('join', data);
 
+        $(window).bind("beforeunload", function() {
+            data = {
+                'game_id': game_id
+            },
+            App.socket.emit('leave', data);
+            App.socket.disconnect();
+        });
+
         $('#start-game').click(function() {
             console.log("start game");
             App.start_game();

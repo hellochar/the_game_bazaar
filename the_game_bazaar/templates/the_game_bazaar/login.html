@@ -1,13 +1,56 @@
 <head>
     <link href="/static/the_game_bazaar/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/the_game_bazaar/css/login.css" rel="stylesheet">
-
     <script type="text/javascript" src="/static/the_game_bazaar/js/jquery-1.6.1.min.js"></script>
     <script type="text/javascript" src="/static/the_game_bazaar/js/login.js"></script>
     <script type="text/javascript" src="/static/the_game_bazaar/js/jquery.cookie.js"></script>
 </head>
 
 <body>
+	{% include "the_game_bazaar/navbar.html" %}
+
+	<div class="container">
+		<div class="pull-right" style="margin-right:-25px">
+			<h1><i class="icon-arrow-up"></i>Login Here<i class="icon-arrow-up"></i></h1>
+		</div>
+		<br />
+		<br />
+		<h3 class="text-center"><em>or</em>	</h3>
+	</div>
+	<div class="container">
+		<div class="page-header">
+			<h2>Sign Up Instantly!</h2>
+		</div>
+		<form class="form-horizontal">
+			<fieldset>
+				{% csrf_token %}
+				<div class="control-group">
+					<label class="control-label" for="registerUsername">Username</label>
+					<div class="controls">
+						<input id="registerUsername" type="text" class="input-block-level input-large" placeholder="username">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="registerPassword">Password</label>
+					<div class="controls">
+						<input type="password" class="input-block-level input-large" placeholder="password" id="registerPassword">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="registerEmail">Email</label>
+					<div class="controls">
+						<input type="text" class="input-block-level input-large" placeholder="email" id="registerEmail">
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<button class="btn btn-large btn-primary" type="submit">Sign Up</button>
+					</div>	
+				</div>
+			</fieldset>
+		</form>
+	</div>
+
+
 	<div class="container" id="login_page">
 		<div class="form-toggle">
 			<a class="register-link" id="register">Not registered?</a>
@@ -20,7 +63,7 @@
 			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
 		</form>
 	</div>
-
+<!--
 	<div class="container" id="register_page">
 		<div class="form-toggle">
 			<a class="register-link" id="login">Already registered?</a>
@@ -33,6 +76,6 @@
 			<input type="text" class="input-block-level" placeholder="email" id="email-reg">
 			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
 		</form>
-	</div>
+	</div> -->
 
 </body>

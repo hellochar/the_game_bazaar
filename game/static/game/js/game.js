@@ -68,6 +68,7 @@ $(function() {
         $(window).bind("beforeunload", function() {
             App.socket.emit('leave', game_id);
             App.socket.disconnect();
+            return false;
         });
 
 
@@ -114,9 +115,6 @@ $(function() {
             App.socket.disconnect();
         });
 
-        // Join the room of the game_id
-        App.socket.join(App.game_id.toString());
-
         // Set up the gamestate with an ajax call.
         // This method calls finishInitialization() once the ajax call succeeds.
         App.instantiateGameState();
@@ -130,19 +128,18 @@ $(function() {
             type: "GET",
             url: "/game/userlist",
             data: {
-                "game_id": parseInt(App.map_id, 10)
+                "game_id": App.game_id
             },
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
                 if(data['success'] === true){
-                    App.updatePlayerList(data);
+                    App.updatePlayerList(data['players']);
                     App.populatePlayerNames();
                 }
                 else {
-                    $("#game-id").innerHTML = 'ERROR: Could not load the user list';
-                    App.gamestate = true;
+                    console.log("Couldn't load the player list");
                 }
                 return false;
             }
@@ -162,12 +159,10 @@ $(function() {
 
     App.finishInitialization = function() {
         // If this player is not the game owner, then broadcast a join.
-        if (parseInt(App.player_id, 10) !== 0) {
-            data = {
-                'game_id': App.game_id
-            };
-            App.socket.emit('join', data);
-        }
+        data = {
+            'game_id': App.game_id
+        };
+        App.socket.emit('join', data);
 
         $('#start-game').click(function() {
             console.log("start game");
@@ -191,12 +186,12 @@ $(function() {
                     console.log("putting the following into window.map_data: " + data.map_data);
                     window.map_data = data.map_data;
                     App.gamestate = GameState(data.map_data);
+                    window.gamestate = App.gamestate;
                     App.populatePlayerNames();
                     App.finishInitialization();
                 }
                 else {
                     $("#game-id").innerHTML = 'ERROR: Could not load that map id';
-                    App.gamestate = true;
                 }
                 return false;
             }
@@ -205,21 +200,21 @@ $(function() {
 
     App.updatePlayerList = function(player_list) {
         console.log("Updating player names");
-        parent = $("#player_usernames");
+        var parent = $("#player-usernames");
         parent.empty();
         for (var index in player_list) {
             elem = $(document.createElement("li"));
-            elem.innerHTML = player_list[index];
+            elem.html(player_list[index]);
             parent.append(elem);
         }
     };
 
     App.populatePlayerNames = function() {
         console.log("Populating player names");
-        usernames = $("#player-usernames");
-        username_list = [];
-        for (var index in usernames.children()) {
-            username_list.push(usernames[index].innerHTML);
+        var usernames = $("#player-usernames");
+        var username_list = Array(usernames.children().length);
+        for (var index = 0; index < usernames.children().length; index++) {
+            username_list[index] = usernames.children()[index].innerHTML;
         }
         App.gamestate.populatePlayerNames(username_list);
     };

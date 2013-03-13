@@ -47,22 +47,23 @@ def host_game(request):
 
 # /game/join
 def join_game(request):
-    try:
-        # This is the real code that should run
-        game_id = int(request.POST['game-id'])
-        game = Game.objects.get(pk=game_id)
-        players_json = json.loads(game.players)
+    # This is the real code that should run
+    game_id = int(request.POST['game-id'])
+    game = Game.objects.get(pk=game_id)
+
+    # Add this player to the player list for the game.
+    players_json = json.loads(game.players)
+    # If the user isn't already in the game, add them to it.
+    if request.user.username not in [value for key, value in players_json.items()]:
         players_json[len(players_json)] = request.user.username
         game.players = json.dumps(players_json)
-    except:
-        # This is debugging code that realistically shouldn't be reached.
-        game_id = 'no_game_id'
-        game = {'map_id': 'no_map_id'}
-        players_json = {0: 'first_default_player', 1: 'second_default_player'}
+        game.save()
+
+    # Render the context with our parameters.
     context = {
         'isHost': False,
         'game_id': game_id,
-        'map_id': game.map_id,
+        'map_id': game.map_id.id,
         'players': players_json,
         'player_id': len(players_json) - 1
     }
@@ -74,4 +75,11 @@ def join_game(request):
 def user_list(request):
     game_id = request.GET['game_id']
     game = Game.objects.get(pk=game_id)
-    return HttpResponse(json.loads(game.players), mimetype="application/json")
+    import logging
+    logger = logging.getLogger("socketio")
+    logger.critical(game.players)
+    response = {
+        'success': True,
+        'players': json.loads(game.players)
+    }
+    return HttpResponse(json.dumps(response), mimetype="application/json")

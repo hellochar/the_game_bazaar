@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from gmap.models import Map
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def gmap(request):
@@ -27,11 +28,17 @@ def gmap(request):
 
     elif request.method == 'POST':
         if 'map_id' not in request.POST:
-            creator_id = User.objects.get(pk=1) #TODO: make not bad
+
+            # import logging
+            # logger = logging.getLogger("socketio")
+            # logger.critical(request)
+            # logger.critical(request.user)
+
+            creator = request.user
             num_players = 2 #uh oh
             map_name = "qwer"
             game_map = Map(
-                    creator_id=creator_id,
+                    creator_id=creator,
                     num_players=num_players,
                     data=request.POST['map_data'],
                     map_name=map_name

@@ -32,7 +32,7 @@ Map.fromJSON = function(json) {
         var player = map.getPlayerById(playerObject.id);
         playerObject.units.forEach(function (unitObject) {
             map.addUnit(player, unitObject.init_pos);
-        });
+        }, this);
     });
     return map;
 }
@@ -44,15 +44,24 @@ $(function() {
         render();
     }
     function saveMap() {
+        data = {map_id : window.map.id, map_data : JSON.stringify(window.map)};
         $.post(
-            '/map',
-            {map_id : window.map.id, map_data : JSON.stringify(window.map)},
+            '/map/',
+            data,
             function(data, textStatus, jqXHR) {
+                console.log(data);
             },
             'json'
             ).success(function (response_json) {
+                console.log("success", response_json);
                 window.map.id = response_json.map_id;
                 setEditingMap(window.map);
+            }).done(function (resp) {
+                console.log('resp');
+                console.log(resp);
+            }).error(function (resp) {
+                console.log("errored");
+                console.log(resp);
             });
     }
 

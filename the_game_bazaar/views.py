@@ -31,12 +31,14 @@ def home(request):
 
 
 # /play
+@login_required(login_url='/', redirect_field_name=None)
 def play(request):
     context = {}
     return render(request, 'the_game_bazaar/play.html', context)
 
 
 # /edit
+@login_required(login_url='/', redirect_field_name=None)
 def edit(request):
     context = {}
     return render(request, 'the_game_bazaar/edit.html', context)
@@ -126,6 +128,7 @@ def ajax_register(request):
 
 
 @require_http_methods(["POST"])
+@login_required(login_url='/', redirect_field_name=None)
 def ajax_logout(request):
     logout(request)
     resp = {

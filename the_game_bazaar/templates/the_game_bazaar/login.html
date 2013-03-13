@@ -20,7 +20,7 @@
 		<div class="page-header">
 			<h2>Sign Up Instantly!</h2>
 		</div>
-		<form class="form-horizontal">
+		<form class="form-horizontal" id="register-form">
 			<fieldset>
 				{% csrf_token %}
 				<div class="control-group">
@@ -49,33 +49,5 @@
 			</fieldset>
 		</form>
 	</div>
-
-
-	<div class="container" id="login_page">
-		<div class="form-toggle">
-			<a class="register-link" id="register">Not registered?</a>
-		</div>
-		<form class="form-signin" id="signin-form">
-			{% csrf_token %}
-			<h2 class="form-signin-heading">Please Sign In</h2>
-			<input type="text" class="input-block-level" placeholder="username" id="username">
-			<input type="password" class="input-block-level" placeholder="password" id="password">
-			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
-		</form>
-	</div>
-<!--
-	<div class="container" id="register_page">
-		<div class="form-toggle">
-			<a class="register-link" id="login">Already registered?</a>
-		</div>
-		<form class="form-signin" id="register-form">
-			{% csrf_token %}
-			<h2 class="form-signin-heading">Sign Up Instantly!</h2>
-			<input type="text" class="input-block-level" placeholder="username" id="username-reg">
-			<input type="password" class="input-block-level" placeholder="password" id="password-reg">
-			<input type="text" class="input-block-level" placeholder="email" id="email-reg">
-			<button class="btn btn-large btn-primary" type="submit">Sign In</button>
-		</form>
-	</div> -->
 
 </body>

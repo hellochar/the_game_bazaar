@@ -17,14 +17,14 @@
 	        	<div class="span10">
 	        		<div class="row">
 	        			<div class="span5">
-	        				<h3>Join Games:</h3>
+	        				<h3h>Join A Games:</h3>
 							<form action="/game/join" method="POST">
 							    {% csrf_token %}
 								<input name="game-id" type="text" placeholder="game-id" />
 								<button type="submit">Join</button>
 							</form>
 	        			</div>
-	        				<h3>Host Games:</h3>
+	        				<h3>Host A Games:</h3>
 							<form action="/game/host" method="POST">
 							    {% csrf_token %}
 								<input name="map-id" type="text" placeholder="map-id" />

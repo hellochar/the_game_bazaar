@@ -8,7 +8,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
-from the_game_bazaar.models import Map
+from gmap.models import Map
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -31,12 +31,14 @@ def home(request):
 
 
 # /play
+@login_required(login_url='/', redirect_field_name=None)
 def play(request):
     context = {}
     return render(request, 'the_game_bazaar/play.html', context)
 
 
 # /edit
+@login_required(login_url='/', redirect_field_name=None)
 def edit(request):
     context = {}
     return render(request, 'the_game_bazaar/edit.html', context)
@@ -126,6 +128,7 @@ def ajax_register(request):
 
 
 @require_http_methods(["POST"])
+@login_required(login_url='/', redirect_field_name=None)
 def ajax_logout(request):
     logout(request)
     resp = {

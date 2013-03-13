@@ -6,8 +6,13 @@
 </head>
 
 <body>
-	{% include "the_game_bazaar/navbar.html" %}
-
+	<!-- START NAVIGATION BAR -->
+    {% include "the_game_bazaar/navbar.html" %}
+    <script type="text/javascript">
+    	//mark page's active tab
+        $('#navbar-home').addClass('active');
+    </script>
+    <!-- END NAVIGATION BAR -->
 	<div class="container">
 		<div class="pull-right" style="margin-right:-25px">
 			<h1><i class="icon-arrow-up"></i>Login Here<i class="icon-arrow-up"></i></h1>

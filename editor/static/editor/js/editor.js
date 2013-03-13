@@ -91,7 +91,9 @@ $(function() {
     }
 
     $('#editor-canvas').mousedown(function (evt) {
-        window.map.addUnit(currentPlayer(), {x: evt.offsetX, y: evt.offsetY});
+        var offsetX = $('#editor-canvas').position().left;
+        var offsetY = $('#editor-canvas').position().top;
+        window.map.addUnit(currentPlayer(), {x: evt.clientX - offsetX, y: evt.clientY - offsetY});
         render();
     });
 

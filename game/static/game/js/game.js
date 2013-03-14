@@ -78,7 +78,7 @@ $(function() {
                     for (var unitind in player.units) {
                         if (player.units.hasOwnProperty(unitind)) {
                             var unit = player.units[unitind];
-                            var pos = unit.pos(nowtime - App.server_start_time);
+                            var pos = unit.pos(nowtime - App.client_start_time);
                             var color = App.gamestate.colors[playerind];
                             App.drawCircle(pos.x, pos.y, 20, color);
                         }
@@ -153,6 +153,7 @@ $(function() {
         $('#lobby-container').hide();
         $('#game-container').show();
         App.server_start_time = data.timestamp;
+        App.client_start_time = Date.now();
     });
 
     //---------------------------------------------

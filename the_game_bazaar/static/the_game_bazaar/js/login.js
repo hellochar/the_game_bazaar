@@ -7,15 +7,18 @@ $().ready(function(){
             data: {
                 "username":$('#registerUsername').val(),
                 "password":$('#registerPassword').val(),
-                "email":$('#registerEmail').val(),
+                "email":$('#registerEmail').val()
             },
             headers: {
-                "X-CSRFToken": $.cookie('csrftoken'),
+                "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                if (data.success === true) {
+                    window.location.pathname = data.redirect_url;
+                }
                 console.log(data);
                 return false;
-            },
+            }
         });
         return false;
     });

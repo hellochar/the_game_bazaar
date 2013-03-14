@@ -91,7 +91,10 @@ def ajax_register(request):
 
     try:
         User.objects.create_user(username, email, password)
+        user = authenticate(username=username, password=password)
+        auth_login(request, user)
         resp['success'] = True
+        resp['redirect_url'] = '/home'
     except:
         pass
 

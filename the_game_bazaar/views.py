@@ -44,7 +44,9 @@ def play(request):
 # /edit
 @login_required(login_url='/', redirect_field_name=None)
 def edit(request):
-    context = {}
+    context = {
+        "maps": Map.objects.all(),
+    }
     return render(request, 'the_game_bazaar/edit.html', context)
 
 

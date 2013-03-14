@@ -18,6 +18,22 @@
 	        		<div class="row">
 	        			<div class="span5">
 	        				<h3>Edit Maps:</h3>
+	        				<table class="table table-striped">
+	        					<thead><tr>
+	        						<th>Map ID</th>
+	        						<th>Map Name</th>
+	        						<th># of players</th>
+	        					</tr></thead>
+	        					<tbody>
+	            				{% for map in maps %}
+	            					<tr>
+	            						<td>{{ map.id }}</td>
+	            						<td>{{ map.map_name }}</td>
+	            						<td>{{ map.num_players }}</td>
+	            					</tr>
+	            				{% endfor %}
+	            				</tbody>
+	        				</table>
 							<form action="/editor/" method="POST">
 					            {% csrf_token %}
 						        <input name="map-id" type="text" placeholder="map-id" />

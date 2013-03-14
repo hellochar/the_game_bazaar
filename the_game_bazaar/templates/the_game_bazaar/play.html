@@ -2,6 +2,8 @@
     <head>
         <link href="/static/the_game_bazaar/css/bootstrap.css" rel="stylesheet">
         <script type="text/javascript" src="/static/the_game_bazaar/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="/static/the_game_bazaar/js/play.js"></script>
+
     </head>
     <body>
     	<!-- START NAVIGATION BAR -->
@@ -15,23 +17,58 @@
 	        <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>
 	        <div class="row">
 	        	<div class="span10">
-	        		<div class="row">
-	        			<div class="span5">
-	        				<h3>Join A Game:</h3>
-							<form action="/game/join" method="POST">
-							    {% csrf_token %}
-								<input name="game-id" type="text" placeholder="game-id" />
-								<button type="submit">Join</button>
-							</form>
-	        			</div>
-	        			<div class="span5">
-	        				<h3>Host A Game:</h3>
-							<form action="/game/host" method="POST">
-							    {% csrf_token %}
-								<input name="map-id" type="text" placeholder="map-id" />
-								<button type="submit">Host</button>
-							</form>
-	        			</div>
+                    <div id="play-join">
+                        <button id="play-host-button" class="btn btn-primary pull-right">Host a Game</button>
+        				<h3>Join A Game:</h3>
+        				<table class="table table-striped">
+        					<thead><tr>
+        						<th>Game ID</th>
+        						<th>Map Name</th>
+        						<th>Players</th>
+        					</tr></thead>
+        					<tbody>
+            				{% for game in games %}
+            					<tr>
+            						<td>{{ game.id }}</td>
+            						<td>{{ game.map_id.map_name}}</td>	
+            						<td id="game-{{ game.id }}"></td>
+        							<script>
+        								printPlayers({{ game.id }}, $.parseJSON('{{ game.players }}'.replace(/&quot;/g, '"')));
+        							</script>
+            					</tr>
+            				{% endfor %}
+            				</tbody>
+        				</table>
+        				<form action="/game/join" method="POST">
+        				    {% csrf_token %}
+        					<input name="game-id" type="text" placeholder="game-id" />
+        					<button type="submit">Join</button>
+        				</form>
+                    </div>
+                    <div id="play-host">
+                        <button id="play-join-button" class="btn btn-primary pull-right">Join a Game</button>
+        				<h3>Host A Game:</h3>
+        				<table class="table table-striped">
+        					<thead><tr>
+        						<th>Map ID</th>
+        						<th>Map Name</th>
+        						<th># of players</th>
+        					</tr></thead>
+        					<tbody>
+            				{% for map in maps %}
+            					<tr>
+            						<td>{{ map.id }}</td>
+            						<td>{{ map.map_name }}</td>
+            						<td>{{ map.num_players }}</td>
+            					</tr>
+            				{% endfor %}
+            				</tbody>
+        				</table>
+        				<form action="/game/host" method="POST">
+        				    {% csrf_token %}
+        					<input class="input-block-level input-large" name="map-id" type="text" placeholder="map-id" />
+        					<button type="submit">Host</button>
+        				</form>
 	        		</div>
 	        	</div>
 	        </div>

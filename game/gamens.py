@@ -17,28 +17,31 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
             if room_name in socket.session['rooms']:
                 socket.send_packet(pkt)
 
+    def get_time(self):
+        return int(time.time() * 1000)
+
     def on_input(self, data):
         game_id = str(data['game_id'])
         del data['game_id']
-        data['timestamp'] = time.mktime(time.localtime())
+        data['timestamp'] = self.get_time()
         self.broadcast_to_room(game_id, 'input', data)
 
     def on_start(self, data):
         game_id = str(data['game_id'])
         del data['game_id']
-        data['timestamp'] = time.mktime(time.localtime())
+        data['timestamp'] = self.get_time()
         self.broadcast_to_room(game_id, 'start', data)
 
     def on_join(self, data):
         game_id = str(data['game_id'])
         del data['game_id']
         self.join(game_id)
-        data['timestamp'] = time.mktime(time.localtime())
+        data['timestamp'] = self.get_time()
         self.emit_to_room(game_id, 'join', data)
 
     def on_leave(self, data):
         game_id = str(data['game_id'])
         del data['game_id']
         self.leave(game_id)
-        data['timestamp'] = time.mktime(time.localtime())
+        data['timestamp'] = self.get_time()
         self.broadcast_to_room(game_id, 'leave', data)

@@ -18,8 +18,6 @@ $(function() {
     App.connectionState = "blank";
     App.me = '#000000';
 
-    $(App.canvas).click(App.onClick);
-
     App.socket = io.connect('/game');
 
     console.log("Attemting to connect");
@@ -55,6 +53,7 @@ $(function() {
     };
 
     App.onClick = function(e) {
+        // TODO selection of units
         var posX = $(this).position().left,
             posY = $(this).position().top;
         var x = e.pageX - posX,
@@ -64,25 +63,28 @@ $(function() {
         }
     };
 
+    $(App.canvas).click(App.onClick);
+
     App.refreshAll = function() {
-        $(window).bind("beforeunload", function() {
-            App.socket.emit('leave', game_id);
-            App.socket.disconnect();
-            return false;
-        });
-
-
         App.clear();
+        var nowtime = Date.now();
         if (App.connectionState == "connected") {
-            // TODO: However you build your game state updater,
-            // change the rendering logic here.
-
-            // for (var player in Players) {
-            //     if (Players.hasOwnProperty(player)) {
-            //         player = Players[player];
-            //         App.drawCircle(player.x, player.y, 20, player.color);
-            //     }
-            // }
+            // For each player in the gamestate
+            var players = App.gamestate.players;
+            for (var playerind in players) {
+                if (players.hasOwnProperty(playerind)) {
+                    var player = players[playerind];
+                    // For each unit in the player
+                    for (var unitind in player.units) {
+                        if (player.units.hasOwnProperty(unitind)) {
+                            var unit = player.units[unitind];
+                            var pos = unit.pos(nowtime - App.server_start_time);
+                            var color = App.gamestate.colors[playerind];
+                            App.drawCircle(pos.x, pos.y, 20, color);
+                        }
+                    }
+                }
+            }
         } else if (App.connectionState == "connecting") {
             App.ctx.fillStyle = "Black";
             App.ctx.fillText("Connecting...", 400, 200);
@@ -123,7 +125,6 @@ $(function() {
     // Let client know someone has joined
     App.socket.on('join', function (data){
         console.log("Someone joined the game at: ", data.timestamp);
-        // TODO: Add data.player_id to game state
         $.ajax({
             type: "GET",
             url: "/game/userlist",
@@ -151,6 +152,7 @@ $(function() {
         console.log("Timestamp: ", data.timestamp);
         $('#lobby-container').hide();
         $('#game-container').show();
+        App.server_start_time = data.timestamp;
     });
 
     //---------------------------------------------
@@ -223,17 +225,23 @@ $(function() {
         data = {
             'x': x,
             'y': y,
-            'game_id': $("#game-id").attr("val")
+            'game_id': App.game_id,
+            'player_id': App.player_id
         };
         App.socket.emit('input', data);
     };
 
     App.socket.on('input', function (data) {
+        // Get our variables.
+        var timestamp = data['timestamp'];
+        var player_id = data['player_id'];
+        var x = data['x'];
+        var y = data['y'];
+        // Update our timestamps.
+        var updateTime = timestamp - App.server_start_time;
         // Update the game state.
-        // TODO: FILL IN HERE
-        timestamp = data['timestamp'];
-        player_id = data['player_id'];
-        player_input = data['player_input'];
+        // TODO modify the correct unit.
+        App.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
     });
 
     //---------------------------------------------
@@ -255,12 +263,10 @@ $(function() {
     // LOBBY FUNCTIONS
     //---------------------------------------------
     App.start_game = function() {
-        //TODO: Use a real game ID
         data = {
-            'game_id': $("#game-id").attr("val")
+            'game_id': App.game_id
         };
         App.socket.emit('start', data);
-        //don't really need a message
     };
 
     // DOM manipulation

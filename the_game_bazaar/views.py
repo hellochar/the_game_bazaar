@@ -8,8 +8,9 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
-from gmap.models import Map
 from django.views.decorators.csrf import csrf_exempt
+from gmap.models import Map
+from game.models import Game
 
 
 # /
@@ -33,7 +34,10 @@ def home(request):
 # /play
 @login_required(login_url='/', redirect_field_name=None)
 def play(request):
-    context = {}
+    context = {
+        "maps": Map.objects.all(),
+        "games": Game.objects.all(),
+    }
     return render(request, 'the_game_bazaar/play.html', context)
 
 
@@ -46,7 +50,8 @@ def edit(request):
 
 # /list
 def list_games(request):
-    context = {}
+    context = {
+    }
     return render(request, 'the_game_bazaar/play.html', context)
 
 

@@ -14,11 +14,12 @@ class SimpleTest(TestCase):
 
 
 class ourAuthTest(TestCase):
-	def test_ajax_login(self):
+    def test_ajax_login(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
-		req = {
-            'username':'aaa'
+        req = {
+            'method':'POST',
+            'username':'aaa',
             'password':'aaa'
-		}
+        }
         s_resp = views.ajax_login(req)
         self.assertEqual(json.loads(s_resp)['success'], True)

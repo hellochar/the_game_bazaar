@@ -24,4 +24,15 @@ To run locally:
 
     foreman start
 
+Testing Instructions
+=============
+
+Make sure that TEST in the top level directory is executable with the following command:
+
+    chmod 777 TEST
+
+Then run the TEST bash file as so:
+
+    ./TEST
+
 Will look at the Procfile and start it correctly

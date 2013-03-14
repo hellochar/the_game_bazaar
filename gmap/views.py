@@ -8,13 +8,18 @@ from django.contrib.auth.models import User
 def gmap(request):
     if request.method == 'GET':
         if 'map_id' not in request.GET:
+            map_id = "";
+        else:
+            map_id = request.GET['map_id'];
+
+        if not map_id:
             return HttpResponse(json.dumps({
                 'success': False,
                 'reason': "No map id supplied!"
                 }), mimetype='application/json')
 
         try:
-            game_map = Map.objects.get(id=request.GET['map_id'])
+            game_map = Map.objects.get(id=map_id)
             return HttpResponse(json.dumps({
                 'success': True, 
                 'map_id' : game_map.id, 
@@ -28,12 +33,16 @@ def gmap(request):
 
     elif request.method == 'POST':
         if 'map_id' not in request.POST:
+            map_id = "";
+        else:
+            map_id = request.POST['map_id'];
 
             # import logging
             # logger = logging.getLogger("socketio")
             # logger.critical(request)
             # logger.critical(request.user)
 
+        if not map_id:
             creator = request.user
             num_players = 2 #uh oh
             map_name = "qwer"
@@ -45,7 +54,7 @@ def gmap(request):
                     )
         else:
             try:
-                game_map = Map.objects.get(id=request.POST['map_id'])
+                game_map = Map.objects.get(id=map_id)
                 game_map.data = request.POST['map_data']
             except Map.DoesNotExist:
                 return HttpResponse(json.dumps({

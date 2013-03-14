@@ -1,16 +1,39 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from gmap.models import Map
 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+def createUser():
+    User.objects.create_user("tester", "tester", "tester")
+
+
+def createTestMap():
+    Map.objects.create(
+        creator_id=User.objects.get(username="tester"),
+        num_players=2,
+        data={},
+        map_name="qwer"
+    )
+
+
+class MapTester(TestCase):
+    def setUp(self):
+        createUser()
+        createTestMap()
+
+    def test_get_map(self):
         """
-        Tests that 1 + 1 always equals 2.
+        Test getting the first map
         """
-        self.assertEqual(1 + 1, 2)
+        response = self.client.get(reverse("gmap"), {"map_id": 1})
+        self.assertEquals(response.status_code, 200)
+        # fill in more tests here
+
+    def test_post_map(self):
+        """
+        Test saving the map to the server
+        """
+        # actually post test map data
+        response = self.client.post(reverse("gmap"), {"map_id": 1, "map_data": "{}"})
+        self.assertEquals(response.status_code, 200)

@@ -4,7 +4,13 @@
         <script type="text/javascript" src="/static/the_game_bazaar/js/jquery-1.6.1.min.js"></script>
     </head>
     <body>
+        <!-- START NAVIGATION BAR -->
         {% include "the_game_bazaar/navbar.html" %}
+        <script type="text/javascript">
+            //mark page's active tab
+            $('#navbar-edit').addClass('active');
+        </script>
+        <!-- END NAVIGATION BAR -->
         <div class="container">
 	        <div class="page-header"><h1>Edit a Map!</h1></div>
 	        <div class="row">

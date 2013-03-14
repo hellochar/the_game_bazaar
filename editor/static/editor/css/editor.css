@@ -1,13 +1,10 @@
-
-#canvas-container {
+canvas {
     margin: 0px auto;
     border: 1px solid black;
-    width: 800px;
-    height: 800px;
 }
 
 #buttons {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 200px;
+    right: 10px;
 }

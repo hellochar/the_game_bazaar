@@ -2,7 +2,6 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
-
 class Map(models.Model):
     # map_id is created by default
     creator_id = models.ForeignKey(User, related_name="+")

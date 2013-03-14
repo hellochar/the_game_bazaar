@@ -9,14 +9,9 @@ $(function() {
     //---------------------------------------------
 
     console.log("Init canvas");
-    App.canvas = document.getElementById('game-canvas');
-    App.ctx = App.canvas.getContext("2d");
-    App.ctx.globalAlpha = 0.4;
-    App.ctx.textAlign = "center";
-    App.ctx.font = "14px Helvetica";
-    App.canvas.tabIndex = "0";
+    App.canvas = Canvas(gamestate);
+
     App.connectionState = "blank";
-    App.me = '#000000';
 
     App.socket = io.connect('/game');
 
@@ -27,73 +22,6 @@ $(function() {
         App.connectionState = "connecting";
     });
 
-    //---------------------------------------------
-    //CANVAS FUNCTIONS
-    //---------------------------------------------
-
-    var requestAnimationFrame = window.requestAnimationFrame ||
-                            window.mozRequestAnimationFrame ||
-                            window.webkitRequestAnimationFrame ||
-                            window.msRequestAnimationFrame;
-
-    window.requestAnimationFrame = requestAnimationFrame;
-
-    App.randomColor = function() {
-        return "#" + Math.random().toString(16).slice(2, 8);
-    };
-
-    App.clear = function() {
-        App.ctx.clearRect(0, 0, App.canvas.width, App.canvas.height);
-    };
-    App.drawCircle = function(x, y, r, color) {
-        App.ctx.beginPath();
-        App.ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        App.ctx.fillStyle = color;
-        App.ctx.fill();
-    };
-
-    App.onClick = function(e) {
-        // TODO selection of units
-        var posX = $(this).position().left,
-            posY = $(this).position().top;
-        var x = e.pageX - posX,
-            y = e.pageY - posY;
-        if (App.playerMovement) {
-            App.playerMovement(x, y);
-        }
-    };
-
-    $(App.canvas).click(App.onClick);
-
-    App.refreshAll = function() {
-        App.clear();
-        var nowtime = Date.now();
-        if (App.connectionState == "connected") {
-            // For each player in the gamestate
-            var players = App.gamestate.players;
-            for (var playerind in players) {
-                if (players.hasOwnProperty(playerind)) {
-                    var player = players[playerind];
-                    // For each unit in the player
-                    for (var unitind in player.units) {
-                        if (player.units.hasOwnProperty(unitind)) {
-                            var unit = player.units[unitind];
-                            var pos = unit.pos(nowtime - App.client_start_time);
-                            var color = App.gamestate.colors[playerind];
-                            App.drawCircle(pos.x, pos.y, 20, color);
-                        }
-                    }
-                }
-            }
-        } else if (App.connectionState == "connecting") {
-            App.ctx.fillStyle = "Black";
-            App.ctx.fillText("Connecting...", 400, 200);
-        } else if (App.connectionState == "blank") {
-            App.ctx.fillStyle = "Black";
-            App.ctx.fillText("Nothing...", 400, 200);
-        }
-        requestAnimationFrame(App.refreshAll);
-    };
 
     //---------------------------------------------
     //MANAGING LOBBY STATE
@@ -276,5 +204,5 @@ $(function() {
         $('#lobby-container').show();
     });
 
-    requestAnimationFrame(App.refreshAll);
+    App.canvas.startRendering();
 });

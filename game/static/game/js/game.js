@@ -5,11 +5,9 @@ $(function() {
 	App = {};
 
     //---------------------------------------------
-    //INITIALIZE CANVAS AND SOCKET.IO
+    //INITIALIZE SOCKET.IO
     //---------------------------------------------
 
-    console.log("Init canvas");
-    App.canvas = Canvas(gamestate);
 
     App.connectionState = "blank";
 
@@ -203,6 +201,12 @@ $(function() {
         $('#game-container').hide();
         $('#lobby-container').show();
     });
+
+    //---------------------------------------------
+    // INITIALIZE CANVAS
+    //---------------------------------------------
+    console.log("Init canvas");
+    App.canvas = Canvas(App);
 
     App.canvas.startRendering();
 });

@@ -27,6 +27,8 @@ def socketio(request):
 def host_game(request):
     # Get the map object that we want to host a game of
     map_id = request.POST['map-id']
+    # TODO: if the map_id is empty, you should display an error!
+
     theMap = Map.objects.get(pk=map_id)
     # Create the players dictionary (only the host at the moment)
     players_json = {0: request.user.username}
@@ -48,7 +50,8 @@ def host_game(request):
 # /game/join
 def join_game(request):
     # This is the real code that should run
-    game_id = int(request.POST['game-id'])
+    game_id = request.POST['game-id']
+    # TODO: if the game_id is empty, you should display an error!
     game = Game.objects.get(pk=game_id)
 
     # Add this player to the player list for the game.
@@ -74,8 +77,8 @@ def join_game(request):
 # Returns a list of users in the game_id provided
 def user_list(request):
     game_id = request.GET['game_id']
+    # TODO: if the game_id is empty, you should display an error!
     game = Game.objects.get(pk=game_id)
-    import logging
     logger = logging.getLogger("socketio")
     logger.critical(game.players)
     response = {

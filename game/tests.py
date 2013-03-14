@@ -6,11 +6,11 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
+import json
 
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class UserListTests(TestCase):
+    def test_userlist(self):
         """
-        Tests that 1 + 1 always equals 2.
+        Test user list to see if the correct response is returned
         """
         self.assertEqual(1 + 1, 2)

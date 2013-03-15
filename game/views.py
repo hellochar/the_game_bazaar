@@ -25,6 +25,19 @@ def socketio(request):
 
 # /game/host
 def host_game(request):
+    game, players_json = host_game_logic
+    # Render the context with our parameters.
+    context = {
+        'isHost': True,
+        'game_id': game.id,
+        'map_id': request.POST['map-id'],
+        'player_id': 0,
+        'players': players_json
+    }
+    return render(request, 'game/game.html', context)
+
+
+def host_game_logic(request):
     # Get the map object that we want to host a game of
     map_id = request.POST['map-id']
     # TODO: if the map_id is empty, you should display an error!
@@ -35,20 +48,25 @@ def host_game(request):
     # Create and save the game
     game = Game(map_id=theMap, players=json.dumps(players_json))
     game.save()
-
-    # Render the context with our parameters.
-    context = {
-        'isHost': True,
-        'game_id': game.id,
-        'map_id': map_id,
-        'player_id': 0,
-        'players': players_json
-    }
-    return render(request, 'game/game.html', context)
+    return game, players_json
 
 
 # /game/join
 def join_game(request):
+    game, players_json = join_game_logic(request)
+
+    # Render the context with our parameters.
+    context = {
+        'isHost': False,
+        'game_id': request.POST['game-id'],
+        'map_id': game.map_id.id,
+        'players': players_json,
+        'player_id': len(players_json) - 1
+    }
+    return render(request, 'game/game.html', context)
+
+
+def join_game_logic(request):
     # This is the real code that should run
     game_id = request.POST['game-id']
     # TODO: if the game_id is empty, you should display an error!
@@ -62,15 +80,7 @@ def join_game(request):
         game.players = json.dumps(players_json)
         game.save()
 
-    # Render the context with our parameters.
-    context = {
-        'isHost': False,
-        'game_id': game_id,
-        'map_id': game.map_id.id,
-        'players': players_json,
-        'player_id': len(players_json) - 1
-    }
-    return render(request, 'game/game.html', context)
+    return game, players_json
 
 
 # /game/userlist
@@ -79,8 +89,6 @@ def user_list(request):
     game_id = request.GET['game_id']
     # TODO: if the game_id is empty, you should display an error!
     game = Game.objects.get(pk=game_id)
-    logger = logging.getLogger("socketio")
-    logger.critical(game.players)
     response = {
         'success': True,
         'players': json.loads(game.players)

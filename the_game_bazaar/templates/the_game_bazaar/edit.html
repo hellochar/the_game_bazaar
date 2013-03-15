@@ -23,6 +23,7 @@
 	        						<th>Map ID</th>
 	        						<th>Map Name</th>
 	        						<th># of players</th>
+                                    <th>Actions</th>
 	        					</tr></thead>
 	        					<tbody>
 	            				{% for map in maps %}
@@ -30,15 +31,11 @@
 	            						<td>{{ map.id }}</td>
 	            						<td>{{ map.map_name }}</td>
 	            						<td>{{ map.num_players }}</td>
+                                        <td><a href="/editor/#{{ map.id }}">Edit</a></td>
 	            					</tr>
 	            				{% endfor %}
 	            				</tbody>
 	        				</table>
-							<form action="/editor/" method="POST">
-					            {% csrf_token %}
-						        <input name="map-id" type="text" placeholder="map-id" />
-						        <button type="submit">Edit</button>
-					        </form>
 	        			</div>
 	        		</div>
 	        	</div>

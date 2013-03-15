@@ -1,5 +1,12 @@
+function navbarAlert(text){
+	$('#navbar-alert-text').html(text);
+	$('#navbar-alert').show();
+}
+
 $().ready(function(){
-	$(".alert").alert();
+
+	$('#navbar-alert').hide();
+
 	$('#navbar-logout').submit(function (e){
 		e.preventDefault();
 		$.ajax({
@@ -33,6 +40,7 @@ $().ready(function(){
                 if(data['success'] === true){
                     window.location.pathname = '/';
                 } else {
+                	navbarAlert("incorrect username or password");
                 	//put stuff in error
                 }
 				return false;

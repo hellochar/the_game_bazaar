@@ -15,6 +15,9 @@ $().ready(function(){
             success: function (data){
                 if (data.success === true) {
                     window.location.pathname = data.redirect_url;
+                } else {
+                    // navbarAlert is in navbar.js
+                    navbarAlert("<strong>Registration Unsuccessful</strong>, please check your fields");
                 }
                 console.log(data);
                 return false;

@@ -25,6 +25,7 @@
         						<th>Game ID</th>
         						<th>Map Name</th>
         						<th>Players</th>
+                                <th></th>
         					</tr></thead>
         					<tbody>
             				{% for game in games %}
@@ -32,6 +33,7 @@
             						<td>{{ game.id }}</td>
             						<td>{{ game.map_id.map_name}}</td>	
             						<td id="game-{{ game.id }}"></td>
+                                    <td></td>
         							<script>
         								printPlayers({{ game.id }}, $.parseJSON('{{ game.players }}'.replace(/&quot;/g, '"')));
         							</script>

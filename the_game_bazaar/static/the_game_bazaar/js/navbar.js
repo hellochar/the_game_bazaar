@@ -7,6 +7,10 @@ $().ready(function(){
 
 	$('#navbar-alert').hide();
 
+	$('#navbar-alert-close').click(function(){
+		$('#navbar-alert').hide();
+	})
+
 	$('#navbar-logout').submit(function (e){
 		e.preventDefault();
 		$.ajax({

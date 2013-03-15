@@ -1,5 +1,5 @@
 describe("GameState", function() {
-    // Instantiate a testing game state with three players and some amount of units for each.
+  // Instantiate a testing game state with three players and some amount of units for each.
   var gamestate;
   beforeEach(function() {
     var map_data = {
@@ -98,6 +98,16 @@ describe("GameState", function() {
       expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
       expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);
       expect(modifiedUnit.pos(200).y).toBeCloseTo(yAt200, 2);
+    });
+  });
+
+  describe("Bug fixes", function() {
+    it("should not error when moving to the spot that it is currently at", function() {
+      var ourUnit = gamestate.players[0].units[0];
+      var originalPos = ourUnit.pos(0);
+      ourUnit.update(0, originalPos);
+      expect(ourUnit.pos(0).x).toBeCloseTo(originalPos.x);
+      expect(ourUnit.pos(0).y).toBeCloseTo(originalPos.y);
     });
   });
 

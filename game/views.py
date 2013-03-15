@@ -25,7 +25,7 @@ def socketio(request):
 
 # /game/host
 def host_game(request):
-    game, players_json = host_game_logic
+    game, players_json = host_game_logic(request)
     # Render the context with our parameters.
     context = {
         'isHost': True,

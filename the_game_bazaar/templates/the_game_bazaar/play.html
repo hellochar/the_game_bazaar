@@ -33,7 +33,13 @@
             						<td>{{ game.id }}</td>
             						<td>{{ game.map_id.map_name}}</td>	
             						<td id="game-{{ game.id }}"></td>
-                                    <td></td>
+                                    <td>
+                                        <form action="/game/join" method="POST" style="margin:0px">
+                                            {% csrf_token %}
+                                            <input name="game-id" type="hidden" value="{{ game.id }}" />
+                                            <button class="btn">Join</button>
+                                        </form>
+                                    </td>
         							<script>
         								printPlayers({{ game.id }}, $.parseJSON('{{ game.players }}'.replace(/&quot;/g, '"')));
         							</script>
@@ -41,11 +47,6 @@
             				{% endfor %}
             				</tbody>
         				</table>
-        				<form action="/game/join" method="POST">
-        				    {% csrf_token %}
-        					<input name="game-id" type="text" placeholder="game-id" />
-        					<button type="submit">Join</button>
-        				</form>
                     </div>
                     <div id="play-host">
                         <button id="play-join-button" class="btn btn-primary pull-right">Join a Game</button>
@@ -55,6 +56,7 @@
         						<th>Map ID</th>
         						<th>Map Name</th>
         						<th># of players</th>
+                                <th></th>
         					</tr></thead>
         					<tbody>
             				{% for map in maps %}
@@ -62,15 +64,17 @@
             						<td>{{ map.id }}</td>
             						<td>{{ map.map_name }}</td>
             						<td>{{ map.num_players }}</td>
+                                    <td>
+                                        <form action="/game/host" method="POST" style="margin:0px">
+                                            {% csrf_token %}
+                                            <input name="map-id" type="hidden" value="{{ map.id }}" />
+                                            <button class="btn">Host</button>
+                                        </form>
+                                    </td>
             					</tr>
             				{% endfor %}
             				</tbody>
         				</table>
-        				<form action="/game/host" method="POST">
-        				    {% csrf_token %}
-        					<input class="input-block-level input-large" name="map-id" type="text" placeholder="map-id" />
-        					<button type="submit">Host</button>
-        				</form>
 	        		</div>
 	        	</div>
 	        </div>

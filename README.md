@@ -14,10 +14,9 @@ To set up the local database for development, perform the following commands in 
 
     1. psql -Upostgres
     2. CREATE USER tgb_db_admin with PASSWORD 'ilovetgb';
-    3. CREATE DATABASE tgb_db with OWNER tgb_db_admin;
-    4. \q
-    5. ???
-    6. Profit!
+    3. ALTER USER tgb_db_admin CREATEDB;
+    4. CREATE DATABASE tgb_db with OWNER tgb_db_admin;
+    5. \q
 
 
 To run locally:

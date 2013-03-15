@@ -22,22 +22,23 @@ class MapTester(TestCase):
     def setUp(self):
         createUser()
         createTestMap()
-        self.client.login( username="tester", password="tester" )
+        self.client.login(username="tester", password="tester")
 
     #returns (response, body parsed to JSON)
     def make_GET(self, map_id=None):
-        if map_id == None:
+        if map_id is None:
             map_id = Map.objects.all()[0].id
         response = self.client.get(reverse("gmap"), {"map_id": map_id})
         return (response, json.loads(response.content))
 
     def make_POST(self, map_data, map_id=None):
-        if map_id == None:
+        if map_id is None:
             map_id = Map.objects.all()[0].id
 
         params = {'map_id': map_id, 'map_data': map_data}
         response = self.client.post(reverse('gmap'), params)
         return (response, json.loads(response.content))
+
 
 class MapGETTester(MapTester):
 
@@ -49,25 +50,26 @@ class MapGETTester(MapTester):
         _, response_json = self.make_GET()
         self.assertTrue(response_json['success'])
         self.assertEquals(map_id, response_json['map_id'])
-        self.assertDictEqual({"players":[{"id":0,"units":[]},{"id":1,"units":[]}]}, json.loads(response_json['map_data']))
+        self.assertDictEqual({"players": [{"id": 0, "units": []}, {"id": 1, "units": []}]}, json.loads(response_json['map_data']))
 
     def test_json_mimetype(self):
         response, _ = self.make_GET()
         self.assertEquals('application/json', response._headers['content-type'][1])
 
     def test_nonexistent_map(self):
-        _, json = self.make_GET(-1) #bad map id
+        _, json = self.make_GET(-1)  # bad map id
         self.assertFalse(json["success"])
 
     def test_no_map_id_parameter(self):
         response = self.client.get(reverse("gmap"), {})
         self.assertFalse(json.loads(response.content)['success'])
 
+
 class MapPOSTTester(MapTester):
 
     def test_successfully_post_new_map(self):
         map_data = "{'players': [{'id':0,'units':[]}, {'id':1,'units':[]}]}"
-        response_json = json.loads(self.client.post(reverse("gmap"), {'map_data': map_data }).content)
+        response_json = json.loads(self.client.post(reverse("gmap"), {'map_data': map_data}).content)
         self.assertTrue(response_json["success"])
         self.assertEqual(map_data, Map.objects.get(id=response_json['map_id']).data)
         # import code
@@ -86,13 +88,13 @@ class MapPOSTTester(MapTester):
         self.make_POST("{'foo':'bar'}", map_id)
         response, json = self.make_GET(map_id)
         self.assertDictEqual(
-                {
-                    'success': True,
-                    'map_id': map_id,
-                    'map_data': "{'foo':'bar'}",
-                },
-                json
-            )
+            {
+                'success': True,
+                'map_id': map_id,
+                'map_data': "{'foo':'bar'}",
+            },
+            json
+        )
 
     def test_json_mimetype(self):
         pass

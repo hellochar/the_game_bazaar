@@ -34,6 +34,11 @@ Then run the TEST bash file as so:
 
     ./TEST
 
+To test the javascript models (unit tests), visit the domain /jasmine. Each line of text that is green is a successful test.
+
+Miscellaneous Problems
+=============
+
 If you get errors related to 'permission denied', chances are the 'tgb_db_admin' user doesn't have createdb permission. To fix this, run a postgres shell with
 
     psql

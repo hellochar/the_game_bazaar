@@ -42,10 +42,10 @@ function Unit(init_pos) {
             var dx = destination.x - start.x;
             var dy = destination.y - start.y;
             var mag = Math.sqrt(dx * dx + dy * dy);
-            var x = dx / mag * this.speed;
-            var y = dy / mag * this.speed;
-            var changeX = x * dt;
-            var changeY = y * dt;
+            var normdx = dx / mag;
+            var normdy = dy / mag;
+            var changeX = normdx * this.speed * dt;
+            var changeY = normdy * this.speed * dt;
             if (Math.abs(changeX) > Math.abs(dx) || Math.abs(changeY) > Math.abs(dy)) {
                 changeX = dx;
                 changeY = dy;

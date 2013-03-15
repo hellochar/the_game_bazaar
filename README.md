@@ -35,4 +35,12 @@ Then run the TEST bash file as so:
 
     ./TEST
 
-Will look at the Procfile and start it correctly
+If you get errors related to 'permission denied', chances are the 'tgb_db_admin' user doesn't have createdb permission. To fix this, run a postgres shell with
+
+    psql
+
+You should be logged in as a superuser (the prompt will look like `username=#` instead of `username=>`). Then execute the following sql:
+
+    ALTER USER tgb_db_admin CREATEDB;
+
+You can now quit the shell with `\q`.

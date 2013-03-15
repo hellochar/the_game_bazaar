@@ -5,8 +5,8 @@ from gmap.views import gmap
 from jasmine_testing.views import tests
 
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+# from django.contrib import admin
+# admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$',

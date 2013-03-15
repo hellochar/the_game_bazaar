@@ -2,6 +2,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from the_game_bazaar import views
 from gmap.views import gmap
+from jasmine_testing.views import tests
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -13,21 +14,21 @@ urlpatterns = patterns('',
         name="index"),
 
     url(r'^socket.io/', include('game.urls')),
-    
+
     url(r'^home/$',
         views.home,
         name="home"),
-    
+
     # Loggin In, Registering, Loggin Out
-    url(r'^login/$', 
+    url(r'^login/$',
         views.login,
         name="login"),
 
-    url(r'^auth/login/$', 
+    url(r'^auth/login/$',
         views.ajax_login,
         name="ajax_login"),
 
-    url(r'^auth/register/$', 
+    url(r'^auth/register/$',
         views.ajax_register,
         name="ajax_register"),
 
@@ -45,11 +46,14 @@ urlpatterns = patterns('',
         name="edit"),
 
     url(r'^editor/', include('editor.urls')),
-    # url(r'^', 'lauth.views.login_user'),
     url(r'^game/', include('game.urls')),
-    url(r'^map/$',
-        gmap,
-        name="gmap"),
+
+    # The testing modules
+    url(r'^jasmine/$', tests, name="tests"),
+
+    # Retrieving and saving maps
+    url(r'^map/$', gmap, name="gmap"),
+
 
     # Examples:
     # url(r'^$', 'the_game_bazaar.views.home', name='home'),

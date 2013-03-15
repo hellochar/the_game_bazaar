@@ -23,7 +23,7 @@ def gmap(request):
             return HttpResponse(json.dumps({
                 'success': True, 
                 'map_id' : game_map.id, 
-                'map_data': json.loads(game_map.data)
+                'map_data': game_map.data, #send the string
                 }), mimetype='application/json')
         except Map.DoesNotExist:
             return HttpResponse(json.dumps({
@@ -37,11 +37,6 @@ def gmap(request):
         else:
             map_id = request.POST['map_id'];
 
-            # import logging
-            # logger = logging.getLogger("socketio")
-            # logger.critical(request)
-            # logger.critical(request.user)
-
         if not map_id:
             creator = request.user
             num_players = 2 #uh oh
@@ -49,9 +44,14 @@ def gmap(request):
             game_map = Map(
                     creator_id=creator,
                     num_players=num_players,
-                    data=request.POST['map_data'],
+                    data=request.POST['map_data'], #gets stored as a string
                     map_name=map_name
                     )
+
+            # import logging
+            # logger = logging.getLogger("socketio")
+            # logger.critical(game_map)
+
         else:
             try:
                 game_map = Map.objects.get(id=map_id)

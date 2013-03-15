@@ -24,11 +24,12 @@ Map.prototype.toJSON = function() {
     return {players: this.players}; // will have to eventually turn this into more
 }
 
-Map.fromJSON = function(json) {
+Map.fromJSON = function(response) {
     //todo: handle incomplete/bad json
 
-    var map = new Map(json.map_id);
-    json.map_data.players.forEach(function (playerObject) {
+    var map = new Map(response.map_id);
+    var map_data_json = JSON.parse(response.map_data);
+    map_data_json.players.forEach(function (playerObject) {
         var player = map.getPlayerById(playerObject.id);
         playerObject.units.forEach(function (unitObject) {
             map.addUnit(player, unitObject.init_pos);
@@ -44,7 +45,7 @@ $(function() {
         render();
     }
     function saveMap() {
-        data = {map_id : window.map.id, map_data : JSON.stringify(window.map)};
+        data = {map_id : window.map.id, map_data : JSON.stringify(window.map.toJSON())};
         $.post(
             '/map/',
             data,
@@ -67,7 +68,7 @@ $(function() {
 
     //Load a map from the server with the given map id
     function loadMap(map_id) {
-        $.getJSON(
+        $.getJSON( //Returned content will automatically be parsed into JSON
             '/map',
             {map_id : map_id},
             function(data, textStatus, jqXHR) {

@@ -112,9 +112,10 @@ $(function() {
             },
             success: function (data){
                 if(data['success'] === true){
-                    console.log("putting the following into window.map_data: " + data.map_data);
-                    window.map_data = data.map_data;
-                    App.gamestate = GameState(data.map_data);
+                    map_data_json = JSON.parse(data.map_data);
+                    console.log("putting the following into window.map_data: " + map_data_json);
+                    window.map_data = map_data_json;
+                    App.gamestate = GameState(map_data_json);
                     window.gamestate = App.gamestate;
                     App.populatePlayerNames();
                     App.finishInitialization();

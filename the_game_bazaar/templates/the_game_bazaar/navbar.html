@@ -13,8 +13,10 @@
         {% if user.is_authenticated %}
             <form id="navbar-logout" class="navbar-form pull-right">
                 {% csrf_token %}
+
                 <button type="submit" class="btn">Logout</button> 
             </form>
+            <div class="pull-right" style="padding-top:10px;padding-right:10px"> logged in as {{ user.username }}</div>
         {% else %}
             <form id="navbar-login" class="navbar-form pull-right">
                 {% csrf_token %}

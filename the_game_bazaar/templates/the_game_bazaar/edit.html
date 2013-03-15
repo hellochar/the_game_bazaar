@@ -31,12 +31,16 @@
 	            						<td>{{ map.id }}</td>
 	            						<td>{{ map.map_name }}</td>
 	            						<td>{{ map.num_players }}</td>
-                                        <td><a href="/editor/#{{ map.id }}">Edit</a></td>
+                                        <td><a class="btn" href="/editor/#{{ map.id }}">Edit</a></td>
 	            					</tr>
 	            				{% endfor %}
 	            				</tbody>
 	        				</table>
 	        			</div>
+                        <div class="span5">
+                            <h3>Create maps:</h3>
+                            <a class="btn btn-large" href="/editor/">Create new map!</a>
+                        </div>
 	        		</div>
 	        	</div>
 	        </div>

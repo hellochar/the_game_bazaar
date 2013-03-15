@@ -6,16 +6,13 @@ from django.contrib.auth.models import User
 
 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
-
+def login(client, username, password):
+    s_resp = client.post('/auth/login/', {'username':username, 'password':password})
+    resp_object = json.loads(s_resp.content)
+    return resp_object
 
 class ourAuthTest(TestCase):
-    def test_ajax_login(self):
+    def test_ajax_login_success(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
         c = Client()
 
@@ -24,16 +21,65 @@ class ourAuthTest(TestCase):
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], True)
 
+    def test_ajax_login_fail(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = Client()
+
         # test failed login
         s_resp = c.post('/auth/login/', {'username':'bbb', 'password':'aaa'})
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], False)
 
-    def test_ajax_logout(self):
+    def test_ajax_logout_success(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
         c = Client()
+        # gotta login first
         s_resp = c.post('/auth/login/', {'username':'aaa', 'password':'aaa'})
         resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        # now test logging out
         s_resp = c.post('/auth/logout/', {})
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], True)
+
+    def test_ajax_register_success(self):
+        c = Client()
+        s_resp = c.post('/auth/register/', {'username':'bbb', 'password':'bbb', 'email':'bbb'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        resp_object = login(c, 'bbb', 'bbb')
+        self.assertEqual(resp_object['success'], True)
+
+    def test_ajax_register_fail(self):
+        c = Client()
+        s_resp = c.post('/auth/register/', {'username':'', 'password':'', 'email':''})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+
+class unauthorizedRedirectTest(TestCase):
+    def test_play_redirect(self):
+        c = Client()
+        s_resp = c.get('/play/', follow=True)
+        self.assertEqual(len(s_resp.redirect_chain), 1)
+
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        login(c, 'aaa', 'aaa')
+        s_resp = c.get('/play/', follow=True)
+        self.assertEqual(len(s_resp.redirect_chain), 0)
+
+    def test_edit_redirect(self):
+        c = Client()
+        s_resp = c.get('/edit/', follow=True)
+        self.assertEqual(len(s_resp.redirect_chain), 1)
+
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        login(c, 'aaa', 'aaa')
+        s_resp = c.get('/edit/', follow=True)
+        self.assertEqual(len(s_resp.redirect_chain), 0)
+
+    def test_logout_redirect(self):
+        c = Client()
+        s_resp = c.post('/auth/logout/', {}, follow=True)
+        self.assertEqual(len(s_resp.redirect_chain), 1)

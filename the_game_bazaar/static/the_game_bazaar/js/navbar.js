@@ -1,5 +1,5 @@
 $().ready(function(){
-	
+	$(".alert").alert();
 	$('#navbar-logout').submit(function (e){
 		e.preventDefault();
 		$.ajax({

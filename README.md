@@ -26,11 +26,7 @@ To run locally:
 Testing Instructions
 =============
 
-Make sure that TEST in the top level directory is executable with the following command:
-
-    chmod 777 TEST
-
-Then run the TEST bash file as so:
+Run the TEST bash file as so:
 
     ./TEST
 

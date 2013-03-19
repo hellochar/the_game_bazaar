@@ -1,23 +1,43 @@
 WEB_SOCKET_DEBUG = true;
 
 $(function() {
-	var App;
-	App = {};
+    // DOM manipulation
+    $().ready(function() {
+        $('#game-container').hide();
+        $('#lobby-container').show();
+    });
+    var game = Game();
+});
 
+// Start off by creating a new instance of a Game
+function Game() {
+
+    var self = this;
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
     //---------------------------------------------
 
+    self.GAME_STATES = {
+        INIT:           0,
+        CONNECTING:     1,
+        CONNECTED:      2,
+        DISCONNECTED:   3,
+    };
 
-    App.connectionState = "blank";
+    self.conn_state = self.GAME_STATES.INIT;
 
-    App.socket = io.connect('/game');
+    self.socket = io.connect('/game', {
+        reconnect: false
+    });
 
+    // DEBUG
     console.log("Attemting to connect");
 
-    App.socket.on('connecting', function() {
+    self.socket.on('connecting', function() {
+        // DEBUG
         console.log("Connecting...");
-        App.connectionState = "connecting";
+
+        self.conn_state = self.GAME_STATES.CONNECTING;
     });
 
 
@@ -26,46 +46,53 @@ $(function() {
     //---------------------------------------------
 
     //join the lobby as soon as we connect
-    App.socket.on('connect', function () {
+    self.socket.on('connect', function () {
         // These divs are set in the context
-        App.player_id = parseInt($("#player-id").attr("val"), 10);
-        App.game_id = parseInt($("#game-id").attr("val"), 10);
-        App.map_id = parseInt($("#map-id").attr("val"), 10);
+        self.player_id = parseInt($("#player-id").attr("val"), 10);
+        self.game_id = parseInt($("#game-id").attr("val"), 10);
+        self.map_id = parseInt($("#map-id").attr("val"), 10);
 
         // Do some connecting and make sure we cleanup correctly.
+
+        // DEBUG
         console.log("Connected!");
-        App.connectionState = "connected";
+        
+        self.conn_state = self.GAME_STATES.CONNECTED;
         $(window).bind("beforeunload", function() {
             data = {
-                'game_id': App.game_id
+                'game_id': self.game_id
             },
-            App.socket.emit('leave', data);
-            App.socket.disconnect();
+            self.socket.emit('leave', data);
+            self.socket.disconnect();
         });
 
         // Set up the gamestate with an ajax call.
         // This method calls finishInitialization() once the ajax call succeeds.
-        App.instantiateGameState();
+        self.instantiateGameState();
     });
 
     // Let client know someone has joined
-    App.socket.on('join', function (data){
+    self.socket.on('join', function (data) {
+        // DEBUG
         console.log("Someone joined the game at: ", data.timestamp);
+
+        // TODO: Change this to something better
         $.ajax({
             type: "GET",
             url: "/game/userlist",
             data: {
-                "game_id": App.game_id
+                "game_id": self.game_id
             },
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
                 if(data['success'] === true){
-                    App.updatePlayerList(data['players']);
-                    App.populatePlayerNames();
+                    self.updatePlayerList(data['players']);
+                    self.populatePlayerNames();
                 }
                 else {
+                    // DEBUG
                     console.log("Couldn't load the player list");
                 }
                 return false;
@@ -74,38 +101,46 @@ $(function() {
     });
 
     // Starting a Game
-    App.socket.on('start', function (data) {
+    self.socket.on('start', function (data) {
+        // DEBUG
         console.log("Timestamp: ", data.timestamp);
+
+        // Begin rendering and handling user input
+        self.bindClick(self.playerMovement);
+        self.renderer.startRendering(self);
+        
         $('#lobby-container').hide();
         $('#game-container').show();
-        App.server_start_time = data.timestamp;
-        App.client_start_time = Date.now();
+        self.server_start_time = data.timestamp;
+        self.client_start_time = Date.now();
     });
 
     //---------------------------------------------
     //MANAGING GAME STATE
     //---------------------------------------------
 
-    App.finishInitialization = function() {
+    self.finishInitialization = function() {
         // If this player is not the game owner, then broadcast a join.
         data = {
-            'game_id': App.game_id
+            'game_id': self.game_id
         };
-        App.socket.emit('join', data);
+        self.socket.emit('join', data);
 
         $('#start-game').click(function() {
+            // DEBUG
             console.log("start game");
-            App.start_game();
+
+            self.start_game();
         });
     };
 
-    App.instantiateGameState = function() {
-        App.gamestate = false;
+    self.instantiateGameState = function() {
+        self.gamestate = false;
         $.ajax({
             type: "GET",
             url: "/map",
             data: {
-                "map_id": parseInt(App.map_id, 10)
+                "map_id": parseInt(self.map_id, 10)
             },
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
@@ -113,12 +148,18 @@ $(function() {
             success: function (data){
                 if(data['success'] === true){
                     map_data_json = JSON.parse(data.map_data);
+                    // DEBUG
                     console.log("putting the following into window.map_data: " + map_data_json);
+                    // DEBUG
                     window.map_data = map_data_json;
-                    App.gamestate = GameState(map_data_json);
-                    window.gamestate = App.gamestate;
-                    App.populatePlayerNames();
-                    App.finishInitialization();
+
+                    self.gamestate = GameState(map_data_json);
+                    
+                    // DEBUG
+                    window.gamestate = self.gamestate;
+
+                    self.populatePlayerNames();
+                    self.finishInitialization();
                 }
                 else {
                     $("#game-id").innerHTML = 'ERROR: Could not load that map id';
@@ -128,8 +169,10 @@ $(function() {
         });
     };
 
-    App.updatePlayerList = function(player_list) {
+    self.updatePlayerList = function(player_list) {
+        // DEBUG
         console.log("Updating player names");
+
         var parent = $("#player-usernames");
         parent.empty();
         for (var index in player_list) {
@@ -139,75 +182,71 @@ $(function() {
         }
     };
 
-    App.populatePlayerNames = function() {
+    self.populatePlayerNames = function() {
+        // DEBUG
         console.log("Populating player names");
+
         var usernames = $("#player-usernames");
         var username_list = Array(usernames.children().length);
         for (var index = 0; index < usernames.children().length; index++) {
             username_list[index] = usernames.children()[index].innerHTML;
         }
-        App.gamestate.populatePlayerNames(username_list);
+        self.gamestate.populatePlayerNames(username_list);
     };
 
-    App.playerMovement = function(x, y) {
+    self.playerMovement = function(x, y) {
         data = {
             'x': x,
             'y': y,
-            'game_id': App.game_id,
-            'player_id': App.player_id
+            'game_id': self.game_id,
+            'player_id': self.player_id
         };
-        App.socket.emit('input', data);
+        self.socket.emit('input', data);
     };
 
-    App.socket.on('input', function (data) {
+    self.socket.on('input', function (data) {
         // Get our variables.
         var timestamp = data['timestamp'];
         var player_id = data['player_id'];
         var x = data['x'];
         var y = data['y'];
         // Update our timestamps.
-        var updateTime = timestamp - App.server_start_time;
+        var updateTime = timestamp - self.server_start_time;
         // Update the game state.
         // TODO modify the correct unit.
-        App.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
+        self.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
     });
 
     //---------------------------------------------
     //SOCKET.IO ERROR CATCHING
     //---------------------------------------------
-    App.socket.on('reconnect', function () {
-        // message('System', 'Reconnected to the server');
+
+    self.socket.on('disconnect', function () {
+        self.conn_state = GAME_STATE.DISCONNECTED;
     });
 
-    App.socket.on('reconnecting', function () {
-        // message('System', 'Attempting to re-connect to the server');
-    });
-
-    App.socket.on('error', function (e) {
+    self.socket.on('error', function (e) {
         // message('System', e ? e : 'An unknown error occurred');
     });
 
     //---------------------------------------------
     // LOBBY FUNCTIONS
     //---------------------------------------------
-    App.start_game = function() {
+    self.start_game = function() {
         data = {
-            'game_id': App.game_id
+            'game_id': self.game_id
         };
-        App.socket.emit('start', data);
+        self.socket.emit('start', data);
     };
-
-    // DOM manipulation
-    $().ready(function() {
-        $('#game-container').hide();
-        $('#lobby-container').show();
-    });
 
     //---------------------------------------------
     // INITIALIZE CANVAS
     //---------------------------------------------
-    console.log("Init canvas");
-    App.canvas = Canvas(App);
 
-    App.canvas.startRendering();
-});
+    // DEBUG
+    console.log("Init canvas");
+
+    self.renderer = Renderer();
+
+    return self;
+}

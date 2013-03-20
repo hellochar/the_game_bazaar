@@ -6,3 +6,4 @@ class Game(models.Model):
     # The map id of this game.
     map_id = models.ForeignKey(Map, related_name="+")
     players = models.TextField()
+    state = models.TextField()

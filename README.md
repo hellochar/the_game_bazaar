@@ -45,7 +45,7 @@ You should be logged in as a superuser (the prompt will look like `username=#` i
 
 You can now quit the shell with `\q`.
 
-Reseting Your Database
+Resetting Your Database
 ==============
     python manage.py reset_db --router=default
 This will delete all your current data and update the db to have the new fields in the models.

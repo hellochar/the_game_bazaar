@@ -35,7 +35,7 @@
             <h3>And the players are..........</h3>
             <ul id='player-usernames'>
                 {% for key, value in players.items %}
-                    <li id='player{{ key }}'>{{ value }}</li>
+                    <li id='player-slot-{{ key }}'>{{ value }}</li>
                 {% endfor %}
             </ul>
             </p>

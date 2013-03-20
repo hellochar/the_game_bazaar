@@ -7,12 +7,6 @@ function GameState(map_data) {
     for (var index in map_data.players) {
         self.players[index] = new Player(map_data.players[index]);
     }
-    // A function used to update the player names.
-    self.populatePlayerNames = function(player_list) {
-        for (var index in player_list) {
-            self.players[index].username = player_list[index];
-        }
-    };
     return self;
 }
 

@@ -37,6 +37,7 @@ def host_game(request):
     return render(request, 'game/game.html', context)
 
 
+# Testable method for host_game
 def host_game_logic(request):
     # Get the map object that we want to host a game of
     map_id = request.POST['map-id']
@@ -45,6 +46,8 @@ def host_game_logic(request):
     theMap = Map.objects.get(pk=map_id)
     # Create the players dictionary (only the host at the moment)
     players_json = {0: request.user.username}
+    for i in range(1, theMap.num_players):
+        players_json[i] = ""
     # Create and save the game
     game = Game(map_id=theMap, players=json.dumps(players_json))
     game.save()
@@ -53,19 +56,21 @@ def host_game_logic(request):
 
 # /game/join
 def join_game(request):
-    game, players_json = join_game_logic(request)
+    game, players_json, player_id = join_game_logic(request)
 
     # Render the context with our parameters.
     context = {
-        'isHost': False,
-        'game_id': request.POST['game-id'],
+        'isHost': player_id == 0,
+        'game_id': game.id,
         'map_id': game.map_id.id,
         'players': players_json,
-        'player_id': len(players_json) - 1
+        'player_range': range(0, game.map_id.num_players),
+        'player_id': player_id
     }
     return render(request, 'game/game.html', context)
 
 
+# Testable method for join_game
 def join_game_logic(request):
     # This is the real code that should run
     game_id = request.POST['game-id']
@@ -73,24 +78,26 @@ def join_game_logic(request):
     game = Game.objects.get(pk=game_id)
 
     # Add this player to the player list for the game.
-    players_json = json.loads(game.players)
+    players_json = translateStringToIntKeys(json.loads(game.players))
     # If the user isn't already in the game, add them to it.
-    if request.user.username not in [value for key, value in players_json.items()]:
-        players_json[len(players_json)] = request.user.username
-        game.players = json.dumps(players_json)
-        game.save()
+    player_id = -1
+    for key, value in players_json.items():
+        # If the user is already in the game or there is an empty spot, add him.
+        if request.user.username == value or value == "":
+            players_json[key] = request.user.username
+            player_id = key
+    # TODO handle a user rejection gracefully
+    assert player_id != -1, "No empty slot for player " + request.user.username + " in json " + json.dumps(players_json)
+    game.players = json.dumps(players_json)
+    game.save()
 
-    return game, players_json
+    return game, players_json, player_id
 
 
-# /game/userlist
-# Returns a list of users in the game_id provided
-def user_list(request):
-    game_id = request.GET['game_id']
-    # TODO: if the game_id is empty, you should display an error!
-    game = Game.objects.get(pk=game_id)
-    response = {
-        'success': True,
-        'players': json.loads(game.players)
-    }
-    return HttpResponse(json.dumps(response), mimetype="application/json")
+# Takes a dictionary and tries to translate all the keys to ints.
+# This ensures that iterating through the keys gives them to you in numerical order.
+def translateStringToIntKeys(players):
+    new_players = {}
+    for key, value in players.items():
+        new_players[int(key)] = value
+    return new_players

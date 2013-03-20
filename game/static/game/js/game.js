@@ -21,7 +21,7 @@ function Game() {
         INIT:           0,
         CONNECTING:     1,
         CONNECTED:      2,
-        DISCONNECTED:   3,
+        DISCONNECTED:   3
     };
 
     self.init = function() {
@@ -51,7 +51,7 @@ function Game() {
 
         // DEBUG
         console.log("Attemting to connect");
-   
+
         //---------------------------------------------
         // INITIALIZE CANVAS
         //---------------------------------------------
@@ -85,7 +85,7 @@ function Game() {
 
         // DEBUG
         console.log("Connected!");
-        
+
         self.conn_state = self.GAME_STATES.CONNECTED;
         $(window).bind("beforeunload", function() {
             data = {
@@ -105,29 +105,9 @@ function Game() {
         // DEBUG
         console.log("Someone joined the game at: ", data.timestamp);
         console.log("Player id: ", data.player_id);
+        console.log("Joining user's name: ", data.username);
 
-        // TODO: Change this to something better
-        $.ajax({
-            type: "GET",
-            url: "/game/userlist",
-            data: {
-                "game_id": self.game_id
-            },
-            headers: {
-                "X-CSRFToken": $.cookie('csrftoken')
-            },
-            success: function (data){
-                if(data['success'] === true){
-                    self.updatePlayerList(data['players']);
-                    self.populatePlayerNames();
-                }
-                else {
-                    // DEBUG
-                    console.log("Couldn't load the player list");
-                }
-                return false;
-            }
-        });
+        self.addPlayerToHTML(data.player_id, data.username);
     };
 
     // Starting a Game
@@ -138,7 +118,7 @@ function Game() {
         // Begin rendering and handling user input
         self.bindClick(self.playerMovement);
         self.renderer.startRendering(self);
-        
+
         $('#lobby-container').hide();
         $('#game-container').show();
         self.server_start_time = data.timestamp;
@@ -154,7 +134,8 @@ function Game() {
         // If the user is the game owner, no one else should be in the game
         data = {
             'game_id': self.game_id,
-            'player_id': self.player_id
+            'player_id': self.player_id,
+            'username': self.getUsernameByPid(self.player_id)
         };
         self.socket.emit('join', data);
 
@@ -186,44 +167,43 @@ function Game() {
                     window.map_data = map_data_json;
 
                     self.gamestate = GameState(map_data_json);
-                    
+
                     // DEBUG
                     window.gamestate = self.gamestate;
 
-                    self.populatePlayerNames();
+                    self.populatePlayerNamesInGSFromHTML();
                     self.finishInitialization();
                 }
                 else {
-                    $("#game-id").innerHTML = 'ERROR: Could not load that map id';
+                    $("#game-id").text('ERROR: Could not load that map id');
                 }
                 return false;
             }
         });
     };
 
-    self.updatePlayerList = function(player_list) {
+    self.addPlayerToHTML = function(new_player_id, new_player_username) {
         // DEBUG
         console.log("Updating player names");
 
-        var parent = $("#player-usernames");
-        parent.empty();
-        for (var index in player_list) {
-            elem = $(document.createElement("li"));
-            elem.html(player_list[index]);
-            parent.append(elem);
-        }
+        var slot = $("#player-slot-" + new_player_id.toString(10));
+        slot.text(new_player_username);
+        self.gamestate.players[new_player_id].username = new_player_username;
     };
 
-    self.populatePlayerNames = function() {
+    self.getUsernameByPid = function(player_id) {
+        return $("#player-slot-" + player_id.toString(10)).text();
+    };
+
+    self.populatePlayerNamesInGSFromHTML = function() {
         // DEBUG
         console.log("Populating player names");
 
         var usernames = $("#player-usernames");
         var username_list = Array(usernames.children().length);
         for (var index = 0; index < usernames.children().length; index++) {
-            username_list[index] = usernames.children()[index].innerHTML;
+            self.gamestate.players[index].username = usernames.children()[index].text();
         }
-        self.gamestate.populatePlayerNames(username_list);
     };
 
     self.playerMovement = function(x, y) {

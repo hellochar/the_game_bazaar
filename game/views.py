@@ -46,7 +46,7 @@ def host_game_logic(request):
     # Create the players dictionary (only the host at the moment)
     players_json = {0: request.user.username}
     # Create and save the game
-    game = Game(map_id=theMap, players=json.dumps(players_json))
+    game = Game(map_id=theMap, players=json.dumps(players_json), status=Game.LOBBY)
     game.save()
     return game, players_json
 

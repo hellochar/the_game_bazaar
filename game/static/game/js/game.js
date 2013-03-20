@@ -7,16 +7,16 @@ $(function() {
         $('#lobby-container').show();
     });
     var game = Game();
+    game.init();
 });
 
 // Start off by creating a new instance of a Game
 function Game() {
 
+    // Constants
     var self = this;
-    //---------------------------------------------
-    //INITIALIZE SOCKET.IO
-    //---------------------------------------------
 
+    // Constants
     self.GAME_STATES = {
         INIT:           0,
         CONNECTING:     1,
@@ -24,29 +24,58 @@ function Game() {
         DISCONNECTED:   3,
     };
 
-    self.conn_state = self.GAME_STATES.INIT;
+    self.init = function() {
+        //---------------------------------------------
+        //INITIALIZE SOCKET.IO
+        //---------------------------------------------
+        self.conn_state = self.GAME_STATES.INIT;
 
-    self.socket = io.connect('/game', {
-        reconnect: false
-    });
+        self.socket = io.connect('/game', {
+            reconnect: false
+        });
 
-    // DEBUG
-    console.log("Attemting to connect");
+        // BIND HANDLERS FOR SOCKET EVENTS
 
-    self.socket.on('connecting', function() {
+        // Connection handling
+        self.socket.on('connecting', self.handleConnecting);
+        self.socket.on('connect', self.handleConnected);
+        // Error handling
+        self.socket.on('disconnect', self.handleDisconnect);
+        self.socket.on('error', self.handleConnectError);
+
+        // Game logic handling
+        self.socket.on('join', self.handleUserJoin);
+        self.socket.on('start', self.handleGameStart);
+        self.socket.on('input', self.handleInput);
+
+
+        // DEBUG
+        console.log("Attemting to connect");
+   
+        //---------------------------------------------
+        // INITIALIZE CANVAS
+        //---------------------------------------------
+
+        // DEBUG
+        console.log("Init canvas");
+
+        self.renderer = Renderer();
+
+    };
+
+    self.handleConnecting = function() {
         // DEBUG
         console.log("Connecting...");
 
         self.conn_state = self.GAME_STATES.CONNECTING;
-    });
-
+    };
 
     //---------------------------------------------
     //MANAGING LOBBY STATE
     //---------------------------------------------
 
     //join the lobby as soon as we connect
-    self.socket.on('connect', function () {
+    self.handleConnected = function () {
         // These divs are set in the context
         self.player_id = parseInt($("#player-id").attr("val"), 10);
         self.game_id = parseInt($("#game-id").attr("val"), 10);
@@ -69,12 +98,13 @@ function Game() {
         // Set up the gamestate with an ajax call.
         // This method calls finishInitialization() once the ajax call succeeds.
         self.instantiateGameState();
-    });
+    };
 
     // Let client know someone has joined
-    self.socket.on('join', function (data) {
+    self.handleUserJoin = function (data) {
         // DEBUG
         console.log("Someone joined the game at: ", data.timestamp);
+        console.log("Player id: ", data.player_id);
 
         // TODO: Change this to something better
         $.ajax({
@@ -98,10 +128,10 @@ function Game() {
                 return false;
             }
         });
-    });
+    };
 
     // Starting a Game
-    self.socket.on('start', function (data) {
+    self.handleGameStart = function (data) {
         // DEBUG
         console.log("Timestamp: ", data.timestamp);
 
@@ -113,16 +143,18 @@ function Game() {
         $('#game-container').show();
         self.server_start_time = data.timestamp;
         self.client_start_time = Date.now();
-    });
+    };
 
     //---------------------------------------------
     //MANAGING GAME STATE
     //---------------------------------------------
 
     self.finishInitialization = function() {
-        // If this player is not the game owner, then broadcast a join.
+        // Broadcast a join
+        // If the user is the game owner, no one else should be in the game
         data = {
-            'game_id': self.game_id
+            'game_id': self.game_id,
+            'player_id': self.player_id
         };
         self.socket.emit('join', data);
 
@@ -204,7 +236,7 @@ function Game() {
         self.socket.emit('input', data);
     };
 
-    self.socket.on('input', function (data) {
+    self.handleInput = function (data) {
         // Get our variables.
         var timestamp = data['timestamp'];
         var player_id = data['player_id'];
@@ -215,19 +247,19 @@ function Game() {
         // Update the game state.
         // TODO modify the correct unit.
         self.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
-    });
+    };
 
     //---------------------------------------------
     //SOCKET.IO ERROR CATCHING
     //---------------------------------------------
 
-    self.socket.on('disconnect', function () {
+    self.handleDisconnect = function () {
         self.conn_state = GAME_STATE.DISCONNECTED;
-    });
+    };
 
-    self.socket.on('error', function (e) {
+    self.handleConnectError = function (e) {
         // message('System', e ? e : 'An unknown error occurred');
-    });
+    };
 
     //---------------------------------------------
     // LOBBY FUNCTIONS
@@ -238,15 +270,6 @@ function Game() {
         };
         self.socket.emit('start', data);
     };
-
-    //---------------------------------------------
-    // INITIALIZE CANVAS
-    //---------------------------------------------
-
-    // DEBUG
-    console.log("Init canvas");
-
-    self.renderer = Renderer();
 
     return self;
 }

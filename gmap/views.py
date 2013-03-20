@@ -42,7 +42,7 @@ def gmap(request):
             num_players = 2 #uh oh
             map_name = "qwer"
             game_map = Map(
-                    creator_id=creator,
+                    creator=creator,
                     num_players=num_players,
                     data=request.POST['map_data'], #gets stored as a string
                     map_name=map_name

@@ -37,21 +37,28 @@ function Unit(init_pos) {
     self.update = function(t, destination) {
         // iteration one has no obstacles
         var start = self.pos(t);
-        self.pos = function(newt) {
-            var dt = newt - t;
-            var dx = destination.x - start.x;
-            var dy = destination.y - start.y;
-            var mag = Math.sqrt(dx * dx + dy * dy);
-            var normdx = dx / mag;
-            var normdy = dy / mag;
-            var changeX = normdx * this.speed * dt;
-            var changeY = normdy * this.speed * dt;
-            if (Math.abs(changeX) > Math.abs(dx) || Math.abs(changeY) > Math.abs(dy)) {
-                changeX = dx;
-                changeY = dy;
-            }
-            return {'x': start.x + changeX, 'y': start.y + changeY};
-        };
+        if (start.x == destination.x && start.y == destination.y) {
+            self.pos = function(newt) {
+                return destination;
+            };
+        }
+        else {
+            self.pos = function(newt) {
+                var dt = newt - t;
+                var dx = destination.x - start.x;
+                var dy = destination.y - start.y;
+                var mag = Math.sqrt(dx * dx + dy * dy);
+                var normdx = dx / mag;
+                var normdy = dy / mag;
+                var changeX = normdx * this.speed * dt;
+                var changeY = normdy * this.speed * dt;
+                if (Math.abs(changeX) > Math.abs(dx) || Math.abs(changeY) > Math.abs(dy)) {
+                    changeX = dx;
+                    changeY = dy;
+                }
+                return {'x': start.x + changeX, 'y': start.y + changeY};
+            };
+        }
     };
 }
 

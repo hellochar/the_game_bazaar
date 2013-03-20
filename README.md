@@ -44,3 +44,10 @@ You should be logged in as a superuser (the prompt will look like `username=#` i
     ALTER USER tgb_db_admin CREATEDB;
 
 You can now quit the shell with `\q`.
+
+Reseting Your Database
+==============
+psql -d tbg_db
+drop table <table name> cascade;
+\q
+python manage.py syncdb

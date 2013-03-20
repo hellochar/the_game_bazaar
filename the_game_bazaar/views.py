@@ -35,6 +35,7 @@ def play(request):
     context = {
         "maps": Map.objects.all(),
         "games": Game.objects.all(),
+        "lobby": Game.LOBBY,
     }
     return render(request, 'the_game_bazaar/play.html', context)
 

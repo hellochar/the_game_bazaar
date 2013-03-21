@@ -22,7 +22,7 @@ describe("GameState", function() {
         ]}
       ]
     };
-    gamestate = new GameState(map_data);
+    gamestate = GameState.fromJSON(map_data);
   });
 
   describe("Instantiation", function() {
@@ -53,14 +53,15 @@ describe("GameState", function() {
       }
     });
 
-    it("should have a username property for each player", function() {
-      for (var playerInd in gamestate.players) {
-        if (gamestate.players.hasOwnProperty(playerInd)) {
-          var player = gamestate.players[playerInd];
-          expect('username' in player).toBe(true);
-        }
-      }
-    });
+    // it("should have a username property for each player", function() {
+    //   for (var playerInd in gamestate.players) {
+    //     if (gamestate.players.hasOwnProperty(playerInd)) {
+    //       var player = gamestate.players[playerInd];
+    //       expect('username' in player).toBe(true);
+    //     }
+    //   }
+    // });
+
   });
 
   describe("Mutation", function() {

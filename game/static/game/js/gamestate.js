@@ -6,6 +6,7 @@ function GameState(players) {
     this.colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'];
 }
 
+// Takes a JSON object created by gamestate.toJSON() and converts it back into a GameState.
 GameState.fromJSON = function(map_data) {
     return new GameState(map_data.players.map(Player.fromJSON));
 }

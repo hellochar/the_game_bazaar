@@ -1,6 +1,3 @@
-//THIS FILE ASSUMES gamestate.js IS ALREADY LOADED
-
-//Don't call toJSON directly; turn it into a string representation using JSON.parse(gamestate)
 GameState.prototype.toJSON = function() {
     return {players: this.players};
 }
@@ -12,7 +9,7 @@ Player.prototype.toJSON = function() {
 Unit.prototype.toJSON = function() {
     return {
             speed: this.speed,
-            init_pos: this.pos(0)       // pos(0) that Unit.update has never been called
+            init_pos: this.pos(0)       //assumes that Unit.update has never been called
            };
 }
 

@@ -1,1 +1,6 @@
 python manage.py test game gmap editor the_game_bazaar
+foreman start &
+PID=$!
+sleep 2
+phantomjs phantomjs-test-runner.js http://localhost:5000/jasmine
+kill -9 $PID

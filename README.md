@@ -4,6 +4,7 @@ Prerequisites
     2. gunicorn
     3. local virtualenv install
     4. postgresql
+    5. phantomjs
 
 Installation Instructions
 =============
@@ -25,6 +26,8 @@ To run locally:
 
 Testing Instructions
 =============
+
+Install phantomjs with `sudo apt-get install phantomjs`
 
 Run the TEST bash file as so:
 

@@ -1,6 +1,14 @@
 python manage.py test game gmap editor the_game_bazaar
-foreman start &
-PID=$!
-sleep 2
-phantomjs phantomjs-test-runner.js http://localhost:5000/jasmine
-kill -9 $PID
+
+if hash phantomjs &> /dev/null; then
+    if [ $(ps -C gunicorn | wc -l) == 1 ]; then
+        foreman start &
+        sleep 2
+        phantomjs phantomjs-test-runner.js http://localhost:5000/jasmine
+        pkill -9 -f gunicorn
+    else
+        echo "Gunicorn is already running; skipping jasmine tests!"
+    fi
+else
+    echo "You don't have phantomjs installed; skipping jasmine tests!"
+fi

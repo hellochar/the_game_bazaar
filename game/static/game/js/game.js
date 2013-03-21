@@ -3,6 +3,7 @@ WEB_SOCKET_DEBUG = true;
 $(function() {
 	var App;
 	App = {};
+    window.App = App;
 
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
@@ -113,9 +114,9 @@ $(function() {
             success: function (data){
                 if(data['success'] === true){
                     map_data_json = JSON.parse(data.map_data);
-                    console.log("putting the following into window.map_data: " + map_data_json);
+                    console.log("putting the following into window.map_data: ", map_data_json);
                     window.map_data = map_data_json;
-                    App.gamestate = GameState(map_data_json);
+                    App.gamestate = GameState.fromJSON(map_data_json);
                     window.gamestate = App.gamestate;
                     App.populatePlayerNames();
                     App.finishInitialization();

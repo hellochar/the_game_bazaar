@@ -1,41 +1,37 @@
-function Player(id) {
-    this.id = id;
-    this.units = [];
-}
-Player.prototype.fillStyle = function() {
-    return ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'][this.id];
-}
+//THIS FILE ASSUMES gamestate.js IS ALREADY LOADED
 
-function Map(id) {
-    //todo: oh god don't do this
-    this.id = id;
-    this.players = [new Player(0), new Player(1)];
+//Don't call toJSON directly; turn it into a string representation using JSON.parse(gamestate)
+GameState.prototype.toJSON = function() {
+    return {players: this.players};
 }
 
-Map.prototype.addUnit = function(player, position) {
-    player.units.push({init_pos : position});
+Player.prototype.toJSON = function() {
+    return {units: this.units};
 }
 
-Map.prototype.getPlayerById = function(id) {
-    return this.players[id];
+Unit.prototype.toJSON = function() {
+    return {
+            speed: this.speed,
+            init_pos: this.pos(0)       // pos(0) that Unit.update has never been called
+           };
 }
 
-Map.prototype.toJSON = function() {
-    return {players: this.players}; // will have to eventually turn this into more
-}
-
-Map.fromJSON = function(response) {
-    //todo: handle incomplete/bad json
-
-    var map = new Map(response.map_id);
-    var map_data_json = JSON.parse(response.map_data);
-    map_data_json.players.forEach(function (playerObject) {
-        var player = map.getPlayerById(playerObject.id);
-        playerObject.units.forEach(function (unitObject) {
-            map.addUnit(player, unitObject.init_pos);
-        }, this);
-    });
+function createDefaultMap() {
+    //this code is required to get the gamestate in the same format as other maps
+    var gamestate = new GameState([new Player(), new Player()]);
+    var map = GameState.fromJSON(JSON.parse(JSON.stringify(gamestate)));
+    map.id = undefined;
     return map;
+}
+
+function createMapFromResponse(response) {
+    var map = GameState.fromJSON(JSON.parse(response.map_data));
+    map.id = response.map_id;
+    return map;
+}
+
+GameState.prototype.addUnit = function(player, position) {
+    player.units.push(new Unit(position));
 }
 
 $(function() {
@@ -56,7 +52,7 @@ $(function() {
             ).success(function (response_json) {
                 console.log("success", response_json);
                 window.map.id = response_json.map_id;
-                setEditingMap(window.map);
+                setEditingMap(window.map); //this call just updates the map-id element
             }).done(function (resp) {
                 console.log('resp');
                 console.log(resp);
@@ -75,7 +71,7 @@ $(function() {
                 window.temp_data = data;
             }
             ).success(function (data_json) {
-                setEditingMap( Map.fromJSON(data_json) );
+                setEditingMap( createMapFromResponse(data_json) );
             });
     }
 
@@ -84,7 +80,7 @@ $(function() {
         loadMap(window.location.hash.substring(1));
     } else {
         //load new map
-        setEditingMap(new Map());
+        setEditingMap(createDefaultMap());
     }
 
     function currentPlayer() {
@@ -109,12 +105,12 @@ $(function() {
         var context = canvas.getContext('2d');
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        window.map.players.forEach(function (player) {
-            context.fillStyle = player.fillStyle();
+        window.map.players.forEach(function (player, idx) {
+            context.fillStyle = window.map.colors[idx];
             player.units.forEach(function (unit) {
                 // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
                 context.beginPath();
-                context.arc(unit.init_pos.x, unit.init_pos.y, 10, 0, Math.PI*2, true);
+                context.arc(unit.pos(0).x, unit.pos(0).y, 10, 0, Math.PI*2, true);
                 context.closePath();
                 context.fill();
             });

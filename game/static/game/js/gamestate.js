@@ -1,31 +1,29 @@
-function GameState(map_data) {
-    // Create the player array
-    var self = this;
-    // Hacky colors for two players only.
-    self.colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'];
-    self.players = Array(map_data.players.length);
-    for (var index in map_data.players) {
-        self.players[index] = new Player(map_data.players[index]);
-    }
-    // A function used to update the player names.
-    self.populatePlayerNames = function(player_list) {
-        for (var index in player_list) {
-            self.players[index].username = player_list[index];
-        }
-    };
-    return self;
+//=============================================================================
+//                                GAMESTATE
+//=============================================================================
+function GameState(players) {
+    this.players = players || [];
+    this.colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'];
 }
 
-function Player(player_data) {
-    var self = this;
-    self.username = "";
-    // Has Units
-    self.units = Array(player_data.units.length);
-    for (var index in player_data.units) {
-        self.units[index] = new Unit(player_data.units[index].init_pos);
-    }
+GameState.fromJSON = function(map_data) {
+    return new GameState(map_data.players.map(Player.fromJSON));
 }
 
+//=============================================================================
+//                                PLAYER
+//=============================================================================
+function Player(units) {
+    this.units = units || [];
+}
+
+Player.fromJSON = function(player_data) {
+    return new Player(player_data.units.map(Unit.fromJSON));
+}
+
+//=============================================================================
+//                                UNIT
+//=============================================================================
 function Unit(init_pos) {
     var self = this;
     // arbitrary speed for unit movement
@@ -62,3 +60,6 @@ function Unit(init_pos) {
     };
 }
 
+Unit.fromJSON = function(unit_data) {
+    return new Unit(unit_data.init_pos);
+}

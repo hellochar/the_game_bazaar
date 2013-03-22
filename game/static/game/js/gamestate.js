@@ -16,7 +16,7 @@ GameState.fromJSON = function(map_data) {
 }
 
 GameState.prototype.toJSON = function() {
-    return {players: this.players};
+    return {players: this.players.map(function (player) { return player.toJSON(); })};
 }
 
 
@@ -32,7 +32,7 @@ Player.fromJSON = function(player_data) {
 }
 
 Player.prototype.toJSON = function() {
-    return {units: this.units};
+    return {units: this.units.map(function (unit) { return unit.toJSON(); })};
 }
 
 //=============================================================================

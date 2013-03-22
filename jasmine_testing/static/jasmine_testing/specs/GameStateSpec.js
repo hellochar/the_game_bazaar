@@ -1,8 +1,9 @@
 describe("GameState", function() {
   // Instantiate a testing game state with three players and some amount of units for each.
   var gamestate;
+  var map_data;
   beforeEach(function() {
-    var map_data = {
+    map_data = {
       players: [
         {units: [
             {init_pos: {'x': 10, 'y': 15}},
@@ -26,6 +27,34 @@ describe("GameState", function() {
   });
 
   describe("Instantiation", function() {
+
+    //taken from http://stackoverflow.com/questions/15322793/is-there-a-jasmine-matcher-to-compare-objects-on-subsets-of-their-properties
+    beforeEach(function () {
+      this.addMatchers({
+        toInclude: function (expected) {
+          var failed;
+
+          for (var i in expected) {
+            if (expected.hasOwnProperty(i) && !this.actual.hasOwnProperty(i)) {
+              failed = [i, expected[i]];
+              break;
+            }
+          }
+
+          if (undefined !== failed) {
+            this.message = 'Failed asserting that array includes element "' + failed[0] + ' => ' + failed[1] + '"';
+
+            return false;
+          }
+
+          return true;
+        }
+      });
+    });
+
+    it("it's toJSON method should output a superset of the json that it was parsed from", function() {
+      expect(GameState.fromJSON(map_data).toJSON()).toInclude(map_data);
+    });
 
     it("should have three players", function() {
       expect(gamestate.players.length).toEqual(3);

@@ -1,7 +1,7 @@
 function createDefaultMap() {
     //this code is required to get the gamestate in the same format as other maps
     var gamestate = new GameState([new Player(), new Player()]);
-    var map = GameState.fromJSON(JSON.parse(JSON.stringify(gamestate)));
+    var map = GameState.fromJSON(gamestate.toJSON());
     map.id = undefined;
     return map;
 }

@@ -3,22 +3,18 @@ describe("Map Editor", function() {
   describe("toJSON", function() {
     // Instantiate a testing game state with three players and some amount of units for each.
     var gamestate;
-    var map_data_original;
     beforeEach(function() {
-      map_data_original = {
-        players: [
-          {units: [
-              {init_pos: {'x': 0, 'y': 100}, speed: 0.1},
-              {init_pos: {'x': 1, 'y': 101}, speed: 0.1},
-          ]},
-          {units: [
-              {init_pos: {'x': 2000, 'y': 2100}, speed: 0.1},
-          ]},
-          {units: []
-          }
-        ]
-      };
-      gamestate = GameState.fromJSON(map_data_original);
+      gamestate = new GameState([
+        new Player([
+          new Unit({'x': 0, 'y': 100}),
+          new Unit({'x': 1, 'y': 101})
+          ]),
+        new Player([
+          new Unit({'x': 2000, 'y': 2100})
+          ]),
+        new Player([
+          ])
+        ]);
     });
 
     describe("GameState.toJSON", function() {
@@ -33,6 +29,12 @@ describe("Map Editor", function() {
       it("should have the correct number of players", function() {
         expect(json.players.length).toEqual(3);
       });
+
+      // I would like to have test like this but it's impossible to test for "functional" equality in the pos() functions of units
+      // it("should be the inverse of fromJSON", function() {
+      //   expect(GameState.fromJSON(gamestate.toJSON())).toEqual(gamestate);
+      // });
+
     });
 
     describe("Player.toJSON", function() {
@@ -57,7 +59,7 @@ describe("Map Editor", function() {
         expect(json).toEqual({
           init_pos: {
             x: 0,
-            y: 100
+          y: 100
           },
           speed: 0.1
         });

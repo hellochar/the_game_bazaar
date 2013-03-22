@@ -48,4 +48,5 @@ You can now quit the shell with `\q`.
 Resetting Your Database
 ==============
     python manage.py reset_db --router=default
+    python manage.py syncdb
 This will delete all your current data and update the db to have the new fields in the models.

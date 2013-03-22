@@ -4,6 +4,7 @@ Prerequisites
     2. gunicorn
     3. local virtualenv install
     4. postgresql
+    5. phantomjs
 
 Installation Instructions
 =============
@@ -31,6 +32,9 @@ Run the TEST bash file as so:
     ./TEST
 
 To test the javascript models (unit tests), visit the domain /jasmine. Each line of text that is green is a successful test.
+
+You may install phantomjs by downloading the binary from http://phantomjs.org/download.html and putting it in your PATH. Installing phantomjs
+will have `./TEST` automatically run the jasmine tests from the CLI and output their status.
 
 Miscellaneous Problems
 =============

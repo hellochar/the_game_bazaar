@@ -3,13 +3,22 @@
 //=============================================================================
 function GameState(players) {
     this.players = players || [];
-    this.colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'];
+}
+GameState.PLAYER_COLORS = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(0, 255, 255)', 'rgb(255, 0, 255)', 'rgb(255, 255, 0)', 'rgb(255, 128, 0)', 'rgb(0, 128, 255)', 'rgb(128, 0, 255)']
+
+GameState.prototype.addUnit = function(player, position) {
+    player.units.push(new Unit(position));
 }
 
 // Takes a JSON object created by gamestate.toJSON() and converts it back into a GameState.
 GameState.fromJSON = function(map_data) {
     return new GameState(map_data.players.map(Player.fromJSON));
 }
+
+GameState.prototype.toJSON = function() {
+    return {players: this.players};
+}
+
 
 //=============================================================================
 //                                PLAYER
@@ -20,6 +29,10 @@ function Player(units) {
 
 Player.fromJSON = function(player_data) {
     return new Player(player_data.units.map(Unit.fromJSON));
+}
+
+Player.prototype.toJSON = function() {
+    return {units: this.units};
 }
 
 //=============================================================================
@@ -63,4 +76,11 @@ function Unit(init_pos) {
 
 Unit.fromJSON = function(unit_data) {
     return new Unit(unit_data.init_pos);
+}
+
+Unit.prototype.toJSON = function() {
+    return {
+            speed: this.speed,
+            init_pos: this.pos(0)       //assumes that Unit.update has never been called
+           };
 }

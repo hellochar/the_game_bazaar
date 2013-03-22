@@ -1,18 +1,3 @@
-GameState.prototype.toJSON = function() {
-    return {players: this.players};
-}
-
-Player.prototype.toJSON = function() {
-    return {units: this.units};
-}
-
-Unit.prototype.toJSON = function() {
-    return {
-            speed: this.speed,
-            init_pos: this.pos(0)       //assumes that Unit.update has never been called
-           };
-}
-
 function createDefaultMap() {
     //this code is required to get the gamestate in the same format as other maps
     var gamestate = new GameState([new Player(), new Player()]);
@@ -25,10 +10,6 @@ function createMapFromResponse(response) {
     var map = GameState.fromJSON(JSON.parse(response.map_data));
     map.id = response.map_id;
     return map;
-}
-
-GameState.prototype.addUnit = function(player, position) {
-    player.units.push(new Unit(position));
 }
 
 $(function() {
@@ -103,7 +84,7 @@ $(function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         window.map.players.forEach(function (player, idx) {
-            context.fillStyle = window.map.colors[idx];
+            context.fillStyle = GameState.PLAYER_COLORS[idx];
             player.units.forEach(function (unit) {
                 // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
                 context.beginPath();

@@ -63,7 +63,7 @@ function Canvas(App) {
                         if (player.units.hasOwnProperty(unitind)) {
                             var unit = player.units[unitind];
                             var pos = unit.pos(nowtime - App.client_start_time);
-                            var color = App.gamestate.colors[playerind];
+                            var color = GameState.PLAYER_COLORS[playerind];
                             self.drawCircle(pos.x, pos.y, 20, color);
                         }
                     }

@@ -147,7 +147,7 @@ $(function() {
         for (var index = 0; index < usernames.children().length; index++) {
             username_list[index] = usernames.children()[index].innerHTML;
         }
-        App.gamestate.populatePlayerNames(username_list);
+        // App.gamestate.populatePlayerNames(username_list);
     };
 
     App.playerMovement = function(x, y) {

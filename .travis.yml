@@ -10,5 +10,5 @@ install:
 # command to run tests
 before_script:
   - echo "CREATE USER tgb_db_admin with PASSWORD 'ilovetgb'; ALTER USER tgb_db_admin CREATEDB; CREATE DATABASE tgb_db with OWNER tgb_db_admin;" | psql -Upostgres
-  - "python manage.py syncdb"
+  - "python manage.py syncdb --noinput"
 script: ./TEST

@@ -8,5 +8,7 @@ before_install:
 install:
   "pip install -r requirements.txt --use-mirrors"
 # command to run tests
-before_script: "python manage.py syncdb"
+before_script:
+  - echo "CREATE USER tgb_db_admin with PASSWORD 'ilovetgb'; ALTER USER tgb_db_admin CREATEDB; CREATE DATABASE tgb_db with OWNER tgb_db_admin;" | psql -Upostgres
+  - "python manage.py syncdb"
 script: ./TEST

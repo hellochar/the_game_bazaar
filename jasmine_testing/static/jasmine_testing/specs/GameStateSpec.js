@@ -97,7 +97,7 @@ describe("GameState", function() {
 
     describe("Adding a unit", function() {
       it("should add a unit with correct player/pos attributes", function() {
-        var map = createDefaultMap();
+        var map = Editor.createDefaultMap();
         map.addUnit(map.players[0], {x: 100, y: 200});
         expect(map.players[0].units[0].pos(0)).toEqual({x:100, y:200});
       });

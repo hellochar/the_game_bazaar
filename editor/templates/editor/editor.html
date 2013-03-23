@@ -3,6 +3,32 @@
         <script src="{{ STATIC_URL }}the_game_bazaar/js/jquery-1.6.1.min.js"></script>
         <script src="{{ STATIC_URL }}game/js/gamestate.js"></script>
         <script src="{{ STATIC_URL }}editor/js/editor.js"></script>
+        <script>
+            $(function() {
+                var editor = window.editor = new Editor();
+                if(window.location.hash != "") {
+                    //hash exists; load the map
+                    editor.loadMap(window.location.hash.substring(1));
+                }
+
+                $('#editor-canvas').mousedown(function (evt) {
+                    var offsetX = $('#editor-canvas').position().left;
+                    var offsetY = $('#editor-canvas').position().top;
+                    editor.map.addUnit(editor.currentPlayer(), {x: evt.clientX - offsetX, y: evt.clientY - offsetY});
+                    render();
+                });
+
+                $('#save-button').click(function () {
+                    editor.saveMap();
+                });
+
+                $('#load-button').click(function() {
+                    editor.loadMap($('#load-id').val());
+                });
+            });
+        </script>
+
+
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}editor/css/editor.css" />
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}the_game_bazaar/css/bootstrap.css" />
     </head>
@@ -11,8 +37,8 @@
         <!-- START NAVIGATION BAR -->
         {% include "the_game_bazaar/navbar.html" %}
         <script type="text/javascript">
-        	//mark page's active tab
-            $('#navbar-edit').addClass('active');
+            //mark page's active tab
+        $('#navbar-edit').addClass('active');
         </script>
         <!-- END NAVIGATION BAR -->
         <div class="row">

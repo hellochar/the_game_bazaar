@@ -11,7 +11,7 @@ window.requestAnimationFrame = requestAnimationFrame;
 
 
 function Renderer() {
-    
+
     var self = this;
 
     // INITIALIZE CANVAS
@@ -22,7 +22,7 @@ function Renderer() {
     self.ctx.textAlign = "center";
     self.ctx.font = "14px Helvetica";
     self.canvas.tabIndex = "0";
-        
+
     // Generates a random hex color
     self.randomColor = function() {
         return "#" + Math.random().toString(16).slice(2, 8);
@@ -72,22 +72,18 @@ function Renderer() {
         if (game.conn_state == game.GAME_STATES.CONNECTED) {
             // For each player in the gamestate
             var players = game.gamestate.players;
-            for (var playerind in players) {
-                if (players.hasOwnProperty(playerind)) {
-                    var player = players[playerind];
-                    // For each unit in the player
-                    for (var unitind in player.units) {
-                        if (player.units.hasOwnProperty(unitind)) {
-                            self.renderUnit(
-                                player.units[unitind],
-                                game.gamestate.colors[playerind],
-                                nowtime,
-                                game.client_start_time
-                                );
-                        }
-                    }
-                }
-            }
+            players.forEach(function (player, playerind) {
+                player.units.forEach(function(unit) {
+                    self.renderUnit(
+                        unit,
+                        // TODO: Refactor so that getting the player's color
+                        // does not rely on getting the player's index
+                        game.gamestate.colors[playerind],
+                        nowtime,
+                        game.client_start_time
+                        );
+                });
+            });
         } else if (game.conn_state == game.GAME_STATES.CONNECTING) {
             self.ctx.fillText("Connecting...", 400, 200);
         } else if (game.conn_state == game.GAME_STATES.INIT) {

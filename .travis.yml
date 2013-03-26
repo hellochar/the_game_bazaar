@@ -2,6 +2,13 @@ language: python
 python:
   - "2.7"
 # command to install dependencies
-install: "pip install -r requirements.txt --use-mirrors"
+before_install:
+  - "gem install foreman"
+  - "sudo apt-get install -y libevent-dev python-gevent"
+install:
+  "pip install -r requirements.txt --use-mirrors"
 # command to run tests
+before_script:
+  - echo "CREATE USER tgb_db_admin with PASSWORD 'ilovetgb'; ALTER USER tgb_db_admin CREATEDB; CREATE DATABASE tgb_db with OWNER tgb_db_admin;" | psql -Upostgres
+  - "python manage.py syncdb --noinput"
 script: ./TEST

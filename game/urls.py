@@ -11,10 +11,6 @@ urlpatterns = patterns('',
         views.join_game,
         name="join"),
 
-    url(r'userlist',
-        views.user_list,
-        name="user_list"),
-
     url(r'',
         views.socketio,
         name="socketio"),

@@ -49,7 +49,7 @@ def host_game_logic(request):
     for i in range(1, theMap.num_players):
         players_json[i] = ""
     # Create and save the game
-    game = Game(map_id=theMap, players=json.dumps(players_json))
+    game = Game(map_id=theMap, players=json.dumps(players_json), state=Game.LOBBY)
     game.save()
     return game, players_json
 

@@ -24,7 +24,7 @@ class GameControllerTest(TestCase):
     def setUp(self):
         User.objects.create_user("username", "email", "password")
         user = authenticate(username="username", password="password")
-        aMap = Map(creator_id=user, num_players=3, data="{}", map_name="Oogie Boogie")
+        aMap = Map(creator=user, num_players=3, data="{}", map_name="Oogie Boogie")
         aMap.save()
         GameControllerTest.map_id = aMap.id
 

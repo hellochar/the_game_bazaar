@@ -11,7 +11,7 @@ def createUser():
 
 def createTestMap():
     Map.objects.create(
-        creator_id=User.objects.get(username="tester"),
+        creator=User.objects.get(username="tester"),
         num_players=2,
         data='{"players":[{"id":0,"units":[]},{"id":1,"units":[]}]}',
         map_name="qwer"

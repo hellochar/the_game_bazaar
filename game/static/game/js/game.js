@@ -8,6 +8,7 @@ $(function() {
     });
     var game = Game();
     game.init();
+    window.game = game;
 });
 
 // Start off by creating a new instance of a Game
@@ -166,7 +167,7 @@ function Game() {
                     // DEBUG
                     window.map_data = map_data_json;
 
-                    self.gamestate = GameState(map_data_json);
+                    self.gamestate = GameState.fromJSON(map_data_json);
 
                     // DEBUG
                     window.gamestate = self.gamestate;

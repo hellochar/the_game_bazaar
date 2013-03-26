@@ -1,8 +1,9 @@
 describe("GameState", function() {
-    // Instantiate a testing game state with three players and some amount of units for each.
+  // Instantiate a testing game state with three players and some amount of units for each.
   var gamestate;
+  var map_data;
   beforeEach(function() {
-    var map_data = {
+    map_data = {
       players: [
         {units: [
             {init_pos: {'x': 10, 'y': 15}},
@@ -22,10 +23,38 @@ describe("GameState", function() {
         ]}
       ]
     };
-    gamestate = new GameState(map_data);
+    gamestate = GameState.fromJSON(map_data);
   });
 
   describe("Instantiation", function() {
+
+    //taken from http://stackoverflow.com/questions/15322793/is-there-a-jasmine-matcher-to-compare-objects-on-subsets-of-their-properties
+    beforeEach(function () {
+      this.addMatchers({
+        toInclude: function (expected) {
+          var failed;
+
+          for (var i in expected) {
+            if (expected.hasOwnProperty(i) && !this.actual.hasOwnProperty(i)) {
+              failed = [i, expected[i]];
+              break;
+            }
+          }
+
+          if (undefined !== failed) {
+            this.message = 'Failed asserting that array includes element "' + failed[0] + ' => ' + failed[1] + '"';
+
+            return false;
+          }
+
+          return true;
+        }
+      });
+    });
+
+    it("it's toJSON method should output a superset of the json that it was parsed from", function() {
+      expect(GameState.fromJSON(map_data).toJSON()).toInclude(map_data);
+    });
 
     it("should have three players", function() {
       expect(gamestate.players.length).toEqual(3);
@@ -53,14 +82,15 @@ describe("GameState", function() {
       }
     });
 
-    it("should have a username property for each player", function() {
-      for (var playerInd in gamestate.players) {
-        if (gamestate.players.hasOwnProperty(playerInd)) {
-          var player = gamestate.players[playerInd];
-          expect('username' in player).toBe(true);
-        }
-      }
-    });
+    // it("should have a username property for each player", function() {
+    //   for (var playerInd in gamestate.players) {
+    //     if (gamestate.players.hasOwnProperty(playerInd)) {
+    //       var player = gamestate.players[playerInd];
+    //       expect('username' in player).toBe(true);
+    //     }
+    //   }
+    // });
+
   });
 
   describe("Mutation", function() {
@@ -98,6 +128,16 @@ describe("GameState", function() {
       expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
       expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);
       expect(modifiedUnit.pos(200).y).toBeCloseTo(yAt200, 2);
+    });
+  });
+
+  describe("Bug fixes", function() {
+    it("should not error when moving to the spot that it is currently at", function() {
+      var ourUnit = gamestate.players[0].units[0];
+      var originalPos = ourUnit.pos(0);
+      ourUnit.update(0, originalPos);
+      expect(ourUnit.pos(0).x).toBeCloseTo(originalPos.x);
+      expect(ourUnit.pos(0).y).toBeCloseTo(originalPos.y);
     });
   });
 

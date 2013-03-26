@@ -4,7 +4,7 @@
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/jquery-1.6.1.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/socket.io.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}game/js/canvas.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}game/js/renderer.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}game/js/gamestate.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
         <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
@@ -34,12 +34,13 @@
             {% endif %}
             <h3>And the players are..........</h3>
             <ul id='player-usernames'>
-                {% for key, value in players.items %}
-                    <li id='player{{ key }}'>{{ value }}</li>
+                {% for key, value in players_json %}
+                    <li id='player-slot-{{ key }}'>{{ value }}</li>
                 {% endfor %}
             </ul>
             </p>
         </div>
+
 
         <!-- GAME CONTAINER --> 
         <div id="game-container">

@@ -34,12 +34,13 @@
             {% endif %}
             <h3>And the players are..........</h3>
             <ul id='player-usernames'>
-                {% for key, value in players.items %}
+                {% for key, value in players_json %}
                     <li id='player-slot-{{ key }}'>{{ value }}</li>
                 {% endfor %}
             </ul>
             </p>
         </div>
+
 
         <!-- GAME CONTAINER --> 
         <div id="game-container">

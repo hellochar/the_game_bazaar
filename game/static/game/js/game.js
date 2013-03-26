@@ -6,7 +6,7 @@ $(function() {
         $('#game-container').hide();
         $('#lobby-container').show();
     });
-    var game = Game();
+    var game = new Game();
     game.init();
     window.game = game;
 });
@@ -60,7 +60,7 @@ function Game() {
         // DEBUG
         console.log("Init canvas");
 
-        self.renderer = Renderer();
+        self.renderer = new Renderer();
 
     };
 
@@ -117,7 +117,7 @@ function Game() {
         console.log("Timestamp: ", data.timestamp);
 
         // Begin rendering and handling user input
-        self.bindClick(self.playerMovement);
+        self.renderer.bindClick(self.playerMovement);
         self.renderer.startRendering(self);
 
         $('#lobby-container').hide();
@@ -203,7 +203,7 @@ function Game() {
         var usernames = $("#player-usernames");
         var username_list = Array(usernames.children().length);
         for (var index = 0; index < usernames.children().length; index++) {
-            self.gamestate.players[index].username = usernames.children()[index].text();
+            self.gamestate.players[index].username = $(usernames.children()[index]).text();
         }
     };
 
@@ -235,7 +235,7 @@ function Game() {
     //---------------------------------------------
 
     self.handleDisconnect = function () {
-        self.conn_state = GAME_STATE.DISCONNECTED;
+        self.conn_state = GAME_STATES.DISCONNECTED;
     };
 
     self.handleConnectError = function (e) {

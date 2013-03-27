@@ -40,15 +40,15 @@ Editor.prototype.saveMap = function() {
 
 //Load a map from the server with the given map id
 Editor.prototype.loadMap = function(map_id) {
-    $.getJSON( //Returned content will automatically be parsed into JSON
-            '/map',
-            {map_id : map_id},
-            function(data, textStatus, jqXHR) {
-                window.temp_data = data;
-            }
-            ).success(function (data_json) {
-                this.setEditingMap( Editor.createMapFromResponse(data_json) );
-            });
+    $.ajax({
+        type: "GET",
+        url: '/map/',
+        data: {map_id : map_id},
+        success: function (data_json) {
+            this.setEditingMap( Editor.createMapFromResponse(data_json) );
+        }.bind(this),
+        dataType: 'json'
+    });
 }
 
 Editor.prototype.currentPlayer = function() {

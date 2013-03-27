@@ -1,6 +1,9 @@
-if ! python manage.py test game lib editor the_game_bazaar; then
+if ! coverage run --source='.' --omit='./venv/*' --branch manage.py test game lib editor the_game_bazaar; then
     exit 1
 fi
+
+coverage report -m
+coverage html
 
 if hash phantomjs &> /dev/null; then
     if [ $(ps -C gunicorn | wc -l) == 1 ]; then

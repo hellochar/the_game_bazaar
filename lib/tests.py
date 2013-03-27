@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from gmap.models import Map
+from lib.models import Map
 import json
 
 
@@ -28,7 +28,7 @@ class MapTester(TestCase):
     def make_GET(self, map_id=None):
         if map_id is None:
             map_id = Map.objects.all()[0].id
-        response = self.client.get(reverse("gmap"), {"map_id": map_id})
+        response = self.client.get(reverse("get_map"), {"map_id": map_id})
         return (response, json.loads(response.content))
 
     def make_POST(self, map_data, map_id=None):
@@ -36,7 +36,7 @@ class MapTester(TestCase):
             map_id = Map.objects.all()[0].id
 
         params = {'map_id': map_id, 'map_data': map_data}
-        response = self.client.post(reverse('gmap'), params)
+        response = self.client.post(reverse('get_map'), params)
         return (response, json.loads(response.content))
 
 
@@ -61,7 +61,7 @@ class MapGETTester(MapTester):
         self.assertFalse(json["success"])
 
     def test_no_map_id_parameter(self):
-        response = self.client.get(reverse("gmap"), {})
+        response = self.client.get(reverse("get_map"), {})
         self.assertFalse(json.loads(response.content)['success'])
 
 
@@ -69,7 +69,7 @@ class MapPOSTTester(MapTester):
 
     def test_successfully_post_new_map(self):
         map_data = "{'players': [{'id':0,'units':[]}, {'id':1,'units':[]}]}"
-        response_json = json.loads(self.client.post(reverse("gmap"), {'map_data': map_data}).content)
+        response_json = json.loads(self.client.post(reverse("get_map"), {'map_data': map_data}).content)
         self.assertTrue(response_json["success"])
         self.assertEqual(map_data, Map.objects.get(id=response_json['map_id']).data)
         # import code

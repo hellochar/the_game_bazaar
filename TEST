@@ -1,4 +1,4 @@
-python manage.py test game gmap editor the_game_bazaar
+python manage.py test game lib editor the_game_bazaar
 
 if hash phantomjs &> /dev/null; then
     if [ $(ps -C gunicorn | wc -l) == 1 ]; then

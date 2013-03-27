@@ -17,7 +17,7 @@ $().ready(function(){
                     window.location.pathname = data.redirect_url;
                 } else {
                     // navbarAlert is in navbar.js
-                    navbarAlert("<strong>Registration Unsuccessful</strong>, please check your fields");
+                    navbarAlert(data.error);
                 }
                 console.log(data);
                 return false;

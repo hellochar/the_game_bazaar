@@ -34,7 +34,8 @@ def home(request):
 def play(request):
     context = {
         "maps": Map.objects.all(),
-        "games": Game.objects.all(),
+        "games": Game.objects.order_by('id').reverse(),
+        "lobby": Game.LOBBY,
     }
     return render(request, 'the_game_bazaar/play.html', context)
 

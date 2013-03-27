@@ -9,6 +9,19 @@
         <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
         <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <script>
+            $(function() {
+                // DOM manipulation
+                $().ready(function() {
+                    $('#game-container').hide();
+                    $('#lobby-container').show();
+                });
+                var game = new Game();
+                game.init();
+                window.game = game;
+            });
+
+        </script>
     </head>
     <body>
         <!-- START NAVIGATION BAR -->

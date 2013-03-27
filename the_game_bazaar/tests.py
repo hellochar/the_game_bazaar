@@ -20,12 +20,21 @@ class ourAuthTest(TestCase):
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], True)
 
-    def test_ajax_login_fail(self):
+    def test_ajax_login_user_dne(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
         c = self.client
 
         # test failed login
         s_resp = c.post('/auth/login/', {'username':'bbb', 'password':'aaa'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+
+    def test_ajax_login_bad_pass(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+
+        # test failed login
+        s_resp = c.post('/auth/login/', {'username':'aaa', 'password':'bbb'})
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], False)
 

@@ -131,6 +131,14 @@ describe("GameState", function() {
     });
   });
 
+  describe("Evaluation function", function() {
+    it("Should match toJSON when called on 0", function() {
+      var json = gamestate.toJSON();
+      var evald = gamestate.evaluate(0);
+      expect(json).toEqual(evald);
+    });
+  });
+
   describe("Bug fixes", function() {
     it("should not error when moving to the spot that it is currently at", function() {
       var ourUnit = gamestate.players[0].units[0];

@@ -82,8 +82,3 @@ class unauthorizedRedirectTest(TestCase):
         c = self.client
         s_resp = c.post('/auth/logout/', {}, follow=True)
         self.assertEqual(len(s_resp.redirect_chain), 1)
-
-class GameTest(TestCase):
-    def setU
-    def test_games_in_state(self):
-        g1 = Game(map_id=

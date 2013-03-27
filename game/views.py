@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from game.gamens import GameNamespace
 from django.shortcuts import render
-from gmap.models import Map
+from lib.models import Map
 from game.models import Game
 import json
 

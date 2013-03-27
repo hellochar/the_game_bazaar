@@ -1,11 +1,11 @@
 from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
-from gmap.models import Map
+from lib.models import Map
 from django.contrib.auth.models import User
 
 @csrf_exempt
-def gmap(request):
+def get_map(request):
     if request.method == 'GET':
         if 'map_id' not in request.GET:
             map_id = "";

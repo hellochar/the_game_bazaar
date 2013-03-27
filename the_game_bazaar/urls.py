@@ -1,7 +1,7 @@
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from the_game_bazaar import views
-from gmap.views import gmap
+from lib.views import get_map
 from jasmine_testing.views import tests
 
 # Uncomment the next two lines to enable the admin:
@@ -52,7 +52,7 @@ urlpatterns = patterns('',
     url(r'^jasmine/$', tests, name="tests"),
 
     # Retrieving and saving maps
-    url(r'^map/$', gmap, name="gmap"),
+    url(r'^map/$', get_map, name="get_map"),
 
 
     # Examples:

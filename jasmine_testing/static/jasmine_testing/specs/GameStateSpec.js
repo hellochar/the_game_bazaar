@@ -142,6 +142,14 @@ describe("GameState", function() {
     });
   });
 
+  describe("Evaluation function", function() {
+    it("Should match toJSON when called on 0", function() {
+      var json = gamestate.toJSON();
+      var evald = gamestate.evaluate(0);
+      expect(json).toEqual(evald);
+    });
+  });
+
   describe("toJSON", function() {
     // Instantiate a testing game state with three players and some amount of units for each.
     var gamestate;

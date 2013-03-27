@@ -1,15 +1,15 @@
 <html>
     <head>
-        <script src="{{ STATIC_URL }}the_game_bazaar/js/jquery-1.6.1.min.js"></script>
-        <script src="{{ STATIC_URL }}game/js/gamestate.js"></script>
+        <script src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
         <script src="{{ STATIC_URL }}editor/js/editor.js"></script>
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}editor/css/editor.css" />
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}the_game_bazaar/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}lib/css/bootstrap.css" />
     </head>
 
     <body>
         <!-- START NAVIGATION BAR -->
-        {% include "the_game_bazaar/navbar.html" %}
+        {% include "lib/navbar.html" %}
         <script type="text/javascript">
         	//mark page's active tab
             $('#navbar-edit').addClass('active');

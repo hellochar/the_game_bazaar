@@ -1,7 +1,7 @@
 from django.test import TestCase
 from game import views
 from game.models import Game
-from gmap.models import Map
+from lib.models import Map
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import json

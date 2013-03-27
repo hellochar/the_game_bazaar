@@ -40,13 +40,16 @@ Editor.prototype.saveMap = function() {
 
 //Load a map from the server with the given map id
 Editor.prototype.loadMap = function(map_id) {
+    var self = this;
+    var successCallback = function (data_json) {
+        self.setEditingMap( Editor.createMapFromResponse(data_json) );
+    };
+
     $.ajax({
         type: "GET",
         url: '/map/',
         data: {map_id : map_id},
-        success: function (data_json) {
-            this.setEditingMap( Editor.createMapFromResponse(data_json) );
-        }.bind(this),
+        success: successCallback,
         dataType: 'json'
     });
 }

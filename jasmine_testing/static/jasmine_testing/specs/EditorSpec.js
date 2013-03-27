@@ -14,7 +14,7 @@ describe("Map Editor", function() {
 
     editor = new Editor();
     //stub out render
-    spyOn(editor, 'render')
+    spyOn(editor, 'render');
   });
 
   afterEach(function() {
@@ -40,7 +40,7 @@ describe("Map Editor", function() {
         response = {
             map_id : 12,
             success : true,
-            map_data : JSON.stringify(Editor.createDefaultMap().toJSON()),
+            map_data : JSON.stringify(Editor.createDefaultMap().toJSON())
         };
     });
     it("should correctly set map_id", function() {
@@ -50,7 +50,7 @@ describe("Map Editor", function() {
     it("should parse the Map from the response and fromJSON it", function() {
       spyOn(GameState, 'fromJSON').andCallThrough();
 
-      var created_map = Editor.createMapFromResponse(response);
+      Editor.createMapFromResponse(response);
       expect(GameState.fromJSON).toHaveBeenCalledWith(JSON.parse(response.map_data));
     });
   });
@@ -97,7 +97,7 @@ describe("Map Editor", function() {
     });
 
     it("should call setEditingMap with its own map", function() {
-        spyOn(editor, 'setEditingMap')
+        spyOn(editor, 'setEditingMap');
         editor.saveMap();
 
         expect(editor.setEditingMap).toHaveBeenCalledWith(editor.map);

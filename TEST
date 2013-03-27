@@ -1,10 +1,18 @@
-python manage.py test game lib editor the_game_bazaar
+if ! coverage run --source='.' --omit='./venv/*' --branch manage.py test game lib editor the_game_bazaar; then
+    exit 1
+fi
+
+coverage report -m
+coverage html
 
 if hash phantomjs &> /dev/null; then
     if [ $(ps -C gunicorn | wc -l) == 1 ]; then
         foreman start &
         sleep 2
-        phantomjs phantomjs-test-runner.js http://localhost:5000/jasmine
+        if ! phantomjs phantomjs-test-runner.js http://localhost:5000/jasmine; then
+            pkill -9 -f gunicorn
+            exit 1
+        fi
         pkill -9 -f gunicorn
     else
         echo "Gunicorn is already running; skipping jasmine tests!"

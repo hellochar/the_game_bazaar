@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
-from gmap.models import Map
+from lib.models import Map
 from game.models import Game
 
 
@@ -34,7 +34,8 @@ def home(request):
 def play(request):
     context = {
         "maps": Map.objects.all(),
-        "games": Game.objects.all(),
+        "games": Game.objects.order_by('id').reverse(),
+        "lobby": Game.LOBBY,
     }
     return render(request, 'the_game_bazaar/play.html', context)
 

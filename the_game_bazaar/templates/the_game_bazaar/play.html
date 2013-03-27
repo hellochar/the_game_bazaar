@@ -1,13 +1,13 @@
 <html>
     <head>
-        <link href="{{ STATIC_URL }}the_game_bazaar/css/bootstrap.css" rel="stylesheet">
-        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/jquery-1.6.1.min.js"></script>
+        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
 
     </head>
     <body>
     	<!-- START NAVIGATION BAR -->
-        {% include "the_game_bazaar/navbar.html" %}
+        {% include "lib/navbar.html" %}
         <script type="text/javascript">
         	//mark page's active tab
             $('#navbar-play').addClass('active');
@@ -29,21 +29,23 @@
         					</tr></thead>
         					<tbody>
             				{% for game in games %}
-            					<tr>
-            						<td>{{ game.id }}</td>
-            						<td>{{ game.map_id.map_name}}</td>	
-            						<td id="game-{{ game.id }}"></td>
-                                    <td>
-                                        <form action="/game/join" method="POST" style="margin:0px">
-                                            {% csrf_token %}
-                                            <input name="game-id" type="hidden" value="{{ game.id }}" />
-                                            <button class="btn">Join</button>
-                                        </form>
-                                    </td>
-        							<script>
-        								printPlayers({{ game.id }}, $.parseJSON('{{ game.players }}'.replace(/&quot;/g, '"')));
-        							</script>
-            					</tr>
+                                {% if game.state == lobby %}
+                                    <tr>
+                                        <td>{{ game.id }}</td>
+                                        <td>{{ game.map_id.map_name}}</td>	
+                                        <td id="game-{{ game.id }}"></td>
+                                        <td>
+                                            <form action="/game/join" method="POST" style="margin:0px">
+                                                {% csrf_token %}
+                                                <input name="game-id" type="hidden" value="{{ game.id }}" />
+                                                <button class="btn">Join</button>
+                                            </form>
+                                        </td>
+            							<script>
+            								printPlayers({{ game.id }}, $.parseJSON('{{ game.players }}'.replace(/&quot;/g, '"')));
+            							</script>
+                					</tr>
+                                {% endif %}
             				{% endfor %}
             				</tbody>
         				</table>

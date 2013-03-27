@@ -1,13 +1,13 @@
 <head>
-    <link href="{{ STATIC_URL }}the_game_bazaar/css/bootstrap.css" rel="stylesheet">
-    <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/jquery-1.6.1.min.js"></script>
+    <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+    <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/login.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
 </head>
 
 <body>
 	<!-- START NAVIGATION BAR -->
-    {% include "the_game_bazaar/navbar.html" %}
+    {% include "lib/navbar.html" %}
     <script type="text/javascript">
     	//mark page's active tab
         $('#navbar-home').addClass('active');

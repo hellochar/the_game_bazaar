@@ -1,5 +1,5 @@
 from django.db import models
-from gmap.models import Map
+from lib.models import Map
 
 
 class Game(models.Model):

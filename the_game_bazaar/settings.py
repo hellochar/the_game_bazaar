@@ -127,8 +127,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'the_game_bazaar',
+    'lib',
     'game',
-    'gmap',
     'editor',
     'jasmine_testing',
     # Uncomment the next line to enable the admin:
@@ -177,7 +177,12 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'ERROR',
             'propagate': True,
-        }
+        },
+        'debug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 

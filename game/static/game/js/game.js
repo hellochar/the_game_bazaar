@@ -252,11 +252,9 @@ function Game() {
     // Move all units in the player_id's unit list that are currently selected to
     // the clickpos and execute the update at in-game time updateTime.
     self.moveUnits = function(updateTime, player_id, clickpos) {
-        var unit_list = self.gamestate.players[player_id].units;
+        var unit_list = self.gamestate.players[player_id].selectedUnits;
         unit_list.forEach(function(unit) {
-            if (unit.isSelected) {
-                unit.update(updateTime, clickpos);
-            }
+            unit.update(updateTime, clickpos);
         });
     };
 

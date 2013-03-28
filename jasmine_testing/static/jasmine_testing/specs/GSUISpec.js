@@ -30,9 +30,7 @@ describe("GS UI", function() {
     it("Selects a unit when you click directly on it", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click directly on the first unit of the first player
@@ -42,18 +40,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 0) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects a unit when you click on the circle but not on the center", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -63,18 +63,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 0) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects a unit when you drag over it (top left to bottom right)", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -85,18 +87,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 1) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects a unit when you drag over it (top right to bottom left)", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -107,18 +111,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 1) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects a unit when you drag over it (bottom left to top right)", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -129,18 +135,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 1) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects a unit when you drag over it (bottom right to top left)", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -151,18 +159,20 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(unit === selectedUnit);
-        });
+        if (gamestate.players.indexOf(player) === 1) {
+          expect(player.selectedUnits.length).toBe(1);
+          expect(player.selectedUnits[0]).toBe(selectedUnit);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 
     it("Selects multiple units when you drag over them", function() {
       // Assert all units are unselected before we start
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(false);
-        });
+        expect(player.selectedUnits.length).toBe(0);
       });
 
       // Click a little off-center on the second unit of the first player
@@ -172,9 +182,14 @@ describe("GS UI", function() {
 
       // Assert that all units are unselected unless they are the chosen unit
       gamestate.players.forEach(function(player) {
-        player.units.forEach(function(unit) {
-          expect(unit.isSelected).toBe(gamestate.players.indexOf(player) === 2);
-        });
+        if (gamestate.players.indexOf(player) === 2) {
+          expect(player.selectedUnits.length).toBe(2);
+          expect(player.selectedUnits[0]).toBe(player.units[0]);
+          expect(player.selectedUnits[1]).toBe(player.units[1]);
+        }
+        else {
+          expect(player.selectedUnits.length).toBe(0);
+        }
       });
     });
 

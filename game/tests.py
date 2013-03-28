@@ -37,7 +37,7 @@ class GameControllerTest(TestCase):
         pass
 
 
-    def test_joingame(self):
+    def test_add_user_to_game(self):
         game, _ = views.create_new_game(self.aMap.id, self.user)
 
         # Perform the join logic
@@ -47,4 +47,3 @@ class GameControllerTest(TestCase):
         self.assertEqual(len(players_json), 3)
         self.assertEqual(players_json[0], "hosting_player")
         self.assertEqual(players_json[1], "joining_player")
-        pass

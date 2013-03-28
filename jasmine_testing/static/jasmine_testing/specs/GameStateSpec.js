@@ -67,8 +67,8 @@ describe("GameState", function() {
     });
 
     it("should have units that have pos functions that evaluate to a map with x and y keys", function() {
-      gamestate.players.map(function (player) {
-        player.units.map(function (unit) {
+      gamestate.players.forEach(function (player) {
+        player.units.forEach(function (unit) {
           var position = unit.pos(0);
           expect(Object.keys(position)).toEqual(['x', 'y']);
         });

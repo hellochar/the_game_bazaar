@@ -1,13 +1,23 @@
 from django.db import models
 from lib.models import Map
 
-
 class Game(models.Model):
     LOBBY = "lobby"
     ACTIVE = "active"
     FINISHED = "finished"
+    STATE_CHOICES = (
+        (LOBBY, "Lobby"),
+        (ACTIVE, "Active"),
+        (FINISHED, "Finished"),
+    )
 
-    # The map id of this game.
-    map_id = models.ForeignKey(Map, related_name="+")
-    players = models.TextField()
-    state = models.TextField()
+    #----------------------
+    #      FIELDS
+    #----------------------
+    map = models.ForeignKey(Map, related_name="+")
+    players = models.TextField() # a list of usernames in the game stored as "[username, username, ...]"
+    state = models.TextField(choices=STATE_CHOICES, default=LOBBY)
+
+    @staticmethod
+    def get_games_in_state(state):
+        return Game.objects.filter(state=state)

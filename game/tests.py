@@ -37,7 +37,7 @@ class GameControllerTest(TestCase):
         pass
 
 
-    def test_joingame(self):
+    def test_add_user_to_game(self):
         game, _ = views.create_new_game(self.aMap.id, self.user)
 
         # Perform the join logic
@@ -47,4 +47,29 @@ class GameControllerTest(TestCase):
         self.assertEqual(len(players_json), 3)
         self.assertEqual(players_json[0], "hosting_player")
         self.assertEqual(players_json[1], "joining_player")
-        pass
+
+class GameTest(TestCase):
+    def setUp(self):
+        User.objects.create_user("user", "email", "password")
+        self.user = authenticate(username="user", password="password")
+
+        self.map = Map(creator=self.user, num_players=2, data="{}", map_name="map name")
+        self.map.save()
+
+    def test_get_games_in_state(self):
+        g1 = Game(map=self.map, players="['', '']", state=Game.LOBBY)
+        g1.save()
+        g2 = Game(map=self.map, players="['', '']", state=Game.LOBBY)
+        g2.save()
+
+        g3 = Game(map=self.map, players="['', '']", state=Game.ACTIVE)
+        g3.save()
+
+        lobby_games = set(list(Game.get_games_in_state(Game.LOBBY)))
+        self.assertEqual(lobby_games, set([g1, g2]))
+
+        active_games = set(list(Game.get_games_in_state(Game.ACTIVE)))
+        self.assertEqual(active_games, set([g3]))
+
+        finished_games = set(list(Game.get_games_in_state(Game.FINISHED)))
+        self.assertEqual(finished_games, set([]))

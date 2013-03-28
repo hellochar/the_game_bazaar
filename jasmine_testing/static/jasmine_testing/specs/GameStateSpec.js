@@ -82,20 +82,11 @@ describe("GameState", function() {
       }
     });
 
-    // it("should have a username property for each player", function() {
-    //   for (var playerInd in gamestate.players) {
-    //     if (gamestate.players.hasOwnProperty(playerInd)) {
-    //       var player = gamestate.players[playerInd];
-    //       expect('username' in player).toBe(true);
-    //     }
-    //   }
-    // });
-
   });
 
   describe("Mutation", function() {
     it("should be able to change a username without changing other players'", function() {
-      var randomName = "WOOOHOHEOFHEOFE";
+      var randomName = "a user's name";
       gamestate.players[0].username = randomName;
       expect(gamestate.players[0].username).toBe(randomName);
       expect(gamestate.players[1].username).not.toBe(randomName);
@@ -105,25 +96,25 @@ describe("GameState", function() {
     it("should move a unit correctly in the axes directions", function() {
       var modifiedUnit = gamestate.players[0].units[0];
       modifiedUnit.update(0, {'x': 20, 'y': 15});
-      expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
+      expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
       expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-      modifiedUnit.update(10, {'x': 11, 'y': 20});
-      expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
+      modifiedUnit.update(10, {'x': 13, 'y': 20});
+      expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
       expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-      expect(modifiedUnit.pos(20).x).toBeCloseTo(11, 2);
-      expect(modifiedUnit.pos(20).y).toBeCloseTo(16, 2);
+      expect(modifiedUnit.pos(20).x).toBeCloseTo(13, 2);
+      expect(modifiedUnit.pos(20).y).toBeCloseTo(18, 2);
     });
 
     it("should move a unit correctly in the diagonal direction", function() {
       var modifiedUnit = gamestate.players[0].units[0];
-      modifiedUnit.update(0, {'x': 20, 'y': 25});
+      modifiedUnit.update(0, {'x': 40, 'y': 45});
       var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
       var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
       expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
       expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
-      modifiedUnit.update(100, {'x': xAt100 - 10, 'y': yAt100 + 10});
-      var xAt200 = xAt100 - 1 / Math.sqrt(2) * 10;
-      var yAt200 = yAt100 + 1 / Math.sqrt(2) * 10;
+      modifiedUnit.update(100, {'x': xAt100 - 30, 'y': yAt100 + 30});
+      var xAt200 = xAt100 - 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
+      var yAt200 = yAt100 + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
       expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
       expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
       expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);

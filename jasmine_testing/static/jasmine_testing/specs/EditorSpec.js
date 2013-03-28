@@ -61,7 +61,7 @@ describe("Map Editor", function() {
             x: 0,
           y: 100
           },
-          speed: 0.1
+          speed: 0.3
         });
       });
     });

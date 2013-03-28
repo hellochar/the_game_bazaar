@@ -1,100 +1,76 @@
-function createDefaultMap() {
-    //this code is required to get the gamestate in the same format as other maps
+function Editor() {
+    this.setEditingMap(Editor.createDefaultMap());
+}
+
+Editor.createDefaultMap = function() {
     var gamestate = new GameState([new Player(), new Player()]);
+    //Parse and then read the gamestate to get it in the same format as maps retrieved from the server
     var map = GameState.fromJSON(gamestate.toJSON());
     map.id = undefined;
     return map;
 }
 
-function createMapFromResponse(response) {
+Editor.createMapFromResponse = function(response) {
     var map = GameState.fromJSON(JSON.parse(response.map_data));
     map.id = response.map_id;
     return map;
 }
 
-$(function() {
-    function setEditingMap(map) {
-        window.map = map;
-        $('#map-id')[0].innerHTML = map.id;
-        render();
-    }
-    function saveMap() {
-        data = {map_id : window.map.id, map_data : JSON.stringify(window.map.toJSON())};
-        $.post(
-            '/map/',
-            data,
-            function(data, textStatus, jqXHR) {
-                console.log(data);
-            },
-            'json'
-            ).success(function (response_json) {
-                console.log("success", response_json);
-                window.map.id = response_json.map_id;
-                setEditingMap(window.map); //this call just updates the map-id element
-            }).done(function (resp) {
-                console.log('resp');
-                console.log(resp);
-            }).error(function (resp) {
-                console.log("errored");
-                console.log(resp);
-            });
-    }
+Editor.prototype.setEditingMap = function(map) {
+    this.map = map;
+    $('#map-id').text(map.id);
+    this.render();
+}
 
-    //Load a map from the server with the given map id
-    function loadMap(map_id) {
-        $.getJSON( //Returned content will automatically be parsed into JSON
-            '/map',
-            {map_id : map_id},
-            function(data, textStatus, jqXHR) {
-                window.temp_data = data;
-            }
-            ).success(function (data_json) {
-                setEditingMap( createMapFromResponse(data_json) );
-            });
-    }
-
-    if(window.location.hash != "") {
-        //hash exists; load the map
-        loadMap(window.location.hash.substring(1));
-    } else {
-        //load new map
-        setEditingMap(createDefaultMap());
-    }
-
-    function currentPlayer() {
-        return window.map.players[$('input[name=player]:checked').val()];
-    }
-
-    $('#editor-canvas').mousedown(function (evt) {
-        var offsetX = $('#editor-canvas').position().left;
-        var offsetY = $('#editor-canvas').position().top;
-        window.map.addUnit(currentPlayer(), {x: evt.clientX - offsetX, y: evt.clientY - offsetY});
-        render();
+Editor.prototype.saveMap = function() {
+    var self = this;
+    data = {map_id : this.map.id, map_data : JSON.stringify(this.map.toJSON())};
+    $.ajax({
+        type: "POST",
+        url: '/map/',
+        data: data,
+        success: function (response_json) {
+            console.log("success", response_json);
+            self.map.id = response_json.map_id;
+            self.setEditingMap(self.map); //this call just updates the map-id element
+        },
+        dataType: 'json'
     });
+}
 
-    $('#save-button').click(saveMap);
+//Load a map from the server with the given map id
+Editor.prototype.loadMap = function(map_id) {
+    var self = this;
+    var successCallback = function (data_json) {
+        self.setEditingMap( Editor.createMapFromResponse(data_json) );
+    };
 
-    $('#load-button').click(function() {
-        loadMap($('#load-id').val());
+    $.ajax({
+        type: "GET",
+        url: '/map/',
+        data: {map_id : map_id},
+        success: successCallback,
+        dataType: 'json'
     });
+}
 
-    function render() {
-        var canvas = $('#editor-canvas')[0];
-        var context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
+Editor.prototype.currentPlayer = function() {
+    return this.map.players[$('input[name=player]:checked').val()];
+}
 
-        window.map.players.forEach(function (player, idx) {
-            context.fillStyle = GameState.PLAYER_COLORS[idx];
-            player.units.forEach(function (unit) {
-                // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
-                context.beginPath();
-                context.arc(unit.pos(0).x, unit.pos(0).y, 10, 0, Math.PI*2, true);
-                context.closePath();
-                context.fill();
-            });
+Editor.prototype.render = function() {
+    var canvas = $('#editor-canvas')[0];
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    this.map.players.forEach(function (player, idx) {
+        context.fillStyle = GameState.PLAYER_COLORS[idx];
+        player.units.forEach(function (unit) {
+            // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
+            context.beginPath();
+            context.arc(unit.pos(0).x, unit.pos(0).y, 10, 0, Math.PI*2, true);
+            context.closePath();
+            context.fill();
         });
-    }
-
-
-});
-
+    });
+}

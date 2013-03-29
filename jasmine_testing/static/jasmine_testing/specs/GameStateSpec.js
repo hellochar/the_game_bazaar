@@ -204,7 +204,7 @@ describe("GameState", function() {
                 json = gamestate.players[0].toJSON();
             });
             it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['units']);
+                expect(Object.keys(json)).toEqual(['selectedUnits', 'units']);
             });
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);

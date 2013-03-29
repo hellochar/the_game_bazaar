@@ -216,13 +216,14 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].units[0].toJSON();
             });
-            it("should save the position and speed and nothing else", function() {
+            it("should save the position, speed, and facing and nothing else", function() {
                 expect(json).toEqual({
                     init_pos: {
                         x: 0,
                     y: 100
                     },
-                    speed: 0.3
+                    speed: 0.3,
+                    facing: -Math.PI / 2
                 });
             });
         });

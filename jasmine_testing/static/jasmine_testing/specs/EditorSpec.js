@@ -1,157 +1,157 @@
 describe("Map Editor", function() {
-  var editor;
-  beforeEach(function() {
-    //create fake ui elements
-    $('<div/>', {id: 'hidden-ui', style: 'display: none'}).appendTo('body');
-
-    $('<div/>', {id: 'map-id'}).appendTo('#hidden-ui');
-    $('<canvas/>', {id: 'editor-canvas'}).appendTo('#hidden-ui');
-
-
-    $('<input/>', {type: 'radio', name: 'player', value: 0 }).attr('checked', true).appendTo("#hidden-ui");
-    $('<input/>', {type: 'radio', name: 'player', value: 1 }).appendTo("#hidden-ui");
-
-
-    editor = new Editor();
-    //stub out render
-    spyOn(editor, 'render');
-  });
-
-  afterEach(function() {
-    $('#hidden-ui').remove();
-  });
-
-  describe("createDefaultMap", function() {
-    var map;
+    var editor;
     beforeEach(function() {
-      map = Editor.createDefaultMap();
-    });
-    it("should generate a Map object", function() {
-      expect(map).toEqual(jasmine.any(GameState));
-    });
-    it("should not have a map id", function() {
-      expect(map.id).toBeUndefined();
-    });
-  });
+        //create fake ui elements
+        $('<div/>', {id: 'hidden-ui', style: 'display: none'}).appendTo('body');
 
-  describe("createMapFromResponse", function() {
-    var response;
-    beforeEach(function() {
-        response = {
-            map_id : 12,
-            success : true,
-            map_data : JSON.stringify(Editor.createDefaultMap().toJSON())
-        };
-    });
-    it("should correctly set map_id", function() {
-      var created_map = Editor.createMapFromResponse(response);
-      expect(created_map.id).toEqual(12);
-    });
-    it("should parse the Map from the response and fromJSON it", function() {
-      spyOn(GameState, 'fromJSON').andCallThrough();
+        $('<div/>', {id: 'map-id'}).appendTo('#hidden-ui');
+        $('<canvas/>', {id: 'editor-canvas'}).appendTo('#hidden-ui');
 
-      Editor.createMapFromResponse(response);
-      expect(GameState.fromJSON).toHaveBeenCalledWith(JSON.parse(response.map_data));
-    });
-  });
 
-  describe("setEditingMap", function() {
-    var map;
-    beforeEach(function() {
-      map = Editor.createDefaultMap();
-    });
-    it("should set the window.map variable and #map-id's text", function() {
-      editor.setEditingMap(map);
-      expect(editor.map).toEqual(map);
-      expect($('#map-id').text()).toEqual('');
+        $('<input/>', {type: 'radio', name: 'player', value: 0 }).attr('checked', true).appendTo("#hidden-ui");
+        $('<input/>', {type: 'radio', name: 'player', value: 1 }).appendTo("#hidden-ui");
+
+
+        editor = new Editor();
+        //stub out render
+        spyOn(editor, 'render');
     });
 
-    it("should update #map-id text when it changes", function() {
-      map.id = 9;
-      editor.setEditingMap(map);
-      expect($('#map-id').text()).toEqual('9');
-
-      var newMap = Editor.createDefaultMap();
-      newMap.id = 12;
-      editor.setEditingMap(newMap);
-      expect($('#map-id').text()).toEqual('12');
-    });
-  });
-
-  describe("saveMap", function() {
-    beforeEach(function() {
-      var fakeData = {success: true, map_id: 100};
-      spyOn($, "ajax").andCallFake(function(params) {
-        params.success(fakeData);
-      });
+    afterEach(function() {
+        $('#hidden-ui').remove();
     });
 
-    it("should POST to /map/ with map id and map data", function() {
-      editor.map.id = 10;
-      editor.saveMap();
-
-      var request = $.ajax.mostRecentCall.args[0];
-      expect(request.url).toBe('/map/');
-      expect(request.type).toBe('POST');
-      expect(request.data).toEqual({map_id: 10, map_data: JSON.stringify(editor.map.toJSON())});
+    describe("createDefaultMap", function() {
+        var map;
+        beforeEach(function() {
+            map = Editor.createDefaultMap();
+        });
+        it("should generate a Map object", function() {
+            expect(map).toEqual(jasmine.any(GameState));
+        });
+        it("should not have a map id", function() {
+            expect(map.id).toBeUndefined();
+        });
     });
 
-    it("should call setEditingMap with its own map", function() {
-        spyOn(editor, 'setEditingMap');
-        editor.saveMap();
+    describe("createMapFromResponse", function() {
+        var response;
+        beforeEach(function() {
+                response = {
+                        map_id : 12,
+                        success : true,
+                        map_data : JSON.stringify(Editor.createDefaultMap().toJSON())
+                };
+        });
+        it("should correctly set map_id", function() {
+            var created_map = Editor.createMapFromResponse(response);
+            expect(created_map.id).toEqual(12);
+        });
+        it("should parse the Map from the response and fromJSON it", function() {
+            spyOn(GameState, 'fromJSON').andCallThrough();
 
-        expect(editor.setEditingMap).toHaveBeenCalledWith(editor.map);
+            Editor.createMapFromResponse(response);
+            expect(GameState.fromJSON).toHaveBeenCalledWith(JSON.parse(response.map_data));
+        });
     });
 
-    it("should change the map_id when saving a new map", function() {
-      editor.saveMap();
+    describe("setEditingMap", function() {
+        var map;
+        beforeEach(function() {
+            map = Editor.createDefaultMap();
+        });
+        it("should set the window.map variable and #map-id's text", function() {
+            editor.setEditingMap(map);
+            expect(editor.map).toEqual(map);
+            expect($('#map-id').text()).toEqual('');
+        });
 
-      window.editor = editor;
-      expect(editor.map.id).toEqual(100);
+        it("should update #map-id text when it changes", function() {
+            map.id = 9;
+            editor.setEditingMap(map);
+            expect($('#map-id').text()).toEqual('9');
+
+            var newMap = Editor.createDefaultMap();
+            newMap.id = 12;
+            editor.setEditingMap(newMap);
+            expect($('#map-id').text()).toEqual('12');
+        });
     });
-  });
 
-  describe("loadMap", function() {
-      var fakeData;
-      beforeEach(function() {
-          editor.map.addUnit(editor.map.players[0], {x: 10, y: 100});
-          fakeData = {success : true, map_id: 10, map_data: JSON.stringify(editor.map.toJSON())};
+    describe("saveMap", function() {
+        beforeEach(function() {
+            var fakeData = {success: true, map_id: 100};
+            spyOn($, "ajax").andCallFake(function(params) {
+                params.success(fakeData);
+            });
+        });
 
-          var ajax_params;
-          spyOn($, "ajax").andCallFake(function(params) {
-              params.success(fakeData);
-              ajax_params = params;
-          });
-      });
-      it("should GET /map/ with map_id as a param", function() {
-          editor.loadMap(10);
+        it("should POST to /map/ with map id and map data", function() {
+            editor.map.id = 10;
+            editor.saveMap();
 
-          var request = $.ajax.mostRecentCall.args[0];
-          expect(request.url).toBe('/map/');
-          expect(request.type).toBe('GET');
-          expect(request.data).toEqual({map_id: 10});
-      });
+            var request = $.ajax.mostRecentCall.args[0];
+            expect(request.url).toBe('/map/');
+            expect(request.type).toBe('POST');
+            expect(request.data).toEqual({map_id: 10, map_data: JSON.stringify(editor.map.toJSON())});
+        });
 
-      it("should load a map it gets back", function() {
-          spyOn(editor, 'setEditingMap');
-          spyOn(Editor, 'createMapFromResponse');
-          editor.loadMap(10);
+        it("should call setEditingMap with its own map", function() {
+                spyOn(editor, 'setEditingMap');
+                editor.saveMap();
 
-          expect(Editor.createMapFromResponse).toHaveBeenCalledWith(fakeData);
-          expect(editor.setEditingMap).toHaveBeenCalled();
-          expect(editor.map.players[0].units[0].pos(0)).toEqual({x: 10, y: 100});
-      });
-  });
+                expect(editor.setEditingMap).toHaveBeenCalledWith(editor.map);
+        });
 
-  describe("currentPlayer", function() {
-      it("retrieves the checked input's val", function() {
-          expect(editor.currentPlayer()).toEqual(editor.map.players[0]);
+        it("should change the map_id when saving a new map", function() {
+            editor.saveMap();
 
-          $('input[name=player]').val(1);
-          expect(editor.currentPlayer()).toEqual(editor.map.players[1]);
+            window.editor = editor;
+            expect(editor.map.id).toEqual(100);
+        });
+    });
 
-      });
-  });
+    describe("loadMap", function() {
+            var fakeData;
+            beforeEach(function() {
+                    editor.map.addUnit(editor.map.players[0], {x: 10, y: 100});
+                    fakeData = {success : true, map_id: 10, map_data: JSON.stringify(editor.map.toJSON())};
+
+                    var ajax_params;
+                    spyOn($, "ajax").andCallFake(function(params) {
+                            params.success(fakeData);
+                            ajax_params = params;
+                    });
+            });
+            it("should GET /map/ with map_id as a param", function() {
+                    editor.loadMap(10);
+
+                    var request = $.ajax.mostRecentCall.args[0];
+                    expect(request.url).toBe('/map/');
+                    expect(request.type).toBe('GET');
+                    expect(request.data).toEqual({map_id: 10});
+            });
+
+            it("should load a map it gets back", function() {
+                    spyOn(editor, 'setEditingMap');
+                    spyOn(Editor, 'createMapFromResponse');
+                    editor.loadMap(10);
+
+                    expect(Editor.createMapFromResponse).toHaveBeenCalledWith(fakeData);
+                    expect(editor.setEditingMap).toHaveBeenCalled();
+                    expect(editor.map.players[0].units[0].pos(0)).toEqual({x: 10, y: 100});
+            });
+    });
+
+    describe("currentPlayer", function() {
+            it("retrieves the checked input's val", function() {
+                    expect(editor.currentPlayer()).toEqual(editor.map.players[0]);
+
+                    $('input[name=player]').val(1);
+                    expect(editor.currentPlayer()).toEqual(editor.map.players[1]);
+
+            });
+    });
 
 });
 

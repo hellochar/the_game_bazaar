@@ -34,14 +34,11 @@ Game.prototype.init = function() {
     // Game logic handling
     self.socket.on('join', self.handleUserJoin.bind(this));
     self.socket.on('start', self.handleGameStart.bind(this));
-    self.socket.on('input', self.handleInput.bind(this));
+    self.socket.on('click', self.handleClickMessage.bind(this));
+    self.socket.on('drag', self.handleDragMessage.bind(this));
 
     // DEBUG
     console.log("Attemting to connect");
-
-    //---------------------------------------------
-    // INITIALIZE CANVAS
-    //---------------------------------------------
 
     // DEBUG
     console.log("Init canvas");
@@ -82,7 +79,7 @@ Game.prototype.handleConnected = function () {
         },
         self.socket.emit('leave', data);
     self.socket.disconnect();
-    });
+    }.bind(this));
 
     // Set up the gamestate with an ajax call.
     // This method calls finishInitialization() once the ajax call succeeds.
@@ -107,7 +104,8 @@ Game.prototype.handleGameStart = function (data) {
     console.log("Timestamp: ", data.timestamp);
 
     // Begin rendering and handling user input
-    self.renderer.bindClick(self.playerMovement.bind(this));
+    self.renderer.bindClick(self.handleClick.bind(this));
+    self.renderer.bindDrag(self.handleDrag.bind(this));
     self.renderer.startRendering(self);
 
     $('#lobby-container').hide();
@@ -136,7 +134,7 @@ Game.prototype.finishInitialization = function() {
         console.log("start game");
 
         self.start_game();
-    });
+    }.bind(this));
 };
 
 Game.prototype.instantiateGameState = function() {
@@ -202,30 +200,84 @@ Game.prototype.populatePlayerNamesInGSFromHTML = function() {
     }
 };
 
-Game.prototype.playerMovement = function(x, y) {
+//---------------------------------------------
+// GAME CILENT INPUT HANDLERS
+//---------------------------------------------
+Game.prototype.handleClick = function(clicktype, clickpos) {
     var self = this;
     data = {
-        'x': x,
-        'y': y,
+        'clickpos': clickpos,
         'game_id': self.game_id,
-        'player_id': self.player_id
+        'player_id': self.player_id,
+        'clicktype': clicktype
     };
-    self.socket.emit('input', data);
+    self.socket.emit('click', data);
 };
 
-Game.prototype.handleInput = function (data) {
+Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+    var self = this;
+    data = {
+        'dragstart': dragstart,
+        'dragend': dragend,
+        'game_id': self.game_id,
+        'player_id': self.player_id,
+        'clicktype': clicktype
+    };
+    self.socket.emit('drag', data);
+};
+
+Game.prototype.handleClickMessage = function (data) {
     var self = this;
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    var x = data['x'];
-    var y = data['y'];
-    // Update our timestamps.
+    var clickpos = data['clickpos'];
+    var clicktype = data['clicktype'];
+    // Find the time at which this message was supposed to be applied.
     var updateTime = timestamp - self.server_start_time;
     // Update the game state.
-    // TODO modify the correct unit.
-    self.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
+    // On right click
+    if (clicktype === 3) {
+        self.moveUnits(updateTime, player_id, clickpos);
+    }
+    // On left click
+    if (clicktype === 1) {
+        GS_UI.selectUnit(self.gamestate.players[player_id], updateTime, clickpos);
+    }
 };
+
+// Move all units in the player_id's unit list that are currently selected to
+// the clickpos and execute the update at in-game time updateTime.
+Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
+    var self = this;
+    var unit_list = self.gamestate.players[player_id].selectedUnits;
+    unit_list.forEach(function(unit) {
+        unit.update(updateTime, clickpos);
+    });
+};
+
+Game.prototype.handleDragMessage = function(data) {
+    var self = this;
+    // Get our variables.
+    var timestamp = data['timestamp'];
+    var player_id = data['player_id'];
+    var dragstart = data['dragstart'];
+    var dragend = data['dragend'];
+    var clicktype = data['clicktype'];
+
+    // Find the time at which this message was supposed to be applied.
+    var updateTime = timestamp - self.server_start_time;
+
+    // On left mouse drag
+    if (clicktype === 1) {
+        GS_UI.selectUnits(self.gamestate.players[player_id], updateTime, dragstart, dragend);
+    }
+    // On right mouse drag
+    if (clicktype === 3) {
+        self.moveUnits(updateTime, player_id, dragend);
+    }
+};
+
 
 //---------------------------------------------
 //SOCKET.IO ERROR CATCHING

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from lib.models import Map
 from game.models import Game
-
+from django.db import IntegrityError
 
 # /
 def index(request):
@@ -34,8 +34,7 @@ def home(request):
 def play(request):
     context = {
         "maps": Map.objects.all(),
-        "games": Game.objects.order_by('id').reverse(),
-        "lobby": Game.LOBBY,
+        "lobby_games": Game.get_games_in_state(Game.LOBBY).order_by('id').reverse(),
     }
     return render(request, 'the_game_bazaar/play.html', context)
 
@@ -94,8 +93,10 @@ def ajax_register(request):
         auth_login(request, user)
         resp['success'] = True
         resp['redirect_url'] = '/home'
+    except IntegrityError:
+        resp['error'] = username + ' already exists. Did you forget your password?'
     except:
-        pass
+        resp['error'] = 'Please check that all fields are properly filled out'
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

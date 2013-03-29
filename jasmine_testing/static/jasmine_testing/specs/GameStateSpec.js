@@ -26,7 +26,7 @@ describe("GameState", function() {
         gamestate = GameState.fromJSON(map_data);
     });
 
-    describe("Instantiation", function() {
+    describe("fromJSON", function() {
 
         //taken from http://stackoverflow.com/questions/15322793/is-there-a-jasmine-matcher-to-compare-objects-on-subsets-of-their-properties
         beforeEach(function () {
@@ -67,19 +67,12 @@ describe("GameState", function() {
         });
 
         it("should have units that have pos functions that evaluate to a map with x and y keys", function() {
-            for (var playerInd in gamestate.players) {
-                if (gamestate.players.hasOwnProperty(playerInd)) {
-                    var player = gamestate.players[playerInd];
-                    for (var unitInd in player.units) {
-                        if (player.units.hasOwnProperty(unitInd)) {
-                            var unit = player.units[unitInd];
-                            var position = unit.pos(0);
-                            expect('x' in position).toBe(true);
-                            expect('y' in position).toBe(true);
-                        }
-                    }
-                }
-            }
+            gamestate.players.forEach(function (player) {
+                player.units.forEach(function (unit) {
+                    var position = unit.pos(0);
+                    expect(Object.keys(position)).toEqual(['x', 'y']);
+                });
+            });
         });
 
         // it("should have a username property for each player", function() {
@@ -102,32 +95,50 @@ describe("GameState", function() {
             expect(gamestate.players[2].username).not.toBe(randomName);
         });
 
-        it("should move a unit correctly in the axes directions", function() {
-            var modifiedUnit = gamestate.players[0].units[0];
-            modifiedUnit.update(0, {'x': 20, 'y': 15});
-            expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
-            expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-            modifiedUnit.update(10, {'x': 11, 'y': 20});
-            expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
-            expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-            expect(modifiedUnit.pos(20).x).toBeCloseTo(11, 2);
-            expect(modifiedUnit.pos(20).y).toBeCloseTo(16, 2);
+        describe("Adding a unit", function() {
+            it("should add a unit with correct player/pos attributes", function() {
+                var map = Editor.createDefaultMap();
+                map.addUnit(map.players[0], {x: 100, y: 200});
+                expect(map.players[0].units[0].pos(0)).toEqual({x:100, y:200});
+            });
         });
 
-        it("should move a unit correctly in the diagonal direction", function() {
-            var modifiedUnit = gamestate.players[0].units[0];
-            modifiedUnit.update(0, {'x': 20, 'y': 25});
-            var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
-            var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
-            expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
-            expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
-            modifiedUnit.update(100, {'x': xAt100 - 10, 'y': yAt100 + 10});
-            var xAt200 = xAt100 - 1 / Math.sqrt(2) * 10;
-            var yAt200 = yAt100 + 1 / Math.sqrt(2) * 10;
-            expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
-            expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
-            expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);
-            expect(modifiedUnit.pos(200).y).toBeCloseTo(yAt200, 2);
+        describe("update", function() {
+            it("should move a unit correctly in the axes directions", function() {
+                var modifiedUnit = gamestate.players[0].units[0];
+                modifiedUnit.update(0, {'x': 20, 'y': 15});
+                expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
+                expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
+                modifiedUnit.update(10, {'x': 11, 'y': 20});
+                expect(modifiedUnit.pos(10).x).toBeCloseTo(11, 2);
+                expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
+                expect(modifiedUnit.pos(20).x).toBeCloseTo(11, 2);
+                expect(modifiedUnit.pos(20).y).toBeCloseTo(16, 2);
+            });
+
+            it("should move a unit correctly in the diagonal direction", function() {
+                var modifiedUnit = gamestate.players[0].units[0];
+                modifiedUnit.update(0, {'x': 20, 'y': 25});
+                var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
+                var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
+                expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
+                expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
+                modifiedUnit.update(100, {'x': xAt100 - 10, 'y': yAt100 + 10});
+                var xAt200 = xAt100 - 1 / Math.sqrt(2) * 10;
+                var yAt200 = yAt100 + 1 / Math.sqrt(2) * 10;
+                expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
+                expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
+                expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);
+                expect(modifiedUnit.pos(200).y).toBeCloseTo(yAt200, 2);
+            });
+
+            it("should handle moving to the spot that it is currently at", function() {
+                var ourUnit = gamestate.players[0].units[0];
+                var originalPos = ourUnit.pos(0);
+                ourUnit.update(0, originalPos);
+                expect(ourUnit.pos(0).x).toBeCloseTo(originalPos.x);
+                expect(ourUnit.pos(0).y).toBeCloseTo(originalPos.y);
+            });
         });
     });
 
@@ -139,14 +150,72 @@ describe("GameState", function() {
         });
     });
 
-    describe("Bug fixes", function() {
-        it("should not error when moving to the spot that it is currently at", function() {
-            var ourUnit = gamestate.players[0].units[0];
-            var originalPos = ourUnit.pos(0);
-            ourUnit.update(0, originalPos);
-            expect(ourUnit.pos(0).x).toBeCloseTo(originalPos.x);
-            expect(ourUnit.pos(0).y).toBeCloseTo(originalPos.y);
+    describe("toJSON", function() {
+        // Instantiate a testing game state with three players and some amount of units for each.
+        var gamestate;
+        beforeEach(function() {
+            gamestate = new GameState([
+                new Player([
+                    new Unit({'x': 0, 'y': 100}),
+                    new Unit({'x': 1, 'y': 101})
+                    ]),
+                new Player([
+                    new Unit({'x': 2000, 'y': 2100})
+                    ]),
+                new Player([
+                    ])
+                ]);
         });
+
+        describe("GameState.toJSON", function() {
+            var json;
+            beforeEach(function() {
+                json = gamestate.toJSON();
+            });
+
+            it("should only save the players attribute", function() {
+                expect(Object.keys(json)).toEqual(['players']);
+            });
+            it("should have the correct number of players", function() {
+                expect(json.players.length).toEqual(3);
+            });
+
+            // I would like to have test like this but it's impossible to test for "functional" equality in the pos() functions of units
+            // it("should be the inverse of fromJSON", function() {
+            //     expect(GameState.fromJSON(gamestate.toJSON())).toEqual(gamestate);
+            // });
+
+        });
+
+        describe("Player.toJSON", function() {
+            var json;
+            beforeEach(function() {
+                json = gamestate.players[0].toJSON();
+            });
+            it("should have the correct number of units", function() {
+                expect(Object.keys(json)).toEqual(['units']);
+            });
+            it("should only save the units attributes", function() {
+                expect(json.units.length).toEqual(2);
+            });
+        });
+
+        describe("Unit.toJSON", function() {
+            var json;
+            beforeEach(function() {
+                json = gamestate.players[0].units[0].toJSON();
+            });
+            it("should save the position and speed and nothing else", function() {
+                expect(json).toEqual({
+                    init_pos: {
+                        x: 0,
+                    y: 100
+                    },
+                    speed: 0.1
+                });
+            });
+        });
+
     });
 
 });

@@ -82,6 +82,15 @@ describe("GameState", function() {
                 expect(modifiedUnit.pos(20).y).toBeCloseTo(18, 2);
             });
 
+            it("should update facing correctly in the axes directions", function() {
+              var modifiedUnit = gamestate.players[0].units[0];
+              modifiedUnit.update(0, {'x': 20, 'y': 15});
+              expect(modifiedUnit.facing(10)).toBeCloseTo(0, 2);
+              modifiedUnit.update(10, {'x': 13, 'y': 20});
+              expect(modifiedUnit.facing(10)).toBeCloseTo(Math.PI / 2, 2);
+              expect(modifiedUnit.facing(20)).toBeCloseTo(Math.PI / 2, 2);
+            });
+
             it("should move a unit correctly in the diagonal direction", function() {
                 var modifiedUnit = gamestate.players[0].units[0];
                 modifiedUnit.update(0, {'x': 40, 'y': 45});
@@ -96,6 +105,17 @@ describe("GameState", function() {
                 expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
                 expect(modifiedUnit.pos(200).x).toBeCloseTo(xAt200, 2);
                 expect(modifiedUnit.pos(200).y).toBeCloseTo(yAt200, 2);
+            });
+
+            it("should update facing correctly in the diagonal directions", function() {
+              var modifiedUnit = gamestate.players[0].units[0];
+              modifiedUnit.update(0, {'x': 40, 'y': 45});
+              var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
+              var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
+              expect(modifiedUnit.facing(100)).toBeCloseTo(Math.PI / 4, 2);
+              modifiedUnit.update(100, {'x': xAt100 - 30, 'y': yAt100 + 30});
+              expect(modifiedUnit.facing(100)).toBeCloseTo(Math.PI * 3/4, 2);
+              expect(modifiedUnit.facing(200)).toBeCloseTo(Math.PI * 3/4, 2);
             });
 
             it("should handle moving to the spot that it is currently at", function() {
@@ -159,7 +179,7 @@ describe("GameState", function() {
                 json = gamestate.players[0].toJSON();
             });
             it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['units']);
+                expect(Object.keys(json)).toEqual(['selectedUnits', 'units']);
             });
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);
@@ -171,13 +191,14 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].units[0].toJSON();
             });
-            it("should save the position and speed and nothing else", function() {
+            it("should save the position, speed, and facing and nothing else", function() {
                 expect(json).toEqual({
                     init_pos: {
                         x: 0,
                     y: 100
                     },
-                    speed: 0.3
+                    speed: 0.3,
+                    facing: -Math.PI / 2
                 });
             });
         });

@@ -25,19 +25,26 @@ Game.prototype.init = function() {
 
     // BIND HANDLERS FOR SOCKET EVENTS
 
-    // Connection handling
-    this.socket.on('connecting', this.handleConnecting.bind(this));
-    this.socket.on('connect', this.handleConnected.bind(this));
-    // Error handling
-    this.socket.on('disconnect', this.handleDisconnect.bind(this));
-    this.socket.on('error', this.handleConnectError.bind(this));
+    var listeners = {
+        // Connection handling
+        'connecting' : 'handleConnecting',
+        'connect' : 'handleConnected',
 
-    // Game logic handling
-    this.socket.on('join', this.handleUserJoin.bind(this));
-    this.socket.on('start', this.handleGameStart.bind(this));
-    this.socket.on('click', this.handleClickMessage.bind(this));
-    this.socket.on('drag', this.handleDragMessage.bind(this));
+        // Error handling
+        'disconnect' : 'handleDisconnect',
+        'error' : 'handleConnectError',
 
+        // Game logic handling
+        'join' : 'handleUserJoin',
+        'start' : 'handleGameStart',
+        'click' : 'handleClickMessage',
+        'drag' : 'handleDragMessage'
+    };
+
+    for(var evt in listeners) {
+        var listener = this[listeners[evt]];
+        this.socket.on(evt, listener.bind(this));
+    }
 
     // DEBUG
     console.log("Init canvas");
@@ -137,7 +144,7 @@ Game.prototype.instantiateGameState = function() {
     this.gamestate = false;
     $.ajax({
         type: "GET",
-        url: "/map",
+        url: "/map/",
         data: {
             "map_id": parseInt(this.map_id, 10)
         },
@@ -234,15 +241,6 @@ Game.prototype.handleClickMessage = function (data) {
     }
 };
 
-// Move all units in the player_id's unit list that are currently selected to
-// the clickpos and execute the update at in-game time updateTime.
-Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
-    var unit_list = this.gamestate.players[player_id].selectedUnits;
-    unit_list.forEach(function(unit) {
-        unit.update(updateTime, clickpos);
-    });
-};
-
 Game.prototype.handleDragMessage = function(data) {
     // Get our variables.
     var timestamp = data['timestamp'];
@@ -262,6 +260,15 @@ Game.prototype.handleDragMessage = function(data) {
     if (clicktype === 3) {
         this.moveUnits(updateTime, player_id, dragend);
     }
+};
+
+// Move all units in the player_id's unit list that are currently selected to
+// the clickpos and execute the update at in-game time updateTime.
+Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
+    var unit_list = this.gamestate.players[player_id].selectedUnits;
+    unit_list.forEach(function(unit) {
+        unit.update(updateTime, clickpos);
+    });
 };
 
 

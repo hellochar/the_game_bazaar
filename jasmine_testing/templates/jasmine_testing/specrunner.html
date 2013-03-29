@@ -9,20 +9,59 @@
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/js/jasmine.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/js/jasmine-html.js"></script>
 
+  <!-- include jasmine helper files here -->
+  <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/js/jasmine-jquery.js"></script>
+  <script>
+      jasmine.getFixtures().fixturesPath = '{{ STATIC_URL }}jasmine_testing/specs/fixtures';
+  </script>
+  <script>
+      //taken from http://stackoverflow.com/questions/15322793/is-there-a-jasmine-matcher-to-compare-objects-on-subsets-of-their-properties
+      beforeEach(function () {
+          this.addMatchers({
+              toInclude: function (expected) {
+                  var failed;
+
+                  for (var i in expected) {
+                      if (expected.hasOwnProperty(i) && !this.actual.hasOwnProperty(i)) {
+                          failed = [i, expected[i]];
+                          break;
+                      }
+                  }
+
+                  if (undefined !== failed) {
+                      this.message = 'Failed asserting that array includes element "' + failed[0] + ' => ' + failed[1] + '"';
+
+                      return false;
+                  }
+
+                  return true;
+              }
+          });
+      });
+  </script>
+
   <!-- include source files here... -->
+  <!-- External libraries -->
   <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}editor/js/editor.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}lib/js/sylvester.src.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/socket.io.js"></script>
+
+  <!-- Our libraries -->
+  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/renderer.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}lib/js/graph.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
+
   <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}editor/js/editor.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GameStateSpec.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/EditorSpec.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GraphSpec.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GSUISpec.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GameSpec.js"></script>
 
   <script type="text/javascript">
     (function() {

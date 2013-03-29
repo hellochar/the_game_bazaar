@@ -245,7 +245,7 @@ function Game() {
         }
         // On left click
         if (clicktype === 1) {
-            GS_UI.selectUnit(self.gamestate, updateTime, player_id, clickpos);
+            GS_UI.selectUnit(self.gamestate.players[player_id], updateTime, clickpos);
         }
     };
 
@@ -271,7 +271,7 @@ function Game() {
 
         // On left mouse drag
         if (clicktype === 1) {
-            GS_UI.selectUnits(self.gamestate, updateTime, player_id, dragstart, dragend);
+            GS_UI.selectUnits(self.gamestate.players[player_id], updateTime, dragstart, dragend);
         }
         // On right mouse drag
         if (clicktype === 3) {

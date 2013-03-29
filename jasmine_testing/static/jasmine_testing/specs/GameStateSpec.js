@@ -204,7 +204,7 @@ describe("GameState", function() {
                 json = gamestate.players[0].toJSON();
             });
             it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['selectedUnits', 'units']);
+                expect(Object.keys(json)).toEqual(['selectedUnits', 'units', 'color']);
             });
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);
@@ -218,12 +218,13 @@ describe("GameState", function() {
             });
             it("should save the position, speed, and facing and nothing else", function() {
                 expect(json).toEqual({
-                    init_pos: {
+                    pos: {
                         x: 0,
                     y: 100
                     },
                     speed: 0.3,
-                    facing: -Math.PI / 2
+                    facing: -Math.PI / 2,
+                    size: 15
                 });
             });
         });

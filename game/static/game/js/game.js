@@ -11,25 +11,25 @@ $(function() {
     window.game = game;
 });
 
+// Constants
+var GAME_STATES = {
+    INIT:           0,
+    CONNECTING:     1,
+    CONNECTED:      2,
+    DISCONNECTED:   3
+};
+
 // Start off by creating a new instance of a Game
 function Game() {
 
     // Constants
     var self = this;
 
-    // Constants
-    self.GAME_STATES = {
-        INIT:           0,
-        CONNECTING:     1,
-        CONNECTED:      2,
-        DISCONNECTED:   3
-    };
-
     self.init = function() {
         //---------------------------------------------
         //INITIALIZE SOCKET.IO
         //---------------------------------------------
-        self.conn_state = self.GAME_STATES.INIT;
+        self.conn_state = GAME_STATES.INIT;
 
         self.socket = io.connect('/game', {
             reconnect: false
@@ -61,15 +61,15 @@ function Game() {
         // DEBUG
         console.log("Init canvas");
 
-        self.renderer = new Renderer();
-
+        self.ui_renderer = new UIRenderer();
+        //self.gs_renderer = new GSRenderer();
     };
 
     self.handleConnecting = function() {
         // DEBUG
         console.log("Connecting...");
 
-        self.conn_state = self.GAME_STATES.CONNECTING;
+        self.conn_state = GAME_STATES.CONNECTING;
     };
 
     //---------------------------------------------
@@ -88,7 +88,7 @@ function Game() {
         // DEBUG
         console.log("Connected!");
 
-        self.conn_state = self.GAME_STATES.CONNECTED;
+        self.conn_state = GAME_STATES.CONNECTED;
         $(window).bind("beforeunload", function() {
             data = {
                 'game_id': self.game_id
@@ -118,9 +118,9 @@ function Game() {
         console.log("Timestamp: ", data.timestamp);
 
         // Begin rendering and handling user input
-        self.renderer.bindClick(self.handleClick);
-        self.renderer.bindDrag(self.handleDrag);
-        self.renderer.startRendering(self);
+        self.ui_renderer.bindClick(self.handleClick);
+        self.ui_renderer.bindDrag(self.handleDrag);
+        self.ui_renderer.startRendering(self.render);
 
         $('#lobby-container').hide();
         $('#game-container').show();
@@ -299,6 +299,35 @@ function Game() {
             'game_id': self.game_id
         };
         self.socket.emit('start', data);
+    };
+
+    //---------------------------------------------
+    // RENDERING FUNCTIONS
+    //---------------------------------------------
+    self.render = function() {
+        var now_time = Date.now();
+        var start_time = self.client_start_time;
+        var snapshot = self.gamestate.evaluate(now_time - start_time);
+        var renderText = function(text) {
+            self.ui_renderer.renderText(text, 400, 200, "red");
+        };
+        switch (self.conn_state) {
+            case GAME_STATES.CONNECTED:
+                self.ui_renderer.renderGS(snapshot, self.player_id)
+                break;
+            case GAME_STATES.INIT:
+                renderText("Initializing...");
+                break;
+            case GAME_STATES.CONNECTING:
+                renderText("Connecting...");
+                break;
+            case GAME_STATES.DISCONNECTED:
+                renderText("Disconnected!");
+                break;
+            default:
+                renderText("Problem!");
+                break;
+        }
     };
 
     return self;

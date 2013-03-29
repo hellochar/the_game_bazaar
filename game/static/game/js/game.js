@@ -12,47 +12,46 @@ Game.GAME_STATES = {
 };
 
 Game.prototype.init = function() {
-    var self = this;
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
     //---------------------------------------------
-    self.conn_state = Game.GAME_STATES.INIT;
+    this.conn_state = Game.GAME_STATES.INIT;
 
-    self.socket = io.connect('/game', {
+    this.socket = io.connect('/game', {
         reconnect: false
     });
+    // DEBUG
+    console.log("Attempting to connect");
 
     // BIND HANDLERS FOR SOCKET EVENTS
 
     // Connection handling
-    self.socket.on('connecting', self.handleConnecting.bind(this));
-    self.socket.on('connect', self.handleConnected.bind(this));
+    this.socket.on('connecting', this.handleConnecting.bind(this));
+    this.socket.on('connect', this.handleConnected.bind(this));
     // Error handling
-    self.socket.on('disconnect', self.handleDisconnect.bind(this));
-    self.socket.on('error', self.handleConnectError.bind(this));
+    this.socket.on('disconnect', this.handleDisconnect.bind(this));
+    this.socket.on('error', this.handleConnectError.bind(this));
 
     // Game logic handling
-    self.socket.on('join', self.handleUserJoin.bind(this));
-    self.socket.on('start', self.handleGameStart.bind(this));
-    self.socket.on('click', self.handleClickMessage.bind(this));
-    self.socket.on('drag', self.handleDragMessage.bind(this));
+    this.socket.on('join', this.handleUserJoin.bind(this));
+    this.socket.on('start', this.handleGameStart.bind(this));
+    this.socket.on('click', this.handleClickMessage.bind(this));
+    this.socket.on('drag', this.handleDragMessage.bind(this));
 
-    // DEBUG
-    console.log("Attemting to connect");
 
     // DEBUG
     console.log("Init canvas");
 
-    self.renderer = new Renderer();
+    this.renderer = new Renderer();
 
 };
 
+//This method gets called as soon 
 Game.prototype.handleConnecting = function() {
-    var self = this;
     // DEBUG
     console.log("Connecting...");
 
-    self.conn_state = Game.GAME_STATES.CONNECTING;
+    this.conn_state = Game.GAME_STATES.CONNECTING;
 };
 
 //---------------------------------------------
@@ -61,90 +60,86 @@ Game.prototype.handleConnecting = function() {
 
 //join the lobby as soon as we connect
 Game.prototype.handleConnected = function () {
-    var self = this;
     // These divs are set in the context
-    self.player_id = parseInt($("#player-id").attr("val"), 10);
-    self.game_id = parseInt($("#game-id").attr("val"), 10);
-    self.map_id = parseInt($("#map-id").attr("val"), 10);
+    this.player_id = parseInt($("#player-id").attr("val"), 10);
+    this.game_id = parseInt($("#game-id").attr("val"), 10);
+    this.map_id = parseInt($("#map-id").attr("val"), 10);
 
     // Do some connecting and make sure we cleanup correctly.
 
     // DEBUG
     console.log("Connected!");
 
-    self.conn_state = Game.GAME_STATES.CONNECTED;
+    this.conn_state = Game.GAME_STATES.CONNECTED;
     $(window).bind("beforeunload", function() {
         data = {
-            'game_id': self.game_id
-        },
-        self.socket.emit('leave', data);
-    self.socket.disconnect();
+            'game_id': this.game_id
+        };
+        this.socket.emit('leave', data);
+        this.socket.disconnect();
     }.bind(this));
 
     // Set up the gamestate with an ajax call.
     // This method calls finishInitialization() once the ajax call succeeds.
-    self.instantiateGameState();
+    this.instantiateGameState();
 };
 
 // Let client know someone has joined
 Game.prototype.handleUserJoin = function (data) {
-    var self = this;
     // DEBUG
     console.log("Someone joined the game at: ", data.timestamp);
     console.log("Player id: ", data.player_id);
     console.log("Joining user's name: ", data.username);
 
-    self.addPlayerToHTML(data.player_id, data.username);
+    this.addPlayerToHTML(data.player_id, data.username);
 };
 
 // Starting a Game
 Game.prototype.handleGameStart = function (data) {
-    var self = this;
     // DEBUG
     console.log("Timestamp: ", data.timestamp);
 
     // Begin rendering and handling user input
-    self.renderer.bindClick(self.handleClick.bind(this));
-    self.renderer.bindDrag(self.handleDrag.bind(this));
-    self.renderer.startRendering(self);
+    this.renderer.bindClick(this.handleClick.bind(this));
+    this.renderer.bindDrag(this.handleDrag.bind(this));
+    this.renderer.startRendering(this);
 
     $('#lobby-container').hide();
     $('#game-container').show();
-    self.server_start_time = data.timestamp;
-    self.client_start_time = Date.now();
+    this.server_start_time = data.timestamp;
+    this.client_start_time = Date.now();
 };
 
 //---------------------------------------------
 //MANAGING GAME STATE
 //---------------------------------------------
 
+//Send a 'join' message to everyone, bind events to the 'start game' button
 Game.prototype.finishInitialization = function() {
-    var self = this;
     // Broadcast a join
     // If the user is the game owner, no one else should be in the game
     data = {
-        'game_id': self.game_id,
-        'player_id': self.player_id,
-        'username': self.getUsernameByPid(self.player_id)
+        'game_id': this.game_id,
+        'player_id': this.player_id,
+        'username': this.getUsernameByPid(this.player_id)
     };
-    self.socket.emit('join', data);
+    this.socket.emit('join', data);
 
     $('#start-game').click(function() {
         // DEBUG
         console.log("start game");
 
-        self.start_game();
+        this.start_game();
     }.bind(this));
 };
 
 Game.prototype.instantiateGameState = function() {
-    var self = this;
-    self.gamestate = false;
+    this.gamestate = false;
     $.ajax({
         type: "GET",
         url: "/map",
         data: {
-            "map_id": parseInt(self.map_id, 10)
+            "map_id": parseInt(this.map_id, 10)
         },
         headers: {
             "X-CSRFToken": $.cookie('csrftoken')
@@ -157,46 +152,42 @@ Game.prototype.instantiateGameState = function() {
                 // DEBUG
                 window.map_data = map_data_json;
 
-                self.gamestate = GameState.fromJSON(map_data_json);
+                this.gamestate = GameState.fromJSON(map_data_json);
 
                 // DEBUG
-                window.gamestate = self.gamestate;
+                window.gamestate = this.gamestate;
 
-                self.populatePlayerNamesInGSFromHTML();
-                self.finishInitialization();
+                this.populatePlayerNamesInGSFromHTML();
+                this.finishInitialization();
             }
             else {
                 $("#game-id").text('ERROR: Could not load that map id');
             }
             return false;
-        }
+        }.bind(this)
     });
 };
 
 Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
-    var self = this;
     // DEBUG
     console.log("Updating player names");
 
     var slot = $("#player-slot-" + new_player_id.toString(10));
     slot.text(new_player_username);
-    self.gamestate.players[new_player_id].username = new_player_username;
+    this.gamestate.players[new_player_id].username = new_player_username;
 };
 
 Game.prototype.getUsernameByPid = function(player_id) {
-    var self = this;
     return $("#player-slot-" + player_id.toString(10)).text();
 };
 
 Game.prototype.populatePlayerNamesInGSFromHTML = function() {
-    var self = this;
     // DEBUG
     console.log("Populating player names");
 
     var usernames = $("#player-usernames");
-    var username_list = Array(usernames.children().length);
     for (var index = 0; index < usernames.children().length; index++) {
-        self.gamestate.players[index].username = $(usernames.children()[index]).text();
+        this.gamestate.players[index].username = $(usernames.children()[index]).text();
     }
 };
 
@@ -204,60 +195,55 @@ Game.prototype.populatePlayerNamesInGSFromHTML = function() {
 // GAME CILENT INPUT HANDLERS
 //---------------------------------------------
 Game.prototype.handleClick = function(clicktype, clickpos) {
-    var self = this;
     data = {
         'clickpos': clickpos,
-        'game_id': self.game_id,
-        'player_id': self.player_id,
+        'game_id': this.game_id,
+        'player_id': this.player_id,
         'clicktype': clicktype
     };
-    self.socket.emit('click', data);
+    this.socket.emit('click', data);
 };
 
 Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
-    var self = this;
     data = {
         'dragstart': dragstart,
         'dragend': dragend,
-        'game_id': self.game_id,
-        'player_id': self.player_id,
+        'game_id': this.game_id,
+        'player_id': this.player_id,
         'clicktype': clicktype
     };
-    self.socket.emit('drag', data);
+    this.socket.emit('drag', data);
 };
 
 Game.prototype.handleClickMessage = function (data) {
-    var self = this;
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     var clickpos = data['clickpos'];
     var clicktype = data['clicktype'];
     // Find the time at which this message was supposed to be applied.
-    var updateTime = timestamp - self.server_start_time;
+    var updateTime = timestamp - this.server_start_time;
     // Update the game state.
     // On right click
     if (clicktype === 3) {
-        self.moveUnits(updateTime, player_id, clickpos);
+        this.moveUnits(updateTime, player_id, clickpos);
     }
     // On left click
     if (clicktype === 1) {
-        GS_UI.selectUnit(self.gamestate.players[player_id], updateTime, clickpos);
+        GS_UI.selectUnit(this.gamestate.players[player_id], updateTime, clickpos);
     }
 };
 
 // Move all units in the player_id's unit list that are currently selected to
 // the clickpos and execute the update at in-game time updateTime.
 Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
-    var self = this;
-    var unit_list = self.gamestate.players[player_id].selectedUnits;
+    var unit_list = this.gamestate.players[player_id].selectedUnits;
     unit_list.forEach(function(unit) {
         unit.update(updateTime, clickpos);
     });
 };
 
 Game.prototype.handleDragMessage = function(data) {
-    var self = this;
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
@@ -266,15 +252,15 @@ Game.prototype.handleDragMessage = function(data) {
     var clicktype = data['clicktype'];
 
     // Find the time at which this message was supposed to be applied.
-    var updateTime = timestamp - self.server_start_time;
+    var updateTime = timestamp - this.server_start_time;
 
     // On left mouse drag
     if (clicktype === 1) {
-        GS_UI.selectUnits(self.gamestate.players[player_id], updateTime, dragstart, dragend);
+        GS_UI.selectUnits(this.gamestate.players[player_id], updateTime, dragstart, dragend);
     }
     // On right mouse drag
     if (clicktype === 3) {
-        self.moveUnits(updateTime, player_id, dragend);
+        this.moveUnits(updateTime, player_id, dragend);
     }
 };
 
@@ -284,12 +270,10 @@ Game.prototype.handleDragMessage = function(data) {
 //---------------------------------------------
 
 Game.prototype.handleDisconnect = function () {
-    var self = this;
-    self.conn_state = Game.GAME_STATES.DISCONNECTED;
+    this.conn_state = Game.GAME_STATES.DISCONNECTED;
 };
 
 Game.prototype.handleConnectError = function (e) {
-    var self = this;
     // message('System', e ? e : 'An unknown error occurred');
 };
 
@@ -297,10 +281,8 @@ Game.prototype.handleConnectError = function (e) {
 // LOBBY FUNCTIONS
 //---------------------------------------------
 Game.prototype.start_game = function() {
-    var self = this;
     data = {
-        'game_id': self.game_id
+        'game_id': this.game_id
     };
-    self.socket.emit('start', data);
+    this.socket.emit('start', data);
 };
-

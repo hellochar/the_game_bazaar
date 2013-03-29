@@ -20,11 +20,17 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def get_time(self):
         return int(time.time() * 1000)
 
-    def on_input(self, data):
+    def on_click(self, data):
         game_id = str(data['game_id'])
         del data['game_id']
         data['timestamp'] = self.get_time()
-        self.broadcast_to_room(game_id, 'input', data)
+        self.broadcast_to_room(game_id, 'click', data)
+
+    def on_drag(self, data):
+        game_id = str(data['game_id'])
+        del data['game_id']
+        data['timestamp'] = self.get_time()
+        self.broadcast_to_room(game_id, 'drag', data)
 
     def on_start(self, data):
         game_id = str(data['game_id'])

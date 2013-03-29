@@ -47,7 +47,8 @@ function Game() {
         // Game logic handling
         self.socket.on('join', self.handleUserJoin);
         self.socket.on('start', self.handleGameStart);
-        self.socket.on('input', self.handleInput);
+        self.socket.on('click', self.handleClickMessage);
+        self.socket.on('drag', self.handleDragMessage);
 
 
         // DEBUG
@@ -117,7 +118,8 @@ function Game() {
         console.log("Timestamp: ", data.timestamp);
 
         // Begin rendering and handling user input
-        self.renderer.bindClick(self.playerMovement);
+        self.renderer.bindClick(self.handleClick);
+        self.renderer.bindDrag(self.handleDrag);
         self.renderer.startRendering(self);
 
         $('#lobby-container').hide();
@@ -207,27 +209,74 @@ function Game() {
         }
     };
 
-    self.playerMovement = function(x, y) {
+    self.handleClick = function(clicktype, clickpos) {
         data = {
-            'x': x,
-            'y': y,
+            'clickpos': clickpos,
             'game_id': self.game_id,
-            'player_id': self.player_id
+            'player_id': self.player_id,
+            'clicktype': clicktype
         };
-        self.socket.emit('input', data);
+        self.socket.emit('click', data);
     };
 
-    self.handleInput = function (data) {
+    self.handleDrag = function(clicktype, dragstart, dragend) {
+        data = {
+            'dragstart': dragstart,
+            'dragend': dragend,
+            'game_id': self.game_id,
+            'player_id': self.player_id,
+            'clicktype': clicktype
+        };
+        self.socket.emit('drag', data);
+    };
+
+    self.handleClickMessage = function (data) {
         // Get our variables.
         var timestamp = data['timestamp'];
         var player_id = data['player_id'];
-        var x = data['x'];
-        var y = data['y'];
-        // Update our timestamps.
+        var clickpos = data['clickpos'];
+        var clicktype = data['clicktype'];
+        // Find the time at which this message was supposed to be applied.
         var updateTime = timestamp - self.server_start_time;
         // Update the game state.
-        // TODO modify the correct unit.
-        self.gamestate.players[player_id].units[0].update(updateTime, {'x': x, 'y': y});
+        // On right click
+        if (clicktype === 3) {
+            self.moveUnits(updateTime, player_id, clickpos);
+        }
+        // On left click
+        if (clicktype === 1) {
+            GS_UI.selectUnit(self.gamestate.players[player_id], updateTime, clickpos);
+        }
+    };
+
+    // Move all units in the player_id's unit list that are currently selected to
+    // the clickpos and execute the update at in-game time updateTime.
+    self.moveUnits = function(updateTime, player_id, clickpos) {
+        var unit_list = self.gamestate.players[player_id].selectedUnits;
+        unit_list.forEach(function(unit) {
+            unit.update(updateTime, clickpos);
+        });
+    };
+
+    self.handleDragMessage = function(data) {
+        // Get our variables.
+        var timestamp = data['timestamp'];
+        var player_id = data['player_id'];
+        var dragstart = data['dragstart'];
+        var dragend = data['dragend'];
+        var clicktype = data['clicktype'];
+
+        // Find the time at which this message was supposed to be applied.
+        var updateTime = timestamp - self.server_start_time;
+
+        // On left mouse drag
+        if (clicktype === 1) {
+            GS_UI.selectUnits(self.gamestate.players[player_id], updateTime, dragstart, dragend);
+        }
+        // On right mouse drag
+        if (clicktype === 3) {
+            self.moveUnits(updateTime, player_id, dragend);
+        }
     };
 
     //---------------------------------------------

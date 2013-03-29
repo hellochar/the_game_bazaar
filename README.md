@@ -36,6 +36,10 @@ To test the javascript models (unit tests), visit the domain /jasmine. Each line
 You may install phantomjs by downloading the binary from http://phantomjs.org/download.html and putting it in your PATH. Installing phantomjs
 will have `./TEST` automatically run the jasmine tests from the CLI and output their status.
 
+The TEST file will automatically generate a coverage report for the Django server and the information will be output to the terminal.
+
+It is possible to view this coverage report in HTML format by opening htmlcov/index.html after the test is complete.
+
 Miscellaneous Problems
 =============
 

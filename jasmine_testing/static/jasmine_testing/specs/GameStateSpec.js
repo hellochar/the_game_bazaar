@@ -220,7 +220,7 @@ describe("GameState", function() {
                 expect(json).toEqual({
                     pos: {
                         x: 0,
-                    y: 100
+                        y: 100
                     },
                     speed: 0.3,
                     facing: -Math.PI / 2,

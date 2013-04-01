@@ -54,7 +54,20 @@ def list_games(request):
     }
     return render(request, 'the_game_bazaar/play.html', context)
 
+###############################################################################
+# UI AJAX
+###############################################################################
+@login_required(login_url='/', redirect_field_name=None)
+def ajax_lobby_games(request):
+    game_list = []
+    games = Game.get_games_in_state(Game.LOBBY).order_by('id').reverse()
+    for game in games:
+        game_list.append(game.to_map())
+    return HttpResponse(json.dumps(game_list), mimetype="application/json")
 
+###############################################################################
+# AUTHENTICATION 
+###############################################################################
 @login_required(login_url='/', redirect_field_name=None)
 def login(request):
     context = {}

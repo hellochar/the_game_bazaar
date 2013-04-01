@@ -21,3 +21,12 @@ class Game(models.Model):
     @staticmethod
     def get_games_in_state(state):
         return Game.objects.filter(state=state)
+
+    def to_map(game):
+        return {
+            'players': game.players,
+            'state': game.state,
+            'id': game.id,
+            'map_creator': game.map.creator.username,
+            'map_name': game.map.map_name,
+        }

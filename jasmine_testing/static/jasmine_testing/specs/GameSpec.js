@@ -26,9 +26,6 @@ describe("Game", function() {
                 expect(game.socket.on).toHaveBeenCalledWith(event_name, jasmine.any(Function));
             });
         });
-        it("should create a Renderer", function() {
-            expect(game.renderer).toBeDefined();
-        });
     });
 
 
@@ -83,26 +80,24 @@ describe("Game", function() {
         var timestamp = Date.now();
         beforeEach(function() {
         });
-        it("should start listening to events in the renderer", function() {
-            spyOn(game.renderer, 'bindClick');
-            spyOn(game.renderer, 'bindDrag');
+        it("should set up the renderer", function() {
+            spyOn(game.ui_renderer, 'bindClick');
+            spyOn(game.ui_renderer, 'bindDrag');
+            spyOn(game.ui_renderer, 'startRendering');
             game.handleGameStart({timestamp: timestamp});
-            expect(game.renderer.bindClick).toHaveBeenCalled();
-            expect(game.renderer.bindDrag).toHaveBeenCalled();
-        });
-
-        it("should start rendering the game", function() {
-            spyOn(game.renderer, 'startRendering');
-            game.handleGameStart({timestamp: timestamp});
-            expect(game.renderer.startRendering).toHaveBeenCalledWith(game);
+            expect(game.ui_renderer.bindClick).toHaveBeenCalled();
+            expect(game.ui_renderer.bindDrag).toHaveBeenCalled();
+            expect(game.ui_renderer.startRendering).toHaveBeenCalled();
         });
 
         it("should hide the lobby and show the game client", function() {
+            spyOn(game.ui_renderer, 'startRendering');
             game.handleGameStart({timestamp: timestamp});
             expect($('#lobby-container')).toBeHidden();
             expect($('#game-container')).not.toBeHidden();
         });
         it("should set the server_start_time and client_start_times", function() {
+            spyOn(game.ui_renderer, 'startRendering');
             spyOn(Date, 'now').andReturn(123456);
             game.handleGameStart({timestamp: timestamp});
             expect(game.server_start_time).toEqual(timestamp);

@@ -49,7 +49,8 @@ Game.prototype.init = function() {
     // DEBUG
     console.log("Init canvas");
 
-    this.renderer = new Renderer();
+    this.ui_renderer = new UIRenderer();
+    // this.gs_renderer = new GSRenderer();
 
 };
 
@@ -106,15 +107,45 @@ Game.prototype.handleGameStart = function (data) {
     // DEBUG
     console.log("Timestamp: ", data.timestamp);
 
-    // Begin rendering and handling user input
-    this.renderer.bindClick(this.handleClick.bind(this));
-    this.renderer.bindDrag(this.handleDrag.bind(this));
-    this.renderer.startRendering(this);
+    this.server_start_time = data.timestamp;
+    this.client_start_time = Date.now();
+
+    // set up user input hooks
+    this.ui_renderer.bindClick(this.handleClick.bind(this));
+    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
 
     $('#lobby-container').hide();
     $('#game-container').show();
-    this.server_start_time = data.timestamp;
-    this.client_start_time = Date.now();
+
+    //Begin rendering!
+    this.ui_renderer.startRendering(this.render.bind(this));
+};
+
+Game.prototype.render = function() {
+    var self = this;
+    var now_time = Date.now();
+    var start_time = self.client_start_time;
+    var snapshot = self.gamestate.evaluate(now_time - start_time);
+    var renderText = function(text) {
+        self.ui_renderer.renderText(text, 400, 200, "red");
+    };
+    switch (self.conn_state) {
+        case Game.GAME_STATES.CONNECTED:
+            self.ui_renderer.renderGS(snapshot, self.player_id);
+            break;
+        case Game.GAME_STATES.INIT:
+            renderText("Initializing...");
+            break;
+        case Game.GAME_STATES.CONNECTING:
+            renderText("Connecting...");
+            break;
+        case Game.GAME_STATES.DISCONNECTED:
+            renderText("Disconnected!");
+            break;
+        default:
+            renderText("Problem!");
+            break;
+    }
 };
 
 //---------------------------------------------

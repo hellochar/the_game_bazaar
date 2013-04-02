@@ -1,6 +1,16 @@
-function Editor() {
-    this.setEditingMap(Editor.createDefaultMap());
+function Editor(map, ui_renderer) {
+    this.setEditingMap(map || Editor.createDefaultMap());
+
+    this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
 }
+
+Editor.prototype.init = function() {
+    this.ui_renderer.bindClick(this.handleClick.bind(this));
+    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+
+    this.ui_renderer.startRendering(this.renderMethod.bind(this));
+}
+
 
 Editor.createDefaultMap = function() {
     var gamestate = new GameState([new Player(), new Player()]);
@@ -16,10 +26,20 @@ Editor.createMapFromResponse = function(response) {
     return map;
 }
 
+//======================
+//User event handling
+//======================
+Editor.prototype.handleClick = function(clicktype, clickpos) {
+    if(clicktype == 1)
+        this.map.addUnit(this.currentPlayer(), clickpos);
+}
+
+Editor.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+}
+
 Editor.prototype.setEditingMap = function(map) {
     this.map = map;
     $('#map-id').text(map.id);
-    this.render();
 }
 
 Editor.prototype.saveMap = function() {
@@ -58,19 +78,8 @@ Editor.prototype.currentPlayer = function() {
     return this.map.players[$('input[name=player]:checked').val()];
 }
 
-Editor.prototype.render = function() {
-    var canvas = $('#editor-canvas')[0];
-    var context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    this.map.players.forEach(function (player, idx) {
-        context.fillStyle = GameState.PLAYER_COLORS[idx];
-        player.units.forEach(function (unit) {
-            // context.fillRect(unit.init_pos.x - 10, unit.init_pos.y - 10, 20, 20);
-            context.beginPath();
-            context.arc(unit.pos(0).x, unit.pos(0).y, 10, 0, Math.PI*2, true);
-            context.closePath();
-            context.fill();
-        });
-    });
+Editor.prototype.renderMethod = function() {
+    var gamestate = this.map.evaluate(0);
+    this.ui_renderer.renderGS(gamestate);
+    // this.ui_renderer.renderSelectionCircles(this.selectedUnits);
 }

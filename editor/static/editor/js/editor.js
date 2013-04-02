@@ -1,13 +1,16 @@
-function Editor() {
-    this.setEditingMap(Editor.createDefaultMap());
+function Editor(map, ui_renderer) {
+    this.setEditingMap(map || Editor.createDefaultMap());
 
-    this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
+    this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
+}
 
+Editor.prototype.init = function() {
     this.ui_renderer.bindClick(this.handleClick.bind(this));
     this.ui_renderer.bindDrag(this.handleDrag.bind(this));
 
     this.ui_renderer.startRendering(this.renderMethod.bind(this));
 }
+
 
 Editor.createDefaultMap = function() {
     var gamestate = new GameState([new Player(), new Player()]);

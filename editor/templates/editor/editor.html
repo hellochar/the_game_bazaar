@@ -11,6 +11,7 @@
                     //hash exists; load the map
                     editor.loadMap(window.location.hash.substring(1));
                 }
+                editor.init();
 
                 $('#save-button').click(function () {
                     editor.saveMap();

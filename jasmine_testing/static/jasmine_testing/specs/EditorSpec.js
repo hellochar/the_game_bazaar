@@ -4,9 +4,12 @@ describe("Map Editor", function() {
         //create fake ui elements
         loadFixtures('editor.html', 'game-canvas.html');
 
-        editor = new Editor();
-        //stub out render
-        spyOn(editor.ui_renderer, 'startRendering');
+        var ui_renderer = new UIRenderer(document.getElementById('game-ui'));
+        //stub out actually rendering
+        spyOn(ui_renderer, 'startRendering');
+
+        editor = new Editor(null, ui_renderer);
+        editor.init();
     });
 
     describe("createDefaultMap", function() {

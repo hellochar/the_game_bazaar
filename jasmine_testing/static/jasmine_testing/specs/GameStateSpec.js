@@ -166,10 +166,9 @@ describe("GameState", function() {
                 expect(json.players.length).toEqual(3);
             });
 
-            // I would like to have test like this but it's impossible to test for "functional" equality in the pos() functions of units
-            // it("should be the inverse of fromJSON", function() {
-            //     expect(GameState.fromJSON(gamestate.toJSON())).toEqual(gamestate);
-            // });
+            it("should be the inverse of fromJSON", function() {
+                expect(GameState.fromJSON(gamestate.toJSON()).evaluate(0)).toEqual(gamestate.evaluate(0));
+            });
 
         });
 

@@ -6,20 +6,20 @@ describe("GS UI", function() {
         map_data = {
             players: [
                 {units: [
-                        {init_pos: {'x': 10, 'y': 15}},
-                        {init_pos: {'x': 20, 'y': 25}},
-                        {init_pos: {'x': 40, 'y': 45}},
-                        {init_pos: {'x': 40, 'y': 45}}
+                        {pos: {'x': 10, 'y': 15}},
+                        {pos: {'x': 20, 'y': 25}},
+                        {pos: {'x': 40, 'y': 45}},
+                        {pos: {'x': 40, 'y': 45}}
                 ]},
                 {units: [
-                        {init_pos: {'x': 10, 'y': 15}},
-                        {init_pos: {'x': 60, 'y': 65}},
-                        {init_pos: {'x': 70, 'y': 75}},
-                        {init_pos: {'x': 80, 'y': 85}}
+                        {pos: {'x': 10, 'y': 15}},
+                        {pos: {'x': 60, 'y': 65}},
+                        {pos: {'x': 70, 'y': 75}},
+                        {pos: {'x': 80, 'y': 85}}
                 ]},
                 {units: [
-                        {init_pos: {'x': 0, 'y': 3}},
-                        {init_pos: {'x': 6, 'y': 9}}
+                        {pos: {'x': 0, 'y': 3}},
+                        {pos: {'x': 6, 'y': 9}}
                 ]}
             ]
         };

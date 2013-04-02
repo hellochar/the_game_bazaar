@@ -1,7 +1,7 @@
 describe("Game", function() {
     var game;
     beforeEach(function() {
-        loadFixtures('game.html');
+        loadFixtures('game.html', 'game-canvas.html');
         window.requestAnimationFrame = function() {}; //We mock out this because it breaks in phantomjs
         // window.Renderer = jasmine.createSpyObj('Renderer', []);
 

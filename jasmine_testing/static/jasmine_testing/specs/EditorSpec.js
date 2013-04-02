@@ -2,23 +2,14 @@ describe("Map Editor", function() {
     var editor;
     beforeEach(function() {
         //create fake ui elements
-        $('<div/>', {id: 'hidden-ui', style: 'display: none'}).appendTo('body');
+        loadFixtures('editor.html', 'game-canvas.html');
 
-        $('<div/>', {id: 'map-id'}).appendTo('#hidden-ui');
-        $('<canvas/>', {id: 'editor-canvas'}).appendTo('#hidden-ui');
+        var ui_renderer = new UIRenderer(document.getElementById('game-ui'));
+        //stub out actually rendering
+        spyOn(ui_renderer, 'startRendering');
 
-
-        $('<input/>', {type: 'radio', name: 'player', value: 0 }).attr('checked', true).appendTo("#hidden-ui");
-        $('<input/>', {type: 'radio', name: 'player', value: 1 }).appendTo("#hidden-ui");
-
-
-        editor = new Editor();
-        //stub out render
-        spyOn(editor, 'render');
-    });
-
-    afterEach(function() {
-        $('#hidden-ui').remove();
+        editor = new Editor(null, ui_renderer);
+        editor.init();
     });
 
     describe("createDefaultMap", function() {

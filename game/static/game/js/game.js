@@ -49,7 +49,7 @@ Game.prototype.init = function() {
     // DEBUG
     console.log("Init canvas");
 
-    this.ui_renderer = new UIRenderer();
+    this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     // this.gs_renderer = new GSRenderer();
 
 };
@@ -126,12 +126,15 @@ Game.prototype.render = function() {
     var now_time = Date.now();
     var start_time = self.client_start_time;
     var snapshot = self.gamestate.evaluate(now_time - start_time);
+
+    
     var renderText = function(text) {
         self.ui_renderer.renderText(text, 400, 200, "red");
     };
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
-            self.ui_renderer.renderGS(snapshot, self.player_id);
+            self.ui_renderer.renderGS(snapshot);
+            self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
             break;
         case Game.GAME_STATES.INIT:
             renderText("Initializing...");
@@ -230,7 +233,7 @@ Game.prototype.populatePlayerNamesInGSFromHTML = function() {
 };
 
 //---------------------------------------------
-// GAME CILENT INPUT HANDLERS
+// GAME CLIENT INPUT HANDLERS
 //---------------------------------------------
 Game.prototype.handleClick = function(clicktype, clickpos) {
     data = {
@@ -253,6 +256,10 @@ Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
     this.socket.emit('drag', data);
 };
 
+
+//---------------------------------------------
+//CALLBACKS FOR WHEN MESSAGES ARE RECEIVED
+//---------------------------------------------
 Game.prototype.handleClickMessage = function (data) {
     // Get our variables.
     var timestamp = data['timestamp'];

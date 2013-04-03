@@ -70,6 +70,33 @@ describe("GameState", function() {
             });
         });
 
+        describe("addWall", function() {
+
+            // beforeEach(function () {
+            //     this.addMatchers({
+            //         vectorCloseTo: function (expected, distThresh) {
+            //             var dist = Math.sqrt(Math.pow(this.actual.x - expected.x, 2) + Math.pow(this.actual.x - expected.x, 2));
+            //             if(dist < distThresh) {
+            //                 return true;
+            //             } else {
+            //                 this.message = 'Failed asserting that ' + JSON.stringify(expected) + ' is within ' + distThresh + ' of ' + JSON.stringify(this.actual);
+            //                 return false;
+            //             }
+            //         }
+            //     });
+            // });
+
+            it("should create nodes at the start/end positions and make a connection between them", function() {
+                var map = Editor.createDefaultMap();
+                map.addWall({x: 0, y: 0}, {x: 12, y: 12});
+                // expect(map.obstacles.nodes.filter(function (node) { return Math.sqrnode.pos
+                expect(map.obstacles.nodes[0].pos).toEqual({x: 0, y: 0});
+                expect(map.obstacles.nodes[1].pos).toEqual({x: 12, y: 12});
+
+                expect(map.obstacles.nodes[0].connections).toEqual([map.obstacles.nodes[1]]);
+            });
+        });
+
         describe("update", function() {
             it("should move a unit correctly in the axes directions", function() {
                 var modifiedUnit = gamestate.players[0].units[0];
@@ -126,14 +153,6 @@ describe("GameState", function() {
                 expect(ourUnit.pos(0).x).toBeCloseTo(originalPos.x);
                 expect(ourUnit.pos(0).y).toBeCloseTo(originalPos.y);
             });
-        });
-    });
-
-    describe("Evaluation function", function() {
-        it("Should match toJSON when called on 0", function() {
-            var json = gamestate.toJSON();
-            var evald = gamestate.evaluate(0);
-            expect(json).toEqual(evald);
         });
     });
 

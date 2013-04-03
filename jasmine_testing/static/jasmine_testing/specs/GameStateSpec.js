@@ -21,7 +21,8 @@ describe("GameState", function() {
                         {pos: {'x': 0, 'y': 3}},
                         {pos: {'x': 6, 'y': 9}}
                 ]}
-            ]
+            ],
+            obstacles: new Graph().toJSON()
         };
         gamestate = GameState.fromJSON(map_data);
     });
@@ -66,6 +67,37 @@ describe("GameState", function() {
                 var map = Editor.createDefaultMap();
                 map.addUnit(map.players[0], {x: 100, y: 200});
                 expect(map.players[0].units[0].pos(0)).toEqual({x:100, y:200});
+            });
+        });
+
+        describe("addWall", function() {
+
+            // I (Xiaohan) was trying to write a matcher for expecting vectors positions (so you can say expect(unit.pos).vectorCloseTo({x: 10, y: 20}).
+            // Couldn't get it working but I didn't want to delete the code so here it is
+
+            // beforeEach(function () {
+            //     this.addMatchers({
+            //         vectorCloseTo: function (expected, distThresh) {
+            //             var dist = Math.sqrt(Math.pow(this.actual.x - expected.x, 2) + Math.pow(this.actual.x - expected.x, 2));
+            //             if(dist < distThresh) {
+            //                 return true;
+            //             } else {
+            //                 this.message = 'Failed asserting that ' + JSON.stringify(expected) + ' is within ' + distThresh + ' of ' + JSON.stringify(this.actual);
+            //                 return false;
+            //             }
+            //         }
+            //     });
+            // });
+
+            it("should create nodes at the start/end positions and make a connection between them", function() {
+                var map = Editor.createDefaultMap();
+                map.addWall({x: 0, y: 0}, {x: 12, y: 12});
+
+                //TODO make this test less brittle (less dependent on indicies of nodes)
+                expect(map.obstacles.nodes[0].pos).toEqual({x: 0, y: 0});
+                expect(map.obstacles.nodes[1].pos).toEqual({x: 12, y: 12});
+
+                expect(map.obstacles.nodes[0].connections).toEqual([map.obstacles.nodes[1]]);
             });
         });
 
@@ -128,14 +160,6 @@ describe("GameState", function() {
         });
     });
 
-    describe("Evaluation function", function() {
-        it("Should match toJSON when called on 0", function() {
-            var json = gamestate.toJSON();
-            var evald = gamestate.evaluate(0);
-            expect(json).toEqual(evald);
-        });
-    });
-
     describe("toJSON", function() {
         // Instantiate a testing game state with three players and some amount of units for each.
         var gamestate;
@@ -159,8 +183,8 @@ describe("GameState", function() {
                 json = gamestate.toJSON();
             });
 
-            it("should only save the players attribute", function() {
-                expect(Object.keys(json)).toEqual(['players']);
+            it("should save the players and obstacles attribute", function() {
+                expect(Object.keys(json)).toEqual(['players', 'obstacles']);
             });
             it("should have the correct number of players", function() {
                 expect(json.players.length).toEqual(3);

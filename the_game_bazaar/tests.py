@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.utils import simplejson as json
 from the_game_bazaar import views
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from game.models import Game
 from lib.models import Map
 
@@ -33,6 +34,41 @@ class playAjaxTest(TestCase):
 
         num = len(Map.objects.all())
         self.assertEqual(len(resp_object), num)
+
+class changeProfileTest(TestCase):
+    def test_password_change_fail(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post('/auth/change/', {'old_pass':'aba', 'new_pass':'bbb'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+        self.assertEqual(resp_object['error'], 'The password is incorrect. Did you forget it?')
+
+
+    def test_password_change_sucess(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post('/auth/change/', {'old_pass': 'aaa', 'new_pass':'bbb'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        user = authenticate(username='aaa', password='bbb')
+        self.assertEqual(user.username, 'aaa')
+
+    def test_email_change(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post('/auth/change/', {'email':'bbb'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+        user = authenticate(username='aaa', password='aaa')
+        self.assertEqual(user.email, 'bbb')
 
 class ourAuthTest(TestCase):
     def test_ajax_login_success(self):

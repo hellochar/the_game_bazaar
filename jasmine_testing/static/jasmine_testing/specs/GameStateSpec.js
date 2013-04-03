@@ -21,7 +21,8 @@ describe("GameState", function() {
                         {pos: {'x': 0, 'y': 3}},
                         {pos: {'x': 6, 'y': 9}}
                 ]}
-            ]
+            ],
+            obstacles: new Graph().toJSON()
         };
         gamestate = GameState.fromJSON(map_data);
     });
@@ -159,8 +160,8 @@ describe("GameState", function() {
                 json = gamestate.toJSON();
             });
 
-            it("should only save the players attribute", function() {
-                expect(Object.keys(json)).toEqual(['players']);
+            it("should save the players and obstacles attribute", function() {
+                expect(Object.keys(json)).toEqual(['players', 'obstacles']);
             });
             it("should have the correct number of players", function() {
                 expect(json.players.length).toEqual(3);

@@ -21,7 +21,8 @@ describe("GS UI", function() {
                         {pos: {'x': 0, 'y': 3}},
                         {pos: {'x': 6, 'y': 9}}
                 ]}
-            ]
+            ],
+            obstacles: new Graph().toJSON()
         };
         gamestate = GameState.fromJSON(map_data);
     });

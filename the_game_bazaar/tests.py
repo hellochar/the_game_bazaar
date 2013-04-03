@@ -2,13 +2,37 @@ from django.test import TestCase
 from django.utils import simplejson as json
 from the_game_bazaar import views
 from django.contrib.auth.models import User
-
+from game.models import Game
+from lib.models import Map
 
 
 def login(client, username, password):
     s_resp = client.post('/auth/login/', {'username':username, 'password':password})
     resp_object = json.loads(s_resp.content)
     return resp_object
+
+class playAjaxTest(TestCase):
+    def test_ajax_lobby_games(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.get('/ajax/lobby/')
+        resp_object = json.loads(s_resp.content)
+
+        num = len(Game.get_games_in_state(Game.LOBBY))
+        self.assertEqual(len(resp_object), num)
+
+    def test_ajax_maps(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.get('/ajax/maps/')
+        resp_object = json.loads(s_resp.content)
+
+        num = len(Map.objects.all())
+        self.assertEqual(len(resp_object), num)
 
 class ourAuthTest(TestCase):
     def test_ajax_login_success(self):

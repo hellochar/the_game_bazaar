@@ -8,6 +8,7 @@
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
         <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
@@ -56,12 +57,6 @@
             </p>
         </div>
 
-
-        <!-- GAME CONTAINER --> 
-        <div id="game-container">
-            <div id="canvas-container">
-                <canvas id="game-ui" width=800 height=800>You need canvas!</canvas>
-            </div>
-        </div>
+        {% include "lib/game-canvas.html" %}
     </body>
 </html>

@@ -1,7 +1,7 @@
 describe("Game", function() {
     var game;
     beforeEach(function() {
-        loadFixtures('game.html');
+        loadFixtures('game.html', 'game-canvas.html');
         window.requestAnimationFrame = function() {}; //We mock out this because it breaks in phantomjs
         // window.Renderer = jasmine.createSpyObj('Renderer', []);
 
@@ -60,7 +60,7 @@ describe("Game", function() {
         it("should send a 'leave' message and then disconnect when the window is closing", function() {
             game.handleConnected();
 
-            $(window).trigger("beforeunload");
+            $(window).trigger("unload");
             expect(game.socket.emit).toHaveBeenCalledWith('leave', {'game_id' : game.game_id} );
             expect(game.socket.disconnect).toHaveBeenCalled();
         });

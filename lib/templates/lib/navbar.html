@@ -13,17 +13,23 @@
             <li id="navbar-edit"><a href="/edit">Edit</a></li>
         </ul>
         {% if user.is_authenticated %}
-            <form id="navbar-logout" class="navbar-form pull-right">
-                {% csrf_token %}
-
-                <button type="submit" class="btn">Logout</button> 
-            </form>
-            <div class="pull-right" style="padding-top:10px;padding-right:10px"> logged in as {{ user.username }}</div>
+            <ul class="nav pull-right">
+                <li id="fat-menu" class="dropdown">
+                    <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/admin">Profile</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/history">History</a></li>
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="" id="navbar-logout">logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
         {% else %}
-            <form id="navbar-login" class="navbar-form pull-right">
+            <form id="navbar-login" class="pull-right" style="margin:0px">
                 {% csrf_token %}
-                <input id="navbar-username" type="text" class="span2" placeholder="username">
-                <input id="navbar-password" type="password" class="span2" placeholder="password">
+                <input id="navbar-username" type="text" class="span2" placeholder="username" style="margin-top:10px">
+                <input id="navbar-password" type="password" class="span2" placeholder="password" style="margin-top:10px">
                 <button type="submit" class="btn">Submit</button>
             </form>
         {% endif %}

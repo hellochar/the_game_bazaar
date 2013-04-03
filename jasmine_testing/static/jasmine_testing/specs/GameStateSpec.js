@@ -6,20 +6,20 @@ describe("GameState", function() {
         map_data = {
             players: [
                 {units: [
-                        {init_pos: {'x': 10, 'y': 15}},
-                        {init_pos: {'x': 20, 'y': 25}},
-                        {init_pos: {'x': 30, 'y': 35}},
-                        {init_pos: {'x': 40, 'y': 45}}
+                        {pos: {'x': 10, 'y': 15}},
+                        {pos: {'x': 20, 'y': 25}},
+                        {pos: {'x': 30, 'y': 35}},
+                        {pos: {'x': 40, 'y': 45}}
                 ]},
                 {units: [
-                        {init_pos: {'x': 50, 'y': 55}},
-                        {init_pos: {'x': 60, 'y': 65}},
-                        {init_pos: {'x': 70, 'y': 75}},
-                        {init_pos: {'x': 80, 'y': 85}}
+                        {pos: {'x': 50, 'y': 55}},
+                        {pos: {'x': 60, 'y': 65}},
+                        {pos: {'x': 70, 'y': 75}},
+                        {pos: {'x': 80, 'y': 85}}
                 ]},
                 {units: [
-                        {init_pos: {'x': 0, 'y': 3}},
-                        {init_pos: {'x': 6, 'y': 9}}
+                        {pos: {'x': 0, 'y': 3}},
+                        {pos: {'x': 6, 'y': 9}}
                 ]}
             ]
         };
@@ -27,31 +27,6 @@ describe("GameState", function() {
     });
 
     describe("fromJSON", function() {
-
-        //taken from http://stackoverflow.com/questions/15322793/is-there-a-jasmine-matcher-to-compare-objects-on-subsets-of-their-properties
-        beforeEach(function () {
-            this.addMatchers({
-                toInclude: function (expected) {
-                    var failed;
-
-                    for (var i in expected) {
-                        if (expected.hasOwnProperty(i) && !this.actual.hasOwnProperty(i)) {
-                            failed = [i, expected[i]];
-                            break;
-                        }
-                    }
-
-                    if (undefined !== failed) {
-                        this.message = 'Failed asserting that array includes element "' + failed[0] + ' => ' + failed[1] + '"';
-
-                        return false;
-                    }
-
-                    return true;
-                }
-            });
-        });
-
         it("it's toJSON method should output a superset of the json that it was parsed from", function() {
             expect(GameState.fromJSON(map_data).toJSON()).toInclude(map_data);
         });
@@ -191,10 +166,9 @@ describe("GameState", function() {
                 expect(json.players.length).toEqual(3);
             });
 
-            // I would like to have test like this but it's impossible to test for "functional" equality in the pos() functions of units
-            // it("should be the inverse of fromJSON", function() {
-            //     expect(GameState.fromJSON(gamestate.toJSON())).toEqual(gamestate);
-            // });
+            it("should be the inverse of fromJSON", function() {
+                expect(GameState.fromJSON(gamestate.toJSON()).evaluate(0)).toEqual(gamestate.evaluate(0));
+            });
 
         });
 
@@ -204,7 +178,7 @@ describe("GameState", function() {
                 json = gamestate.players[0].toJSON();
             });
             it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['selectedUnits', 'units']);
+                expect(Object.keys(json)).toEqual(['selectedUnits', 'units', 'color']);
             });
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);
@@ -218,12 +192,13 @@ describe("GameState", function() {
             });
             it("should save the position, speed, and facing and nothing else", function() {
                 expect(json).toEqual({
-                    init_pos: {
+                    pos: {
                         x: 0,
-                    y: 100
+                        y: 100
                     },
                     speed: 0.3,
-                    facing: -Math.PI / 2
+                    facing: -Math.PI / 2,
+                    size: 15
                 });
             });
         });

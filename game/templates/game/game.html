@@ -4,12 +4,26 @@
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/socket.io.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/renderer.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/three.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
+        <!-- <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js"></script> -->
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
         <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <script>
+            $(function() {
+                // DOM manipulation
+                $().ready(function() {
+                    $('#game-container').hide();
+                    $('#lobby-container').show();
+                });
+                var game = new Game();
+                game.init();
+                window.game = game;
+            });
+        </script>
     </head>
     <body>
         <!-- START NAVIGATION BAR -->
@@ -42,12 +56,6 @@
             </p>
         </div>
 
-
-        <!-- GAME CONTAINER --> 
-        <div id="game-container">
-            <div id="canvas-container">
-                <canvas id="game-canvas" width=800 height=800>You need canvas!</canvas>
-            </div>
-        </div>
+        {% include "lib/game-canvas.html" %}
     </body>
 </html>

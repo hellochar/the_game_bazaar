@@ -18,10 +18,15 @@ urlpatterns = patterns('',
     url(r'^home/$',
         views.home,
         name="home"),
+    
     # Play Ajax Calls
     url(r'^ajax/lobby/$',
         views.ajax_lobby_games,
         name="ajax_lobby_games"),
+
+    url(r'^ajax/maps/$',
+        views.ajax_maps,
+        name="ajax_maps"),
     
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',

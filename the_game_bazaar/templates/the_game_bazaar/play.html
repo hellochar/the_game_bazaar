@@ -1,7 +1,7 @@
 <html>
     <head>
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
 
     </head>
@@ -21,34 +21,6 @@
                         <button id="play-host-button" class="btn btn-primary pull-right">Host a Game</button>
         				<h3>Join A Game:</h3>
                         <div id="play-join-table"></div>
-<!--         				<table class="table table-striped">
-        					<thead><tr>
-        						<th>Game ID</th>
-        						<th>Map Name</th>
-        						<th>Players</th>
-                                <th></th>
-        					</tr></thead>
-        					<tbody>
-            				{% for game in lobby_games %}
-                                <tr>
-                                    <td>{{ game.id }}</td>
-                                    <td>{{ game.map.map_name}}</td>
-                                    <td id="game-{{ game.id }}"></td>
-                                    <td>
-                                        <form action="/game/join" method="POST" style="margin:0px">
-                                            {% csrf_token %}
-                                            <input name="game-id" type="hidden" value="{{ game.id }}" />
-                                            <button class="btn">Join</button>
-                                        </form>
-                                    </td>
-                                    <script>
-                                            printPlayers({{ game.id }}, $.parseJSON('{{ game.players|safe }}'));
-                                    </script>
-                                </tr>
-
-                            {% endfor %}
-                        </tbody>
-                    </table> -->
                 </div>
                 <div id="play-host">
                     <button id="play-join-button" class="btn btn-primary pull-right">Join a Game</button>

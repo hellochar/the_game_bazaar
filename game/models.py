@@ -1,5 +1,7 @@
 from django.db import models
 from lib.models import Map
+from django.utils import simplejson as json
+
 
 class Game(models.Model):
     LOBBY = "lobby"
@@ -24,7 +26,7 @@ class Game(models.Model):
 
     def to_map(game):
         return {
-            'players': game.players,
+            'players': json.loads(game.players),
             'state': game.state,
             'id': game.id,
             'map_creator': game.map.creator.username,

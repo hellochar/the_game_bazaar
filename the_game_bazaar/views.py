@@ -65,6 +65,14 @@ def ajax_lobby_games(request):
         game_list.append(game.to_map())
     return HttpResponse(json.dumps(game_list), mimetype="application/json")
 
+def ajax_maps(request):
+    map_list = []
+    maps = Map.objects.all()
+    for a_map in maps:
+        map_list.append(a_map.to_map())
+    return HttpResponse(json.dumps(map_list), mimetype="application/json")
+
+
 ###############################################################################
 # AUTHENTICATION 
 ###############################################################################

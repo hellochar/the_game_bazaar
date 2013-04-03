@@ -18,8 +18,16 @@ urlpatterns = patterns('',
     url(r'^home/$',
         views.home,
         name="home"),
+    # User menu items
+    url(r'^user/admin$',
+        views.user_admin,
+        name="user_admin"),
+
+    url(r'^user/history$',
+        views.user_history,
+        name="user_history"),
     
-    # Play Ajax Calls
+    # Ajax Calls
     url(r'^ajax/lobby/$',
         views.ajax_lobby_games,
         name="ajax_lobby_games"),
@@ -27,6 +35,10 @@ urlpatterns = patterns('',
     url(r'^ajax/maps/$',
         views.ajax_maps,
         name="ajax_maps"),
+
+    url(r'^ajax/gravatar/$',
+        views.ajax_gravatar,
+        name="ajax_gravatar"),
     
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
@@ -44,6 +56,10 @@ urlpatterns = patterns('',
     url(r'^auth/logout/$',
         views.ajax_logout,
         name="ajax_logout"),
+
+    url(r'^auth/change/$',
+        views.ajax_change,
+        name="ajax_change"),
 
     # Game related
     url(r'^play/$',

@@ -11,7 +11,7 @@ Game.GAME_STATES = {
     DISCONNECTED:   3
 };
 
-Game.prototype.init = function() {
+Game.prototype.init = function(gs_renderer) {
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
     //---------------------------------------------
@@ -50,7 +50,7 @@ Game.prototype.init = function() {
     console.log("Init canvas");
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
-    this.gs_renderer = new GSRenderer();
+    this.gs_renderer = gs_renderer || new GSRenderer();
 };
 
 //This method gets called as soon 

@@ -2,15 +2,60 @@
 	<head>
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/user_admin.js"></script>
     </head>
     <!-- START NAVIGATION BAR -->
         {% include "lib/navbar.html" %}
     <!-- END NAVIGATION BAR -->
 
     <div class="container">
-	    <h1>{{ user.username }}</h1>
-	    <h3>Change Password</h3>
-	    <h3>Change Email</h3>
+    	<div class="row"><div class="span12" style="margin-top:10px"></div></div>
+    	<div class="row">
+    		<div class="span2" id="gravatar"></div>
+	    	<div class="span10"><h1 style="margin-top:100px">{{ user.username }}</h1></div>
+	    </div>
+	    <div class="row">
+            <form class="form-horizontal" id="change_pass_form">
+                <legend>Change Password</legend>
+                <div class="control-group">
+                    <label class="control-label" for="oldPassword">Old Password</label>
+                    <div class="controls">
+                        <input type="password" id="oldPassword" placeholder=".....">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="newPassword">New Password</label>
+                    <div class="controls">
+                        <input type="password" id="newPassword" placeholder=".....">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="newPasswordConfirm">New Password (confirm)</label>
+                    <div class="controls">
+                        <input type="password" id="newPasswordConfirm" placeholder=".....">
+                        <button style="margin-left:10px" type="submit" class="btn">Change</button>
+                    </div>
+                </div>  
+            </form>
+	    </div>
+	    <div class="row">
+	    	<form class="form-horizontal" id="change_email_form">
+                <legend>Change Email</legend>
+                <p style="float:left">current email:&nbsp&nbsp<div id="curr_email">{{ user.email }}</div></p>
+                <div class="control-group">
+                    <label class="control-label" for="newEmail">New Email</label>
+                    <div class="controls">
+                        <input type="text" id="newEmail" placeholder=".....">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="newEmailConfirm">New Email (confirm)</label>
+                    <div class="controls">
+                        <input type="text" id="newEmailConfirm" placeholder=".....">
+                        <button style="margin-left:10px" type="submit" class="btn">Change</button>
+                    </div>
+                </div>  
+            </form>
+		</div>
 	</div>
 </html>

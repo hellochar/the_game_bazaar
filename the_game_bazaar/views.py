@@ -10,6 +10,8 @@ from django.contrib.auth import login as auth_login
 from lib.models import Map
 from game.models import Game
 from django.db import IntegrityError
+import hashlib
+import urllib
 
 # /
 def index(request):
@@ -54,8 +56,7 @@ def list_games(request):
     }
     return render(request, 'the_game_bazaar/play.html', context)
 
-
-# /user
+# /user stuff
 @login_required(login_url='/', redirect_field_name=None)
 def user_admin(request):
     context = {
@@ -64,10 +65,87 @@ def user_admin(request):
     return render(request, 'the_game_bazaar/user_admin.html', context)
 
 @login_required(login_url='/', redirect_field_name=None)
+def user_history(request):
+    games = Game.objects.all()
+    owned_games = []
+    for game in games:
+        players = json.loads(game.players)
+        if(request.user.username in players):
+            owned_games.append(game)
+
+    context = {
+        "user":request.user,
+        "games": owned_games,
+    }
+    return render(request, 'the_game_bazaar/user_history.html', context)
+###############################################################################
+# AJAX
+###############################################################################
+@login_required(login_url='/', redirect_field_name=None)
+def ajax_lobby_games(request):
+    game_list = []
+    games = Game.get_games_in_state(Game.LOBBY).order_by('id').reverse()
+    for game in games:
+        game_list.append(game.to_map())
+    return HttpResponse(json.dumps(game_list), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
+def ajax_maps(request):
+    map_list = []
+    maps = Map.objects.all()
+    for a_map in maps:
+        map_list.append(a_map.to_map())
+    return HttpResponse(json.dumps(map_list), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
+def ajax_gravatar(request):
+    email = request.user.email
+    size = 40
+    if(request.method == 'GET' and 'size' in request.GET):
+        size = request.GET['size']
+    if(request.method == 'GET' and 'email' in request.GET):
+        email = request.GET['email']
+
+    gravatar_url = "<img src='http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+    gravatar_url += urllib.urlencode({'s':str(size)})
+    gravatar_url += "' />"
+    return HttpResponse(gravatar_url, mimetype="text/html")
+
+###############################################################################
+# AUTHENTICATION 
+###############################################################################
+@login_required(login_url='/', redirect_field_name=None)
 def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)
 
+@login_required(login_url='/', redirect_field_name=None)
+@require_http_methods(["POST"])
+def ajax_change(request):
+    resp = {
+        "success": False,
+    }
+    if('old_pass' in request.POST and 'new_pass' in request.POST):
+        #got a change for pass
+        #check to make sure old_pass matches
+        user = authenticate(username=request.user.username, password=request.POST['old_pass'])
+        if(user is not None and user.is_active):
+            #old pass matches, change pass to new one
+            user.set_password(request.POST['new_pass'])
+            user.save()
+            resp['success'] = True
+        else:
+            #old pass didn't match, pass back an error
+            resp['error'] = 'The password is incorrect. Did you forget it?'
+    elif('email' in request.POST):
+        #got a change for email
+        request.user.email = request.POST['email']
+        request.user.save()
+        resp['success'] = True
+    else:
+        resp['error'] = 'Please fill out all the fields. They are all necessary'
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
 
 @require_http_methods(["POST"])
 def ajax_login(request):

@@ -1,0 +1,36 @@
+<html>
+	<head>
+        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/user_admin.js"></script>
+    </head>
+    <!-- START NAVIGATION BAR -->
+        {% include "lib/navbar.html" %}
+    <!-- END NAVIGATION BAR -->
+    <div class="container">
+    	<div class="row"><div class="span12" style="margin-top:10px"></div></div>
+    	<h1>History</h1>
+    	<br />
+    	<h4>Past Games</h4>
+    	<table class="table table-striped">
+			<thead>
+				<tr>
+					<td>id</td>
+					<td>players</td>
+					<td>map name</td>
+					<td>date</td>
+				</tr>
+			</thead>
+			<tbody>
+			    {% for game in games %}
+			    	<tr>
+			    		<td>{{ game.id }}</td>
+			    		<td>{{ game.players }}</td>
+			    		<td>{{ game.map.map_name }}</td>
+			    		<td>{{ game.created_at }}</td>
+			    	</tr>
+			    {% endfor %}
+			</tbody>
+		</table>
+	</div>
+</html>

@@ -60,7 +60,7 @@ describe("Game", function() {
         it("should send a 'leave' message and then disconnect when the window is closing", function() {
             game.handleConnected();
 
-            $(window).trigger("beforeunload");
+            $(window).trigger("unload");
             expect(game.socket.emit).toHaveBeenCalledWith('leave', {'game_id' : game.game_id} );
             expect(game.socket.disconnect).toHaveBeenCalled();
         });

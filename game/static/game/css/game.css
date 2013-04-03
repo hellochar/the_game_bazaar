@@ -1,7 +1,16 @@
+#game-container {
+    background-color: #050505;
+}
 
 #canvas-container {
+    position: relative;
     margin: 0px auto;
     border: 1px solid black;
     width: 800px;
     height: 800px;
+}
+
+#game-ui {
+    position: absolute;
+    z-index: 100;
 }

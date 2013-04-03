@@ -305,7 +305,7 @@ Game.prototype.handleDragMessage = function(data) {
 Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
     var unit_list = this.gamestate.players[player_id].selectedUnits;
     unit_list.forEach(function(unit) {
-        unit.update(updateTime, clickpos);
+        unit.update(updateTime, clickpos, this.gamestate);
     });
 };
 

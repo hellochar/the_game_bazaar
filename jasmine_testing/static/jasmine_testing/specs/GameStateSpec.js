@@ -72,6 +72,9 @@ describe("GameState", function() {
 
         describe("addWall", function() {
 
+            // I (Xiaohan) was trying to write a matcher for expecting vectors positions (so you can say expect(unit.pos).vectorCloseTo({x: 10, y: 20}).
+            // Couldn't get it working but I didn't want to delete the code so here it is
+
             // beforeEach(function () {
             //     this.addMatchers({
             //         vectorCloseTo: function (expected, distThresh) {
@@ -89,7 +92,8 @@ describe("GameState", function() {
             it("should create nodes at the start/end positions and make a connection between them", function() {
                 var map = Editor.createDefaultMap();
                 map.addWall({x: 0, y: 0}, {x: 12, y: 12});
-                // expect(map.obstacles.nodes.filter(function (node) { return Math.sqrnode.pos
+
+                //TODO make this test less brittle (less dependent on indicies of nodes)
                 expect(map.obstacles.nodes[0].pos).toEqual({x: 0, y: 0});
                 expect(map.obstacles.nodes[1].pos).toEqual({x: 12, y: 12});
 

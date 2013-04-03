@@ -18,7 +18,10 @@ urlpatterns = patterns('',
     url(r'^home/$',
         views.home,
         name="home"),
-
+    # User Administration
+    url(r'^user/admin$',
+        views.user_admin,
+        name="user_admin"),
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
         views.login,

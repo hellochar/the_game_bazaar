@@ -55,6 +55,14 @@ def list_games(request):
     return render(request, 'the_game_bazaar/play.html', context)
 
 
+# /user
+@login_required(login_url='/', redirect_field_name=None)
+def user_admin(request):
+    context = {
+        "user":request.user,
+    }
+    return render(request, 'the_game_bazaar/user_admin.html', context)
+
 @login_required(login_url='/', redirect_field_name=None)
 def login(request):
     context = {}

@@ -1,0 +1,16 @@
+<html>
+	<head>
+        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
+    </head>
+    <!-- START NAVIGATION BAR -->
+        {% include "lib/navbar.html" %}
+    <!-- END NAVIGATION BAR -->
+
+    <div class="container">
+	    <h1>{{ user.username }}</h1>
+	    <h3>Change Password</h3>
+	    <h3>Change Email</h3>
+	</div>
+</html>

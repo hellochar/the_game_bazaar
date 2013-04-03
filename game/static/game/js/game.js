@@ -50,7 +50,7 @@ Game.prototype.init = function() {
     console.log("Init canvas");
 
     this.ui_renderer = new UIRenderer();
-    // this.gs_renderer = new GSRenderer();
+    this.gs_renderer = new GSRenderer();
 
 };
 
@@ -79,7 +79,7 @@ Game.prototype.handleConnected = function () {
     console.log("Connected!");
 
     this.conn_state = Game.GAME_STATES.CONNECTED;
-    $(window).bind("beforeunload", function() {
+    $(window).bind("unload", function() {
         data = {
             'game_id': this.game_id
         };
@@ -129,6 +129,8 @@ Game.prototype.render = function() {
     var renderText = function(text) {
         self.ui_renderer.renderText(text, 400, 200, "red");
     };
+    self.gs_renderer.update(snapshot);
+    self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
             self.ui_renderer.renderGS(snapshot, self.player_id);
@@ -194,7 +196,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-
+                this.gs_renderer.preload(this.gamestate.toJSON());
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }

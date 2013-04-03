@@ -35,6 +35,9 @@ Editor.prototype.handleClick = function(clicktype, clickpos) {
 }
 
 Editor.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+    if(clicktype == 1) {
+        this.map.addWall(dragstart, dragend);
+    }
 }
 
 Editor.prototype.setEditingMap = function(map) {

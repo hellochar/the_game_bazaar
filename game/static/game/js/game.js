@@ -11,7 +11,7 @@ Game.GAME_STATES = {
     DISCONNECTED:   3
 };
 
-Game.prototype.init = function() {
+Game.prototype.init = function(gs_renderer) {
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
     //---------------------------------------------
@@ -50,8 +50,7 @@ Game.prototype.init = function() {
     console.log("Init canvas");
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
-    // this.gs_renderer = new GSRenderer();
-
+    this.gs_renderer = gs_renderer || new GSRenderer();
 };
 
 //This method gets called as soon 
@@ -127,10 +126,11 @@ Game.prototype.render = function() {
     var start_time = self.client_start_time;
     var snapshot = self.gamestate.evaluate(now_time - start_time);
 
-    
     var renderText = function(text) {
         self.ui_renderer.renderText(text, 400, 200, "red");
     };
+    self.gs_renderer.update(snapshot);
+    self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
             self.ui_renderer.renderGS(snapshot);
@@ -197,7 +197,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-
+                this.gs_renderer.preload(this.gamestate.toJSON());
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }

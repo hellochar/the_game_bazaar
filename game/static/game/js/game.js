@@ -79,7 +79,7 @@ Game.prototype.handleConnected = function () {
     console.log("Connected!");
 
     this.conn_state = Game.GAME_STATES.CONNECTED;
-    $(window).bind("beforeunload", function() {
+    $(window).unload(function() {
         data = {
             'game_id': this.game_id
         };

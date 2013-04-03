@@ -25,30 +25,7 @@
                 <div id="play-host">
                     <button id="play-join-button" class="btn btn-primary pull-right">Join a Game</button>
                     <h3>Host A Game:</h3>
-                    <table class="table table-striped">
-                        <thead><tr>
-                                <th>Map ID</th>
-                                <th>Map Name</th>
-                                <th># of players</th>
-                                <th></th>
-                        </tr></thead>
-                        <tbody>
-                            {% for map in maps %}
-                            <tr>
-                                <td>{{ map.id }}</td>
-                                <td>{{ map.map_name }}</td>
-                                <td>{{ map.num_players }}</td>
-                                <td>
-                                    <form action="/game/host" method="POST" style="margin:0px">
-                                        {% csrf_token %}
-                                        <input name="map-id" type="hidden" value="{{ map.id }}" />
-                                        <button class="btn">Host</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div id="play-host-table"></div>
                 </div>
             </div>
         </div>

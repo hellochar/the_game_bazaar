@@ -58,3 +58,10 @@ Resetting Your Database
     python manage.py reset_db --router=default
     python manage.py syncdb
 This will delete all your current data and update the db to have the new fields in the models.
+
+Releasing
+==============
+1. First tag the release branch with a descriptive name of the release with `git tag -a <tagname> -m "message"`
+1. Push it to github with `git push --tags`.
+1. Then push to heroku with `git push heroku release`.
+1. If you need to reset the database in heroku (which you most likely will), you can't `reset_db` since Heroku doesn't allow it. Instead use `heroku pg:reset DATABASE_URL`, followed by `heroku run python manage.py syncdb`.

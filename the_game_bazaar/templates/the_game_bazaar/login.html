@@ -1,7 +1,36 @@
 <head>
     <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
     <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/login.js"></script>
+    <script>
+        $().ready(function() {
+            $('#register-form').submit(function (e){
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/auth/register/",
+                    data: {
+                        "username":$('#registerUsername').val(),
+                        "password":$('#registerPassword').val(),
+                        "email":$('#registerEmail').val()
+                    },
+                    headers: {
+                        "X-CSRFToken": $.cookie('csrftoken')
+                    },
+                    success: function (data){
+                        if (data.success === true) {
+                            window.location.pathname = data.redirect_url;
+                        } else {
+                            // navbarAlert is in navbar.js
+                            navbarAlert(data.error);
+                        }
+                        console.log(data);
+                        return false;
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
 </head>
 

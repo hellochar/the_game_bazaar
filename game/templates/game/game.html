@@ -1,19 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/socket.io.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/three.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/graph.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
+        {% include "lib/head-game.html" %}
         <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
-        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <script>
             $(function() {
                 // DOM manipulation

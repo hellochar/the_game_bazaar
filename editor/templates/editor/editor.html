@@ -1,11 +1,6 @@
 <html>
     <head>
-        <script src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/graph.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
-        <script src="{{ STATIC_URL }}editor/js/editor.js"></script>
+        {% include "lib/head-game.html" %}
         <script>
             $(function() {
                 var editor = window.editor = new Editor();
@@ -25,9 +20,7 @@
             });
         </script>
 
-
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}editor/css/editor.css" />
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}lib/css/bootstrap.css" />
     </head>
 
     <body>

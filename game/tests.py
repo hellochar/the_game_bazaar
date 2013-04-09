@@ -29,13 +29,11 @@ class GameControllerTest(TestCase):
         self.aMap = Map(creator=self.user, num_players=3, data="{}", map_name="Oogie Boogie")
         self.aMap.save()
 
-
     def test_create_new_game(self):
         game, players_json = views.create_new_game(self.aMap.id, self.user)
         self.assertEqual(len(players_json), 3)
         self.assertEqual(players_json[0], "hosting_player")
         pass
-
 
     def test_add_user_to_game(self):
         game, _ = views.create_new_game(self.aMap.id, self.user)
@@ -47,6 +45,7 @@ class GameControllerTest(TestCase):
         self.assertEqual(len(players_json), 3)
         self.assertEqual(players_json[0], "hosting_player")
         self.assertEqual(players_json[1], "joining_player")
+
 
 class GameTest(TestCase):
     def setUp(self):

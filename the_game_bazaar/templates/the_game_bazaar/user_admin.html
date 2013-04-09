@@ -2,8 +2,10 @@
 
 
 {% block head %}
-    {% include "lib/head-common.html" %}
+{% with page_title='User Administration' %}
+{{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/user_admin.js"></script>
+{% endwith %}
 {% endblock %}
 
 

@@ -2,7 +2,10 @@
 
 
 {% block head %}
-{# Nothing special needed in the head for now #}
+{% with page_title='Welcome' active_tab='home' %}
+{{ block.super }}
+
+{% endwith %}
 {% endblock %}
 
 

@@ -2,6 +2,8 @@
 
 
 {% block head %}
+{% with page_title='Game Client' active_tab='play' %}
+{{ block.super }}
     {% include "lib/head-game.html" %}
     <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
     <script>
@@ -16,6 +18,7 @@
             window.game = game;
         });
     </script>
+{% endwith %}
 {% endblock %}
 
 

@@ -2,6 +2,8 @@
 
 
 {% block head %}
+{% with page_title='Login' active_tab='home' %}
+{{ block.super }}
     <script>
         $().ready(function() {
             $('#register-form').submit(function (e){
@@ -32,6 +34,7 @@
             });
         });
     </script>
+{% endwith %}
 {% endblock %}
 
 

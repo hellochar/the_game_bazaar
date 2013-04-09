@@ -2,7 +2,10 @@
 
 
 {% block head %}
+{% with page_title='Play a Game' active_tab='play' %}
+{{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
+{% endwith %}
 {% endblock %}
 
 

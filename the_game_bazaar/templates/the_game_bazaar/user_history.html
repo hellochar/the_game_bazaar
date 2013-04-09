@@ -2,7 +2,10 @@
 
 
 {% block head %}
+{% with page_title='User History' %}
+{{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/user_admin.js"></script>
+{% endwith %}
 {% endblock %}
 
 

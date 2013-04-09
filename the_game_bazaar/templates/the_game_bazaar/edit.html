@@ -1,73 +1,69 @@
-<html>
-    <head>
-        {% include "lib/head-common.html" %}
-    </head>
-    <body>
-        <!-- START NAVIGATION BAR -->
-        {% include "lib/navbar.html" %}
-        <script type="text/javascript">
-            //mark page's active tab
-            $('#navbar-edit').addClass('active');
-        </script>
-        <!-- END NAVIGATION BAR -->
-        <div class="container">
-	        <div class="page-header"><h1>Edit a Map!</h1></div>
-	        <div class="row">
-	        	<div class="span10">
-	        		<div class="row">
-	        			<div class="span5">
-	        				<div class="row">
-	        					<h3>Your Maps:</h3>
-	        					<table class="table table-striped">
-	        						<thead><tr>
-	        							<th>Map ID</th>
-	        							<th>Map Name</th>
-	        							<th># of players</th>
-	        							<th>Actions</th>
-	        						</tr></thead>
-	        						<tbody>
-		            				{% for map in maps %}
-		            					{% if map.creator.username == user.username %}
-			            					<tr>
-			            						<td>{{ map.id }}</td>
-			            						<td>{{ map.map_name }}</td>
-			            						<td>{{ map.num_players }}</td>
-		                                        <td><a class="btn" href="/editor/#{{ map.id }}">Edit</a></td>
-			            					</tr>
-			            				{% endif %}
-		            				{% endfor %}
-		            				</tbody>
-		            			</table>
-	        				</div>
-	        				<div class="row">
-		        				<h3>All Maps:</h3>
-		        				<table class="table table-striped">
-		        					<thead><tr>
-		        						<th>Map ID</th>
-		        						<th>Map Name</th>
-		        						<th># of players</th>
-	                                    <th>Actions</th>
-		        					</tr></thead>
-		        					<tbody>
-		            				{% for map in maps %}
-		            					<tr>
-		            						<td>{{ map.id }}</td>
-		            						<td>{{ map.map_name }}</td>
-		            						<td>{{ map.num_players }}</td>
-	                                        <td><a class="btn" href="/editor/#{{ map.id }}">Edit</a></td>
-		            					</tr>
-		            				{% endfor %}
-		            				</tbody>
-		        				</table>
-		        			</div>
-	        			</div>
-                        <div class="span5">
-                            <h3>Create maps:</h3>
-                            <a class="btn btn-large" href="/editor/">Create new map!</a>
+{% extends "lib/layouts/default.html" %}
+
+
+{% block head %}
+{# Nothing special needed in the head for now #}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="page-header"><h1>Edit a Map!</h1></div>
+        <div class="row">
+            <div class="span10">
+                <div class="row">
+                    <div class="span5">
+                        <div class="row">
+                            <h3>Your Maps:</h3>
+                            <table class="table table-striped">
+                                <thead><tr>
+                                        <th>Map ID</th>
+                                        <th>Map Name</th>
+                                        <th># of players</th>
+                                        <th>Actions</th>
+                                </tr></thead>
+                                <tbody>
+                                    {% for map in maps %}
+                                    {% if map.creator.username == user.username %}
+                                    <tr>
+                                        <td>{{ map.id }}</td>
+                                        <td>{{ map.map_name }}</td>
+                                        <td>{{ map.num_players }}</td>
+                                        <td><a class="btn" href="/editor/#{{ map.id }}">Edit</a></td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-	        		</div>
-	        	</div>
-	        </div>
-		</div>
-    </body>
-</html>
+                        <div class="row">
+                            <h3>All Maps:</h3>
+                            <table class="table table-striped">
+                                <thead><tr>
+                                        <th>Map ID</th>
+                                        <th>Map Name</th>
+                                        <th># of players</th>
+                                        <th>Actions</th>
+                                </tr></thead>
+                                <tbody>
+                                    {% for map in maps %}
+                                    <tr>
+                                        <td>{{ map.id }}</td>
+                                        <td>{{ map.map_name }}</td>
+                                        <td>{{ map.num_players }}</td>
+                                        <td><a class="btn" href="/editor/#{{ map.id }}">Edit</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="span5">
+                        <h3>Create maps:</h3>
+                        <a class="btn btn-large" href="/editor/">Create new map!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

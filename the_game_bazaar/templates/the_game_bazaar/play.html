@@ -1,24 +1,20 @@
-<html>
-    <head>
-        {% include "lib/head-common.html" %}
-        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
-    </head>
-    <body>
-    	<!-- START NAVIGATION BAR -->
-        {% include "lib/navbar.html" %}
-        <script type="text/javascript">
-        	//mark page's active tab
-            $('#navbar-play').addClass('active');
-        </script>
-        <!-- END NAVIGATION BAR -->
-        <div class="container">
-	        <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>
-	        <div class="row">
-	        	<div class="span10">
-                    <div id="play-join">
-                        <button id="play-host-button" class="btn btn-primary pull-right">Host a Game</button>
-        				<h3>Join A Game:</h3>
-                        <div id="play-join-table"></div>
+{% extends "lib/layouts/default.html" %}
+
+
+{% block head %}
+    <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/play.js"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>
+        <div class="row">
+            <div class="span10">
+                <div id="play-join">
+                    <button id="play-host-button" class="btn btn-primary pull-right">Host a Game</button>
+                    <h3>Join A Game:</h3>
+                    <div id="play-join-table"></div>
                 </div>
                 <div id="play-host">
                     <button id="play-join-button" class="btn btn-primary pull-right">Join a Game</button>
@@ -28,5 +24,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

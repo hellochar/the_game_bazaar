@@ -1,0 +1,26 @@
+<html>
+    <head>
+        {% include "lib/head-common.html" %}
+
+        {% block head %}
+        {% endblock %}
+        <title>{{ page_title }} - The Game Bazaar</title>
+    </head>
+
+    <body>
+        <!-- START NAVIGATION BAR -->
+        {% include "lib/navbar.html" %}
+
+        <script type="text/javascript">
+            //mark page's active tab
+            $('#navbar-{{ active_tab }}').addClass('active'); //active_tab can be one of "home", "play", "edit"
+        </script>
+
+        <!-- END NAVIGATION BAR -->
+
+        {% block content %}
+        THIS PAGE HAS NO CONTENT!
+        {% endblock %}
+    </body>
+
+</html>

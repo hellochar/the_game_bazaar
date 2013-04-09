@@ -42,11 +42,11 @@ describe("GameState", function() {
             expect(gamestate.players[2].units.length).toEqual(2);
         });
 
-        it("should have units that have pos functions that evaluate to a map with x and y keys", function() {
+        it("should have units that have pos functions that evaluate to THREE.Vector3 instance", function() {
             gamestate.players.forEach(function (player) {
                 player.units.forEach(function (unit) {
                     var position = unit.pos(0);
-                    expect(Object.keys(position)).toEqual(['x', 'y']);
+                    expect(position instanceof THREE.Vector3).toBe(true);
                 });
             });
         });
@@ -65,8 +65,9 @@ describe("GameState", function() {
         describe("Adding a unit", function() {
             it("should add a unit with correct player/pos attributes", function() {
                 var map = Editor.createDefaultMap();
-                map.addUnit(map.players[0], {x: 100, y: 200});
-                expect(map.players[0].units[0].pos(0)).toEqual({x:100, y:200});
+                var pos = new THREE.Vector3(100, 200, 0);
+                map.addUnit(map.players[0], pos);
+                expect(map.players[0].units[0].pos(0)).toEqual(pos);
             });
         });
 
@@ -104,10 +105,10 @@ describe("GameState", function() {
         describe("update", function() {
             it("should move a unit correctly in the axes directions", function() {
                 var modifiedUnit = gamestate.players[0].units[0];
-                modifiedUnit.update(0, {'x': 20, 'y': 15});
+                modifiedUnit.update(0, new THREE.Vector3(20, 15, 0));
                 expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
                 expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-                modifiedUnit.update(10, {'x': 13, 'y': 20});
+                modifiedUnit.update(10, new THREE.Vector3(13, 20, 0));
                 expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
                 expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
                 expect(modifiedUnit.pos(20).x).toBeCloseTo(13, 2);
@@ -116,21 +117,21 @@ describe("GameState", function() {
 
             it("should update facing correctly in the axes directions", function() {
               var modifiedUnit = gamestate.players[0].units[0];
-              modifiedUnit.update(0, {'x': 20, 'y': 15});
+              modifiedUnit.update(0, new THREE.Vector3(20, 15, 0));
               expect(modifiedUnit.facing(10)).toBeCloseTo(0, 2);
-              modifiedUnit.update(10, {'x': 13, 'y': 20});
+              modifiedUnit.update(10, new THREE.Vector3(13, 20, 0));
               expect(modifiedUnit.facing(10)).toBeCloseTo(Math.PI / 2, 2);
               expect(modifiedUnit.facing(20)).toBeCloseTo(Math.PI / 2, 2);
             });
 
             it("should move a unit correctly in the diagonal direction", function() {
                 var modifiedUnit = gamestate.players[0].units[0];
-                modifiedUnit.update(0, {'x': 40, 'y': 45});
+                modifiedUnit.update(0, new THREE.Vector3(40, 45, 0));
                 var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
                 var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
                 expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
                 expect(modifiedUnit.pos(100).y).toBeCloseTo(yAt100, 2);
-                modifiedUnit.update(100, {'x': xAt100 - 30, 'y': yAt100 + 30});
+                modifiedUnit.update(100, new THREE.Vector3(xAt100 - 30, yAt100 + 30));
                 var xAt200 = xAt100 - 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
                 var yAt200 = yAt100 + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
                 expect(modifiedUnit.pos(100).x).toBeCloseTo(xAt100, 2);
@@ -141,11 +142,11 @@ describe("GameState", function() {
 
             it("should update facing correctly in the diagonal directions", function() {
               var modifiedUnit = gamestate.players[0].units[0];
-              modifiedUnit.update(0, {'x': 40, 'y': 45});
+              modifiedUnit.update(0, new THREE.Vector3(40, 45, 0));
               var xAt100 = modifiedUnit.pos(0).x + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
               var yAt100 = modifiedUnit.pos(0).y + 1 / Math.sqrt(2) * 100 * modifiedUnit.speed;
               expect(modifiedUnit.facing(100)).toBeCloseTo(Math.PI / 4, 2);
-              modifiedUnit.update(100, {'x': xAt100 - 30, 'y': yAt100 + 30});
+              modifiedUnit.update(100, new THREE.Vector3(xAt100 - 30, yAt100 + 30));
               expect(modifiedUnit.facing(100)).toBeCloseTo(Math.PI * 3/4, 2);
               expect(modifiedUnit.facing(200)).toBeCloseTo(Math.PI * 3/4, 2);
             });
@@ -166,11 +167,11 @@ describe("GameState", function() {
         beforeEach(function() {
             gamestate = new GameState([
                 new Player([
-                    new Unit({'x': 0, 'y': 100}),
-                    new Unit({'x': 1, 'y': 101})
+                    new Unit(new THREE.Vector3(0, 100)),
+                    new Unit(new THREE.Vector3(1, 101))
                     ]),
                 new Player([
-                    new Unit({'x': 2000, 'y': 2100})
+                    new Unit(new THREE.Vector3(2000, 2100))
                     ]),
                 new Player([
                     ])
@@ -218,7 +219,8 @@ describe("GameState", function() {
                 expect(json).toEqual({
                     pos: {
                         x: 0,
-                        y: 100
+                        y: 100,
+                        z: 0
                     },
                     speed: 0.3,
                     facing: -Math.PI / 2,

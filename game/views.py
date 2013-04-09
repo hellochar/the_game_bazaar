@@ -41,7 +41,7 @@ def host_game(request):
 def create_new_game(map_id, host):
     # TODO: if the map_id is empty, you should display an error!
 
-    theMap = Map.objects.get(pk=map_id) 
+    theMap = Map.objects.get(pk=map_id)
     # Create the players array (only the host at the moment)
     players_json = [""] * theMap.num_players
     players_json[0] = host.username

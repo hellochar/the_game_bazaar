@@ -2,6 +2,7 @@ from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 import time
 
+
 class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def broadcast_to_room(self, room, event, *args):

@@ -213,7 +213,7 @@ describe("Game", function() {
         beforeEach(function() {
             game.player_id = 120;
             game.game_id = 9999;
-            game.handleClick(1, {x: 10, y:100});
+            game.handleClick(1, new THREE.Vector3(10, 100));
         });
         it("should emit a 'click' event", function() {
             expect(game.socket.emit).toHaveBeenCalledWith('click', jasmine.any(Object));
@@ -228,7 +228,7 @@ describe("Game", function() {
         beforeEach(function() {
             game.player_id = 120;
             game.game_id = 9999;
-            game.handleDrag(1, {x: 10, y:100}, {x:15, y:120});
+            game.handleDrag(1, new THREE.Vector3(10, 100), new THREE.Vector3(15, 120));
         });
         it("should emit a 'drag' event", function() {
             expect(game.socket.emit).toHaveBeenCalledWith('drag', jasmine.any(Object));
@@ -252,9 +252,9 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 1,
-                clickpos: {x: 10, y: 100}
+                clickpos: new THREE.Vector3(10, 100)
             });
-            expect(GS_UI.selectUnit).toHaveBeenCalledWith(game.gamestate.players[0], 10, {x: 10, y: 100});
+            expect(GS_UI.selectUnit).toHaveBeenCalledWith(game.gamestate.players[0], 10, new THREE.Vector3(10, 100));
             expect(game.moveUnits).not.toHaveBeenCalled();
         });
 
@@ -263,9 +263,9 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 3,
-                clickpos: {x: 10, y: 100}
+                clickpos: new THREE.Vector3(10, 100)
             });
-            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, {x: 10, y: 100});
+            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, new THREE.Vector3(10, 100));
             expect(GS_UI.selectUnit).not.toHaveBeenCalled();
         });
     });
@@ -284,10 +284,10 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 1,
-                dragstart: {x: 10, y: 10},
-                dragend: {x:50, y:50}
+                dragstart: new THREE.Vector3(10, 10),
+                dragend: new THREE.Vector3(50, 50)
             });
-            expect(GS_UI.selectUnits).toHaveBeenCalledWith(game.gamestate.players[0], 10, {x:10, y:10}, {x:50, y:50});
+            expect(GS_UI.selectUnits).toHaveBeenCalledWith(game.gamestate.players[0], 10, new THREE.Vector3(10, 10), new THREE.Vector3(50, 50));
             expect(game.moveUnits).not.toHaveBeenCalled();
         });
 
@@ -296,11 +296,11 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 3,
-                dragstart: {x: 10, y: 10},
-                dragend: {x:50, y:50}
+                dragstart: new THREE.Vector3(10, 10),
+                dragend: new THREE.Vector3(50, 50)
             });
             expect(GS_UI.selectUnits).not.toHaveBeenCalled();
-            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, {x:50, y:50});
+            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, new THREE.Vector3(50, 50));
         });
     });
 
@@ -309,18 +309,18 @@ describe("Game", function() {
         it("should update all selected units", function() {
             var map = Editor.createDefaultMap();
             game.gamestate = map;
-            var u1 = map.addUnit(map.players[0], {x: 100, y: 100});
-            var u2 = map.addUnit(map.players[0], {x: 120, y: 120});
-            var u3 = map.addUnit(map.players[0], {x: 150, y: 150});
+            var u1 = map.addUnit(map.players[0], new THREE.Vector3(100, 100));
+            var u2 = map.addUnit(map.players[0], new THREE.Vector3(120, 120));
+            var u3 = map.addUnit(map.players[0], new THREE.Vector3(150, 150));
             map.players[0].selectedUnits = [ u1, u2 ];
 
             spyOn(u1, 'update');
             spyOn(u2, 'update');
             spyOn(u3, 'update');
 
-            game.moveUnits(10, 0, {x: 50, y: 50});
-            expect(u1.update).toHaveBeenCalledWith(10, {x:50, y:50});
-            expect(u2.update).toHaveBeenCalledWith(10, {x:50, y:50});
+            game.moveUnits(10, 0, new THREE.Vector3(50, 50));
+            expect(u1.update).toHaveBeenCalledWith(10, new THREE.Vector3(50, 50));
+            expect(u2.update).toHaveBeenCalledWith(10, new THREE.Vector3(50, 50));
             expect(u3.update).not.toHaveBeenCalled();
         });
     });

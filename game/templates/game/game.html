@@ -1,63 +1,51 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/socket.io.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/three.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/graph.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
-        <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
-        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
-        <script>
-            $(function() {
-                // DOM manipulation
-                $().ready(function() {
-                    $('#game-container').hide();
-                    $('#lobby-container').show();
-                });
-                var game = new Game();
-                game.init();
-                window.game = game;
+{% extends "lib/layouts/default.html" %}
+
+
+{% block head %}
+{% with page_title='Game Client' active_tab='play' %}
+{{ block.super }}
+    {% include "lib/head-game.html" %}
+    <link href="{{ STATIC_URL }}game/css/game.css" rel="stylesheet">
+    <script>
+        $(function() {
+            // DOM manipulation
+            $().ready(function() {
+                $('#game-container').hide();
+                $('#lobby-container').show();
             });
-        </script>
-    </head>
-    <body>
-        <!-- START NAVIGATION BAR -->
-        {% include "lib/navbar.html" %}
-        <script type="text/javascript">
-            //mark page's active tab
-            $('#navbar-play').addClass('active');
-        </script>
-        <!-- LOBBY CONTAINER -->
-        <div id="game-id" val="{{ game_id }}"></div>
-        <div id="map-id" val="{{ map_id }}"></div>
-        <div id="player-id" val="{{ player_id }}"></div>
-        <div id="lobby-container">
-            <h1>Welcome to the lobby!</h1>
+            var game = new Game();
+            game.init();
+            window.game = game;
+        });
+    </script>
+{% endwith %}
+{% endblock %}
 
-            <p>
-            {% if isHost %}
-                You are the host! and therefore have this button:
-                <button id="start-game">Start Game!</button>
-                Also, your game id is {{ game_id }}
-            {% else %}
-                You have joined the game!
-            {% endif %}
-            <h3>And the players are..........</h3>
-            <ul id='player-usernames'>
-                {% for key, value in players_json %}
-                    <li id='player-slot-{{ key }}'>{{ value }}</li>
-                {% endfor %}
-            </ul>
-            </p>
-        </div>
 
-        {% include "lib/game-canvas.html" %}
-    </body>
-</html>
+{% block content %}
+    <!-- LOBBY CONTAINER -->
+    <div id="game-id" val="{{ game_id }}"></div>
+    <div id="map-id" val="{{ map_id }}"></div>
+    <div id="player-id" val="{{ player_id }}"></div>
+    <div id="lobby-container">
+        <h1>Welcome to the lobby!</h1>
+
+        <p>
+        {% if isHost %}
+            You are the host! and therefore have this button:
+            <button id="start-game">Start Game!</button>
+            Also, your game id is {{ game_id }}
+        {% else %}
+            You have joined the game!
+        {% endif %}
+        <h3>And the players are..........</h3>
+        <ul id='player-usernames'>
+            {% for key, value in players_json %}
+                <li id='player-slot-{{ key }}'>{{ value }}</li>
+            {% endfor %}
+        </ul>
+        </p>
+    </div>
+
+    {% include "lib/game-canvas.html" %}
+{% endblock %}

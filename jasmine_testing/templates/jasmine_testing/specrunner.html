@@ -41,23 +41,8 @@
   </script>
 
   <!-- include source files here... -->
-  <!-- External libraries -->
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/sylvester.src.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/socket.io.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/three.min.js"></script>
-
-  <!-- Our libraries -->
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/graph.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js"></script>
-
-  <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}editor/js/editor.js"></script>
+  {% include "lib/head-common.html" %}
+  {% include "lib/head-game.html" %}
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/PathBuilderSpec.js"></script>

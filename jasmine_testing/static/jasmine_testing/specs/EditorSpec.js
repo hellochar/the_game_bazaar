@@ -105,7 +105,7 @@ describe("Map Editor", function() {
     describe("loadMap", function() {
             var fakeData;
             beforeEach(function() {
-                    editor.map.addUnit(editor.map.players[0], {x: 10, y: 100});
+                    editor.map.addUnit(editor.map.players[0], new THREE.Vector3(10, 100, 0));
                     fakeData = {success : true, map_id: 10, map_data: JSON.stringify(editor.map.toJSON())};
 
                     var ajax_params;
@@ -130,7 +130,7 @@ describe("Map Editor", function() {
 
                     expect(Editor.createMapFromResponse).toHaveBeenCalledWith(fakeData);
                     expect(editor.setEditingMap).toHaveBeenCalled();
-                    expect(editor.map.players[0].units[0].pos(0)).toEqual({x: 10, y: 100});
+                    expect(editor.map.players[0].units[0].pos(0)).toEqual(new THREE.Vector3(10, 100, 0));
             });
     });
 

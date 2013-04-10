@@ -1,59 +1,47 @@
-<html>
-    <head>
-        <script src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/three.min.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/pathbuilder.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/gamestate.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/graph.js"></script>
-        <script src="{{ STATIC_URL }}lib/js/ui_renderer.js"></script>
-        <script src="{{ STATIC_URL }}editor/js/editor.js"></script>
-        <script>
-            $(function() {
-                var editor = window.editor = new Editor();
-                if(window.location.hash != "") {
-                    //hash exists; load the map
-                    editor.loadMap(window.location.hash.substring(1));
-                }
-                editor.init();
+{% extends "lib/layouts/default.html" %}
 
-                $('#save-button').click(function () {
-                    editor.saveMap();
-                });
 
-                $('#load-button').click(function() {
-                    editor.loadMap($('#load-id').val());
-                });
+{% block head %}
+{% with page_title='Edit' active_tab='edit' %}
+{{ block.super }}
+    {% include "lib/head-game.html" %}
+    <script>
+        $(function() {
+            var editor = window.editor = new Editor();
+            if(window.location.hash != "") {
+                //hash exists; load the map
+                editor.loadMap(window.location.hash.substring(1));
+            }
+            editor.init();
+
+            $('#save-button').click(function () {
+                editor.saveMap();
             });
-        </script>
+
+            $('#load-button').click(function() {
+                editor.loadMap($('#load-id').val());
+            });
+        });
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}editor/css/editor.css" />
+{% endwith %}
+{% endblock %}
 
 
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}editor/css/editor.css" />
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}lib/css/bootstrap.css" />
-    </head>
-
-    <body>
-        <!-- START NAVIGATION BAR -->
-        {% include "lib/navbar.html" %}
-        <script type="text/javascript">
-            //mark page's active tab
-        $('#navbar-edit').addClass('active');
-        </script>
-        <!-- END NAVIGATION BAR -->
-        <div class="row">
-            <div class="span10">
-                <div class="row">
-                    {% include "lib/game-canvas.html" %}
-                    <div id='buttons' class="span5">
-                        <input type="radio" name="player" value="0" checked="yes">Player 0<br>
-                        <input type="radio" name="player" value="1">Player 1<br>
-                        Map id: <input id='load-id' type='text'> <input id='load-button' type='button' value='Load'><br>
-                        <input id='save-button' type="button" value="Save"><br>
-                        <h3>Map id:</h3><span id='map-id'></span>
-                    </div>
+{% block content %}
+    <div class="row">
+        <div class="span10">
+            <div class="row">
+                {% include "lib/game-canvas.html" %}
+                <div id='buttons' class="span5">
+                    <input type="radio" name="player" value="0" checked="yes">Player 0<br>
+                    <input type="radio" name="player" value="1">Player 1<br>
+                    Map id: <input id='load-id' type='text'> <input id='load-button' type='button' value='Load'><br>
+                    <input id='save-button' type="button" value="Save"><br>
+                    <h3>Map id:</h3><span id='map-id'></span>
                 </div>
             </div>
         </div>
-    </body>
-
-
-</html>
+    </div>
+{% endblock %}

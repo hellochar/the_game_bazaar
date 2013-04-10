@@ -2,13 +2,15 @@
     <head>
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}the_game_bazaar/css/home.css" rel="stylesheet">
-
+        <link href='http://fonts.googleapis.com/css?family=Geo|Julius+Sans+One' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
 
         <style>
             .title {
+                -webkit-text-stroke: 1px;
+                font-family: 'Julius Sans One', sans-serif;
                 color:white;
-                width:300px;
+                width:400px;
                 height:200px;
                 position:absolute;
                 left:50%;
@@ -17,6 +19,7 @@
             }
 
             .navigation {
+                font-family: 'Geo', sans-serif;
                 position:absolute;
                 width:140px;
                 margin: 30 10 10 30;
@@ -34,7 +37,7 @@
 
             .navigation .link {
                 width: 130px;
-                height: 40px;                
+                height: 40px;
             }
 
             .navigation .link:hover {
@@ -60,7 +63,7 @@
                 padding-bottom: 0px;
                 margin-bottom:0px;
                 bottom: 0px;
-            }   
+            }
 
             .news ul {
                 position: absolute;
@@ -95,7 +98,7 @@
 
         <!-- Page Content -->
         <div>
-            <div class="title"><h1>theGameBazaar</h1></div>
+            <div class="title"><h1>The Game Bazaar</h1></div>
         </div>
 
         <!-- News Updates -->

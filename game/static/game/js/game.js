@@ -265,6 +265,7 @@ Game.prototype.handleClickMessage = function (data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     var clickpos = data['clickpos'];
+    clickpos = new THREE.Vector3(clickpos.x, clickpos.y, clickpos.z);
     var clicktype = data['clicktype'];
     // Find the time at which this message was supposed to be applied.
     var updateTime = timestamp - this.server_start_time;
@@ -284,7 +285,9 @@ Game.prototype.handleDragMessage = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     var dragstart = data['dragstart'];
+    dragstart = new THREE.Vector3(dragstart.x, dragstart.y, dragstart.z);
     var dragend = data['dragend'];
+    dragend = new THREE.Vector3(dragend.x, dragend.y, dragend.z);
     var clicktype = data['clicktype'];
 
     // Find the time at which this message was supposed to be applied.

@@ -1,34 +1,32 @@
-<html>
-    <head>
-        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
-    </head>
-    <body>
-        <!-- START NAVIGATION BAR -->
-        {% include "lib/navbar.html" %}
-        <script type="text/javascript">
-            //mark page's active tab
-            $('#navbar-home').addClass('active');
-        </script>
-        <!-- END NAVIGATION BAR -->
-        <div class="container">
-            <div class="page-header"><h1><small>Welcome to</small> The Game Bazaar!</h1></div>
-            <div class="row">
-                <div class="span10">
-                    <div class="row">
-                        <div class="span5">
-                            <form action="/play" method="get">
-                                <input type="submit" value="Play a Game!"></input>
-                            </form>
-                        </div>
-                        <div class="span5">
-                            <form action="/edit" method="get">
-                                <input type="submit" value="Edit a Map!"></input>
-                            </form>
-                        </div>
+{% extends "lib/layouts/default.html" %}
+
+
+{% block head %}
+{% with page_title='Welcome' active_tab='home' %}
+{{ block.super }}
+
+{% endwith %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="page-header"><h1><small>Welcome to</small> The Game Bazaar!</h1></div>
+        <div class="row">
+            <div class="span10">
+                <div class="row">
+                    <div class="span5">
+                        <form action="/play" method="get">
+                            <input type="submit" value="Play a Game!"></input>
+                        </form>
+                    </div>
+                    <div class="span5">
+                        <form action="/edit" method="get">
+                            <input type="submit" value="Edit a Map!"></input>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+{% endblock %}

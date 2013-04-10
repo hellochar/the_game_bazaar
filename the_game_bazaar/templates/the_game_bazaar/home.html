@@ -7,9 +7,7 @@
 
         <style>
             .title {
-                color:white;
-                width:300px;
-                height:200px;
+                color:rgb(230, 50, 50);
                 position:absolute;
                 left:50%;
                 top:50%;
@@ -19,7 +17,7 @@
             .navigation {
                 position:absolute;
                 width:140px;
-                margin: 30 10 10 30;
+                margin: 10px;
                 background: rgb(256, 50, 50); /* Fall-back for browsers that don't support rgba */
                 background: rgba(256, 50, 50, .3);
                 color: rgb(220, 220, 220);
@@ -50,6 +48,7 @@
             .navigation .link h3 i {
                 margin-top: 5px;
                 margin-left: 10px;
+                margin-right: 10px;
             }
 
             .news {
@@ -77,11 +76,34 @@
                 background: rgba(256, 50, 50, .4);
                 color: white;
             }
+
+            .user-corner {
+                position: absolute;
+                margin: 10px;
+                right: 0px;
+            }
+
+            .user-corner p:hover {
+                background: rgba(180, 25, 25, 1.0);
+            }
+
+            .user-corner p{
+                background: rgba(256, 50, 50, .4);
+                padding:5px;
+                margin: 5px;
+                font-size: 1.0em;
+                float:left;
+                color: white;
+            }
+
         </style>
     </head>
     <body>
         <!-- top right user corner stuff -->
+        <!-- content here depends on if the user is signed in or not -->
         <div class="user-corner">
+            <p><i class="icon-user icon-white"></i> sign in</p>
+            <p><i class="icon-book icon-white"></i> register</p>
         </div>
 
         <!-- Navigation -->

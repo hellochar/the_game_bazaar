@@ -106,22 +106,25 @@ describe("GameState", function() {
             it("should move a unit correctly in the axes directions", function() {
                 var modifiedUnit = gamestate.players[0].units[0];
                 modifiedUnit.update(0, new THREE.Vector3(20, 15, 0));
-                expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
+                var newx = 10 + 10*modifiedUnit.speed;
+                expect(modifiedUnit.pos(10).x).toBeCloseTo(newx, 2);
                 expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-                modifiedUnit.update(10, new THREE.Vector3(13, 20, 0));
-                expect(modifiedUnit.pos(10).x).toBeCloseTo(13, 2);
+                modifiedUnit.update(10, new THREE.Vector3(newx, 20, 0));
+                var newy = 15 + 10*modifiedUnit.speed;
+                expect(modifiedUnit.pos(10).x).toBeCloseTo(newx, 2);
                 expect(modifiedUnit.pos(10).y).toBeCloseTo(15, 2);
-                expect(modifiedUnit.pos(20).x).toBeCloseTo(13, 2);
-                expect(modifiedUnit.pos(20).y).toBeCloseTo(18, 2);
+                expect(modifiedUnit.pos(20).x).toBeCloseTo(newx, 2);
+                expect(modifiedUnit.pos(20).y).toBeCloseTo(newy, 2);
             });
 
             it("should update facing correctly in the axes directions", function() {
-              var modifiedUnit = gamestate.players[0].units[0];
-              modifiedUnit.update(0, new THREE.Vector3(20, 15, 0));
-              expect(modifiedUnit.facing(10)).toBeCloseTo(0, 2);
-              modifiedUnit.update(10, new THREE.Vector3(13, 20, 0));
-              expect(modifiedUnit.facing(10)).toBeCloseTo(Math.PI / 2, 2);
-              expect(modifiedUnit.facing(20)).toBeCloseTo(Math.PI / 2, 2);
+                var modifiedUnit = gamestate.players[0].units[0];
+                modifiedUnit.update(0, new THREE.Vector3(20, 15, 0));
+                expect(modifiedUnit.facing(10)).toBeCloseTo(0, 2);
+                var newx = 10 + 10*modifiedUnit.speed;
+                modifiedUnit.update(10, new THREE.Vector3(newx, 20, 0));
+                expect(modifiedUnit.facing(10)).toBeCloseTo(Math.PI / 2, 2);
+                expect(modifiedUnit.facing(20)).toBeCloseTo(Math.PI / 2, 2);
             });
 
             it("should move a unit correctly in the diagonal direction", function() {
@@ -215,14 +218,15 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].units[0].toJSON();
             });
-            it("should save the position, speed, and facing and nothing else", function() {
+            it("should save the position, speed, bullets, and facing and nothing else", function() {
                 expect(json).toEqual({
                     pos: {
                         x: 0,
                         y: 100,
                         z: 0
                     },
-                    speed: 0.3,
+                    bullets: [],
+                    speed: 0.1,
                     facing: -Math.PI / 2,
                     size: 15
                 });

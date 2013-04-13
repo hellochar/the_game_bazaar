@@ -1,7 +1,9 @@
 $().ready(function(){
+    $('.sign-in').hide();
+
 	$('#sign-in').click(function(){
-		console.log("hello!");
-	})
+        $('.sign-in').slideToggle(300);
+	});
 });
 
 function user(){

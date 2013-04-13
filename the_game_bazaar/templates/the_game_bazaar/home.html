@@ -75,11 +75,33 @@
 
             .news .item {
                 padding: 5px;
-                margin-top: 10px;
-                margin-bottom: 10px;
+                margin-top: 5px;
+                margin-bottom: 5px;
                 background: rgb(256, 50, 50); /* Fall-back for browsers that don't support rgba */
                 background: rgba(256, 50, 50, .4);
                 color: white;
+            }
+
+            .news .item h5 {
+                margin: 0px;
+            }
+            .news .item p {
+                line-height: 1em;
+
+            }
+
+            .sign-in {
+                top: 60px;
+                right: 15px;
+                position: absolute;
+                background: rgba(256, 256, 256, .3);
+                padding: 5px;
+                -moz-border-radius: 15px;
+                border-radius: 5px;
+            }
+
+            .sign-in form {
+                margin: 0px;
             }
 
             .user-corner {
@@ -134,7 +156,7 @@
                 <input type="password" class="input-small" placeholder="Password">
                 <button type="submit" class="btn">Sign in</button>
             </form>
-        <div>
+        </div>
 
         <!-- News Updates -->
         <div class="news">

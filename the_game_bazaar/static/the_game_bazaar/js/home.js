@@ -1,5 +1,7 @@
 $().ready(function(){
-
+	$('#sign-in').click(function(){
+		console.log("hello!");
+	})
 });
 
 function user(){
@@ -33,6 +35,7 @@ function user(){
                 if(data['success'] === true){
                     this.loggedin = true;
                     this.username = username;
+                    //show that you're logged in
                 } else {
                     //show an error
                 }

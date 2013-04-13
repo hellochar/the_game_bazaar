@@ -2,12 +2,16 @@
     <head>
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}the_game_bazaar/css/home.css" rel="stylesheet">
-
+        <link href='http://fonts.googleapis.com/css?family=Geo|Julius+Sans+One' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/home.js"></script>
 
         <style>
             .title {
                 color:rgb(230, 50, 50);
+                -webkit-text-stroke: 1px;
+                font-family: 'Julius Sans One', sans-serif;
+                color:white;
                 position:absolute;
                 left:50%;
                 top:50%;
@@ -15,6 +19,7 @@
             }
 
             .navigation {
+                font-family: 'Geo', sans-serif;
                 position:absolute;
                 width:140px;
                 margin: 10px;
@@ -32,7 +37,7 @@
 
             .navigation .link {
                 width: 130px;
-                height: 40px;                
+                height: 40px;
             }
 
             .navigation .link:hover {
@@ -59,7 +64,7 @@
                 padding-bottom: 0px;
                 margin-bottom:0px;
                 bottom: 0px;
-            }   
+            }
 
             .news ul {
                 position: absolute;
@@ -85,6 +90,7 @@
 
             .user-corner p:hover {
                 background: rgba(180, 25, 25, 1.0);
+                cursor: pointer;
             }
 
             .user-corner p{
@@ -101,10 +107,11 @@
     <body>
         <!-- top right user corner stuff -->
         <!-- content here depends on if the user is signed in or not -->
-        <div class="user-corner">
-            <p><i class="icon-user icon-white"></i> sign in</p>
-            <p><i class="icon-book icon-white"></i> register</p>
+        <div id="user-corner" class="user-corner">
+            <p id="sign-in"><i class="icon-user icon-white"></i> sign in</p>
+            <p id="register"><i class="icon-book icon-white"></i> register</p>
         </div>
+
 
         <!-- Navigation -->
         <div class="navigation">
@@ -117,8 +124,17 @@
 
         <!-- Page Content -->
         <div>
-            <div class="title"><h1>theGameBazaar</h1></div>
+            <div class="title"><h1>The Game Bazaar</h1></div>
         </div>
+
+        <!-- Sign In Form -->
+        <div class="sign-in">
+            <form class="form-inline">
+                <input type="text" class="input-small" placeholder="Email">
+                <input type="password" class="input-small" placeholder="Password">
+                <button type="submit" class="btn">Sign in</button>
+            </form>
+        <div>
 
         <!-- News Updates -->
         <div class="news">

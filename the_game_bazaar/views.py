@@ -18,11 +18,7 @@ def index(request):
     context = {
         "user": request.user,
     }
-    if request.user.is_authenticated():
-        return render(request, 'the_game_bazaar/home.html', context)
-    else:
-        return render(request, 'the_game_bazaar/login.html', context)
-
+    return render(request, 'the_game_bazaar/home.html', context)
 
 # /home
 @login_required(login_url='/', redirect_field_name=None)

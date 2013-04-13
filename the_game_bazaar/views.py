@@ -120,6 +120,20 @@ def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)
 
+@require_http_methods(["GET"])
+def ajax_is_authenticated(request):
+    logged_in = request.user.is_authenticated()
+
+    resp = {
+        "success": logged_in,
+    }
+
+    if logged_in:
+        resp["username"] = request.user.username
+        resp["gravatar"] = ajax_gravatar(request).content
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
 @login_required(login_url='/', redirect_field_name=None)
 @require_http_methods(["POST"])
 def ajax_change(request):

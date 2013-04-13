@@ -45,6 +45,10 @@ urlpatterns = patterns('',
         views.login,
         name="login"),
 
+    url(r'^auth/check/$',
+        views.ajax_is_authenticated,
+        name="ajax_is_authenticated"),
+    
     url(r'^auth/login/$',
         views.ajax_login,
         name="ajax_login"),

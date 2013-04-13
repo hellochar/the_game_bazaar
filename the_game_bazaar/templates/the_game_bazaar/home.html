@@ -3,7 +3,9 @@
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}the_game_bazaar/css/home.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Geo|Julius+Sans+One' rel='stylesheet' type='text/css'>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/home.js"></script>
 
         <style>
@@ -104,6 +106,17 @@
                 margin: 0px;
             }
 
+            .sign-in button {
+                padding: 0px;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .sign-in p {
+                color: white;
+                margin: 5px;
+            }
+
             .user-corner {
                 position: absolute;
                 margin: 10px;
@@ -128,10 +141,36 @@
     </head>
     <body>
         <!-- top right user corner stuff -->
-        <!-- content here depends on if the user is signed in or not -->
-        <div id="user-corner" class="user-corner">
+        <!-- user not signed in -->
+        <div id="not-signed" class="user-corner">
             <p id="sign-in"><i class="icon-user icon-white"></i> sign in</p>
             <p id="register"><i class="icon-book icon-white"></i> register</p>
+        </div>
+
+        <!-- Sign In Form -->
+        <div class="sign-in">
+            <form class="form-inline">
+                <input id="username" type="text" class="input-small" placeholder="Username">
+                <input id="password" type="password" class="input-small" placeholder="Password">
+                <button type="submit" class="btn btn-danger">Sign in</button>
+            </form>
+        </div>
+
+        <!-- top right user corner stuff-->
+        <!-- user is signed in -->
+        <div id="signed" class="user-corner login_required">
+            <ul>
+                <li id="fat-menu" class="dropdown">
+                    <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/admin">Profile</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/history">History</a></li>
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="navbar-logout">logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
 
 
@@ -139,23 +178,16 @@
         <div class="navigation">
             <ul>
                 <li class="link"><h3>HOME<i class="icon-home icon-white"></i></h3></li>
-                <li class="link"><h3>PLAY<i class="icon-play icon-white"></i></h3></li>
-                <li class="link"><h3>EDIT<i class="icon-edit icon-white"></i></h3></li>
+                <div class="login_required">
+                    <li class="link"><h3>PLAY<i class="icon-play icon-white"></i></h3></li>
+                    <li class="link"><h3>EDIT<i class="icon-edit icon-white"></i></h3></li>
+                </div>
             </ul>
         </div>
 
         <!-- Page Content -->
         <div>
             <div class="title"><h1>The Game Bazaar</h1></div>
-        </div>
-
-        <!-- Sign In Form -->
-        <div class="sign-in">
-            <form class="form-inline">
-                <input type="text" class="input-small" placeholder="Email">
-                <input type="password" class="input-small" placeholder="Password">
-                <button type="submit" class="btn">Sign in</button>
-            </form>
         </div>
 
         <!-- News Updates -->

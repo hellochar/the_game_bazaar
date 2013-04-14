@@ -48,10 +48,14 @@ Editor.prototype.setEditingMap = function(map) {
 
 Editor.prototype.saveMap = function() {
     var self = this;
-    data = {map_id : this.map.id, map_data : JSON.stringify(this.map.toJSON())};
+    var map_id = this.map.id;
+    if (!map_id) {
+        map_id = '';
+    }
+    data = {map_data : JSON.stringify(this.map.toJSON())};
     $.ajax({
         type: "POST",
-        url: '/map/',
+        url: '/map/' + this.map.id,
         data: data,
         success: function (response_json) {
             console.log("success", response_json);
@@ -71,8 +75,7 @@ Editor.prototype.loadMap = function(map_id) {
 
     $.ajax({
         type: "GET",
-        url: '/map/',
-        data: {map_id : map_id},
+        url: '/map/' + map_id,
         success: successCallback,
         dataType: 'json'
     });

@@ -133,14 +133,13 @@ describe("Game", function() {
         beforeEach(function() {
             game.map_id = 120;
         });
-        it("should make a GET request to /map/ with the map_id", function() {
+        it("should make a GET request to /map/#mapid", function() {
             spyOn($, 'ajax');
             game.instantiateGameState();
 
             var request = $.ajax.mostRecentCall.args[0];
-            expect(request.url).toBe('/map/');
+            expect(request.url).toBe('/map/120');
             expect(request.type).toBe('GET');
-            expect(request.data).toEqual({map_id: 120});
         });
 
         describe("on success", function() {

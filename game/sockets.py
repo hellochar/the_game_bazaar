@@ -1,8 +1,10 @@
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
+from lib.sdjango import namespace
 import time
 
 
+@namespace('/game')
 class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def broadcast_to_room(self, room, event, *args):

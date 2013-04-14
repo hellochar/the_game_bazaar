@@ -1,90 +1,79 @@
 import logging
 
-from socketio import socketio_manage
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from game.gamens import GameNamespace
-from django.shortcuts import render
+from django.http import HttpResponse, Http404
+
+from django.views.generic import View
+from django.shortcuts import render, redirect
+from django.core.urlresolvers import reverse
 from lib.models import Map
 from game.models import Game
+from game.forms import GameForm
 import json
 
-SOCKETIO_NS = {
-    '/game': GameNamespace
-}
+
+class LobbiesView(View):
+    """
+    Handles all requests that go to /game/
+    """
+
+    http_method_names = ['get', 'post', 'options']
+
+    # GET /game/
+    def get(self, request):
+        """ Gets the list of all games in the LOBBY state """
+
+        game_list = []
+        games = Game.get_games_in_state(Game.LOBBY).order_by('id').reverse()
+        for game in games:
+            game_list.append(game.to_map())
+
+        map_list = []
+        maps = Map.objects.all()
+        for a_map in maps:
+            map_list.append(a_map.to_map())
+        context = {
+            "maps": map_list,
+            "games": game_list,
+        }
+        return render(request, 'the_game_bazaar/play.html', context)
+
+    # POST /game/
+    def post(self, request):
+        """ Create a new game """
+
+        form = GameForm(request.POST)
+        if form.is_valid():
+            game, players_json = Game.create_new_game(form.cleaned_data['map_id'], request.user)
+            # Render the context with our parameters.
+            return redirect(reverse('game_view', kwargs={'gameid': game.id}))
+        else:
+            # Needs better error handling
+            raise Http404
 
 
-@csrf_exempt
-def socketio(request):
-    try:
-        socketio_manage(request.environ, SOCKETIO_NS, request)
-    except:
-        logging.getLogger("socketio").error("Exception while handling socketio connection" + str(request), exc_info=True)
-        return HttpResponse("")
+class GameView(View):
+    """
+    Handles all requests that go to /game/#gameid
+    """
 
+    http_method_names = ['get', 'options']
 
-# /game/host
-def host_game(request):
-    game, players_json = create_new_game(request.POST['map-id'], request.user)
-    # Render the context with our parameters.
-    context = {
-        'isHost': True,
-        'game_id': game.id,
-        'map_id': game.map.id,
-        'player_id': 0,
-        'players_json': [(k, v) for k, v in enumerate(players_json)]
-    }
-    return render(request, 'game/game.html', context)
+    # GET /game/#gameid
+    def get(self, request, gameid):
+        """ Get the page for game #gameid and join the player to the game """
+        try:
+            gameid = int(gameid)
+        except ValueError:
+            raise Http404
+        # TODO: if the game_id is empty, you should display an error!
+        game, players_json, player_id = Game.add_user_to_game(gameid, request.user)
 
-
-# Adds a new Game entry into the db with the specified host
-def create_new_game(map_id, host):
-    # TODO: if the map_id is empty, you should display an error!
-
-    theMap = Map.objects.get(pk=map_id)
-    # Create the players array (only the host at the moment)
-    players_json = [""] * theMap.num_players
-    players_json[0] = host.username
-
-    game = Game(map=theMap, players=json.dumps(players_json), state=Game.LOBBY)
-    game.save()
-    return game, players_json
-
-
-# /game/join
-def join_game(request):
-    game, players_json, player_id = add_user_to_game(request.POST['game-id'], request.user)
-
-    # Render the context with our parameters.
-    context = {
-        'isHost': player_id == 0,
-        'game_id': game.id,
-        'map_id': game.map.id,
-        'players_json': [(k, v) for k, v in enumerate(players_json)],
-        'player_id': player_id
-    }
-    return render(request, 'game/game.html', context)
-
-
-# Returns (game object, [username, username, username], my_player_id)
-def add_user_to_game(game_id, user):
-    # TODO: if the game_id is empty, you should display an error!
-    game = Game.objects.get(pk=game_id)
-
-    # Add this player to the player list for the game.
-    players_json = json.loads(game.players)
-    # If the user isn't already in the game, add them to it.
-    player_id = -1
-    for idx, username in enumerate(players_json):
-        # If the user is already in the game or there is an empty spot, put him there
-        if user.username == username or username == '':
-            players_json[idx] = user.username
-            player_id = idx
-            break
-
-    # TODO handle a user rejection gracefully
-    assert player_id != -1, "No empty slot for player " + user.username + " in json " + json.dumps(players_json)
-    game.players = json.dumps(players_json)
-    game.save()
-
-    return game, players_json, player_id
+            # Render the context with our parameters.
+        context = {
+            'isHost': player_id == 0,
+            'game_id': game.id,
+            'map_id': game.map.id,
+            'players_json': [(k, v) for k, v in enumerate(players_json)],
+            'player_id': player_id
+        }
+        return render(request, 'game/game.html', context)

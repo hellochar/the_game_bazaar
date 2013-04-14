@@ -53,7 +53,7 @@ Game.prototype.init = function(gs_renderer) {
     this.gs_renderer = gs_renderer || new GSRenderer();
 };
 
-//This method gets called as soon 
+//This method gets called as soon
 Game.prototype.handleConnecting = function() {
     // DEBUG
     console.log("Connecting...");

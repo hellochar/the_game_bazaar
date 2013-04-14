@@ -44,17 +44,8 @@
       });
   </script>
 
-  <!-- THE GAME BAZAAR LIBRARIES -->
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gamestate.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/pathbuilder.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/graph.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}game/js/game.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}editor/js/editor.js" data-cover></script>
-
-  <!-- THE GAME BAZAAR RENDERER LIBRARIES -->
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/ui_renderer.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs_renderer.js" data-cover></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}lib/js/gs-ui.js" data-cover></script>
+  <!-- include source files here... -->
+  {% include "lib/head-game.html" %}
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/PathBuilderSpec.js"></script>
@@ -63,6 +54,7 @@
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GraphSpec.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GSUISpec.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/GameSpec.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}jasmine_testing/specs/PathingSpec.js"></script>
 
   <script type="text/javascript">
     (function() {

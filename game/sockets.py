@@ -40,9 +40,11 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.broadcast_message('start', data)
 
     def on_join(self, data):
+        game_id = str(data['game_id'])
         self.join(game_id)
         self.broadcast_message('join', data)
 
     def on_leave(self, data):
+        game_id = str(data['game_id'])
         self.leave(game_id)
         self.broadcast_message('leave', data)

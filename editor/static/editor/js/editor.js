@@ -1,6 +1,7 @@
 function Editor(map, ui_renderer) {
     this.setEditingMap(map || Editor.createDefaultMap());
 
+    this.palette = new Palette(this);
     this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
 }
 
@@ -30,15 +31,11 @@ Editor.createMapFromResponse = function(response) {
 //User event handling
 //======================
 Editor.prototype.handleClick = function(clicktype, clickpos) {
-    if(clicktype == 1) {
-        this.map.addUnit(this.currentPlayer(), clickpos);
-    }
+    this.palette.handleClick(clicktype, clickpos);
 };
 
 Editor.prototype.handleDrag = function(clicktype, dragstart, dragend) {
-    if(clicktype == 1) {
-        this.map.addWall(dragstart, dragend);
-    }
+    this.palette.handleDrag(clicktype, dragstart, dragend);
 };
 
 Editor.prototype.setEditingMap = function(map) {
@@ -78,12 +75,8 @@ Editor.prototype.loadMap = function(map_id) {
     });
 };
 
-Editor.prototype.currentPlayer = function() {
-    return this.map.players[$('input[name=player]:checked').val()];
-};
-
 Editor.prototype.renderMethod = function() {
     var gamestate = this.map.evaluate(0);
     this.ui_renderer.renderGS(gamestate);
-    // this.ui_renderer.renderSelectionCircles(this.selectedUnits);
+    this.palette.renderMethod();
 };

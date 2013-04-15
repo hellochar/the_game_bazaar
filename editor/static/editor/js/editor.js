@@ -55,7 +55,7 @@ Editor.prototype.saveMap = function() {
     data = {map_data : JSON.stringify(this.map.toJSON())};
     $.ajax({
         type: "POST",
-        url: '/map/' + this.map.id,
+        url: '/map/' + map_id,
         data: data,
         success: function (response_json) {
             console.log("success", response_json);

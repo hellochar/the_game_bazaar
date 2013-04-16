@@ -133,6 +133,11 @@ Game.prototype.render = function() {
     self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
+            var c = self.ui_renderer.currCoords;
+            if (c) {
+                c = self.gs_renderer.project(c);
+                renderText("x: " + c.x + ", y: " + c.y);
+            }
             self.ui_renderer.renderGS(snapshot);
             self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
             break;
@@ -230,23 +235,50 @@ Game.prototype.populatePlayerNamesInGSFromHTML = function() {
 // GAME CLIENT INPUT HANDLERS
 //---------------------------------------------
 Game.prototype.handleClick = function(clicktype, clickpos) {
+    var worldPos = this.gs_renderer.project(clickpos);
     data = {
-        'clickpos': clickpos,
+        'clickpos': worldPos,
         'game_id': this.game_id,
         'player_id': this.player_id,
         'clicktype': clicktype
     };
+    console.log(data);
     this.socket.emit('click', data);
 };
 
+Game.getRect = function(c1, c2) {
+    var x1 = Math.min(c1.x, c2.x);
+    var y1 = Math.min(c1.y, c2.y);
+    var x2 = Math.max(c1.x, c2.x);
+    var y2 = Math.max(c1.y, c2.y);
+    return {
+        "x": x1,
+        "y": y1,
+        "w": x2 - x1,
+        "h": y2 - y1
+        };
+};
+
 Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+    var rect = Game.getRect(dragstart, dragend);
+    var drag_p1 = new THREE.Vector3(rect.x, rect.y, 0);
+    var drag_p2 = new THREE.Vector3(rect.x + rect.w, rect.y, 0);
+    var drag_p3 = new THREE.Vector3(rect.x + rect.w, rect.y + rect.h, 0);
+    var drag_p4 = new THREE.Vector3(rect.x, rect.y + rect.h, 0);
+    drag_p1 = this.gs_renderer.project(drag_p1);
+    drag_p2 = this.gs_renderer.project(drag_p2);
+    drag_p3 = this.gs_renderer.project(drag_p3);
+    drag_p4 = this.gs_renderer.project(drag_p4);
     data = {
-        'dragstart': dragstart,
-        'dragend': dragend,
+        'drag_p1': drag_p1,
+        'drag_p2': drag_p2,
+        'drag_p3': drag_p3,
+        'drag_p4': drag_p4,
         'game_id': this.game_id,
         'player_id': this.player_id,
         'clicktype': clicktype
     };
+    console.log(data);
     this.socket.emit('drag', data);
 };
 
@@ -278,10 +310,16 @@ Game.prototype.handleDragMessage = function(data) {
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    var dragstart = data['dragstart'];
-    dragstart = new THREE.Vector3(dragstart.x, dragstart.y, dragstart.z);
-    var dragend = data['dragend'];
-    dragend = new THREE.Vector3(dragend.x, dragend.y, dragend.z);
+
+    var drag_p1 = data['drag_p1'];
+    drag_p1 = new THREE.Vector3(drag_p1.x, drag_p1.y, drag_p1.z);
+    var drag_p2 = data['drag_p2'];
+    drag_p2 = new THREE.Vector3(drag_p2.x, drag_p2.y, drag_p2.z);
+    var drag_p3 = data['drag_p3'];
+    drag_p3 = new THREE.Vector3(drag_p3.x, drag_p3.y, drag_p3.z);
+    var drag_p4 = data['drag_p4'];
+    drag_p4 = new THREE.Vector3(drag_p4.x, drag_p4.y, drag_p4.z);
+
     var clicktype = data['clicktype'];
 
     // Find the time at which this message was supposed to be applied.
@@ -289,11 +327,11 @@ Game.prototype.handleDragMessage = function(data) {
 
     // On left mouse drag
     if (clicktype === 1) {
-        GS_UI.selectUnits(this.gamestate.players[player_id], updateTime, dragstart, dragend);
+        GS_UI.selectUnits(this.gamestate.players[player_id], updateTime, drag_p1, drag_p2, drag_p3, drag_p4);
     }
     // On right mouse drag
     if (clicktype === 3) {
-        this.moveUnits(updateTime, player_id, dragend);
+        this.moveUnits(updateTime, player_id, drag_p4);
     }
 };
 

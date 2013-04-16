@@ -10,11 +10,23 @@ Game.GAME_STATES = {
     DISCONNECTED:   3
 };
 
+Game.KEY_CODES = {
+    W: 87,
+    A: 65,
+    S: 83,
+    D: 68
+};
+
 Game.prototype.init = function(gs_renderer) {
     //---------------------------------------------
     //INITIALIZE SOCKET.IO
     //---------------------------------------------
     this.conn_state = Game.GAME_STATES.INIT;
+    this.keys = {};
+    this.keys.w = false;
+    this.keys.a = false;
+    this.keys.s = false;
+    this.keys.d = false;
 
     this.socket = io.connect('/game', {
         reconnect: false
@@ -38,7 +50,7 @@ Game.prototype.init = function(gs_renderer) {
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
         'drag' : 'handleDragMessage',
-        'key' : 'handleKeyMessage'
+        'key' : 'handleKeyUpMessage'
     };
 
     for(var evt in listeners) {
@@ -112,7 +124,8 @@ Game.prototype.handleGameStart = function (data) {
     // set up user input hooks
     this.ui_renderer.bindClick(this.handleClick.bind(this));
     this.ui_renderer.bindDrag(this.handleDrag.bind(this));
-    this.ui_renderer.bindKey(this.handleKey.bind(this));
+    this.ui_renderer.bindKeyUp(this.handleKeyUp.bind(this));
+    this.ui_renderer.bindKeyDown(this.handleKeyDown.bind(this));
 
     $('#lobby-container').hide();
     $('#game-container').show();
@@ -139,12 +152,32 @@ Game.prototype.render = function() {
                 c = self.gs_renderer.project(c);
                 renderText("x: " + c.x + ", y: " + c.y);
             }
+            delta = new THREE.Vector3(0, 0, 0);
+            if (this.keys.w) {
+                delta.y += 100;
+            }
+            if (this.keys.a) {
+                delta.x -= 100;
+            }
+            if (this.keys.s) {
+                delta.y -= 100;
+            }
+            if (this.keys.d) {
+                delta.x += 100;
+            }
+            pos = self.gs_renderer.getViewport();
+            self.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
+
             var screenWidth = window.innerWidth;
             var screenHeight = window.innerHeight;
             d1 = self.gs_renderer.project(new THREE.Vector3(0, 0, 0));
             d2 = self.gs_renderer.project(new THREE.Vector3(screenWidth, 0, 0));
             d3 = self.gs_renderer.project(new THREE.Vector3(screenWidth, screenHeight, 0));
             d4 = self.gs_renderer.project(new THREE.Vector3(0, screenHeight, 0));
+            console.log(d1);
+            console.log(d2);
+            console.log(d3);
+            console.log(d4);
             self.ui_renderer.renderMap();
             self.ui_renderer.renderViewPort(d1, d2, d3, d4);
             self.ui_renderer.renderGS(snapshot);
@@ -291,7 +324,19 @@ Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
     this.socket.emit('drag', data);
 };
 
-Game.prototype.handleKey = function(keyCode) {
+Game.prototype.handleKeyUp = function(keyCode) {
+    if (keyCode === Game.KEY_CODES.W) {
+        this.keys.w = false;
+    }
+    if (keyCode === Game.KEY_CODES.A) {
+        this.keys.a = false;
+    }
+    if (keyCode === Game.KEY_CODES.S) {
+        this.keys.s = false;
+    }
+    if (keyCode === Game.KEY_CODES.D) {
+        this.keys.d = false;
+    }
     var data = {
         'game_id': this.game_id,
         'player_id': this.player_id,
@@ -300,6 +345,20 @@ Game.prototype.handleKey = function(keyCode) {
     this.socket.emit('key', data);
 };
 
+Game.prototype.handleKeyDown = function(keyCode) {
+    if (keyCode === Game.KEY_CODES.W) {
+        this.keys.w = true;
+    }
+    if (keyCode === Game.KEY_CODES.A) {
+        this.keys.a = true;
+    }
+    if (keyCode === Game.KEY_CODES.S) {
+        this.keys.s = true;
+    }
+    if (keyCode === Game.KEY_CODES.D) {
+        this.keys.d = true;
+    }
+};
 
 //---------------------------------------------
 //CALLBACKS FOR WHEN MESSAGES ARE RECEIVED
@@ -362,7 +421,7 @@ Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
     });
 };
 
-Game.prototype.handleKeyMessage = function(data) {
+Game.prototype.handleKeyUpMessage = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     var keycode = data['keycode'];

@@ -49,7 +49,7 @@ describe("Pathing", function() {
                 new THREE.Vector3(0, 20),
                 new THREE.Vector3(25, 19)
             );
-            expect(val).toBe(true);
+            expect(val).toBeTruthy();
         });
     });
     describe("inRange", function() {

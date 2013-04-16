@@ -138,6 +138,14 @@ Game.prototype.render = function() {
                 c = self.gs_renderer.project(c);
                 renderText("x: " + c.x + ", y: " + c.y);
             }
+            var screenWidth = window.innerWidth;
+            var screenHeight = window.innerHeight;
+            d1 = self.gs_renderer.project(new THREE.Vector3(0, 0, 0));
+            d2 = self.gs_renderer.project(new THREE.Vector3(screenWidth, 0, 0));
+            d3 = self.gs_renderer.project(new THREE.Vector3(screenWidth, screenHeight, 0));
+            d4 = self.gs_renderer.project(new THREE.Vector3(0, screenHeight, 0));
+            self.ui_renderer.renderMap();
+            self.ui_renderer.renderViewPort(d1, d2, d3, d4);
             self.ui_renderer.renderGS(snapshot);
             self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
             break;

@@ -147,12 +147,26 @@ Game.prototype.render = function() {
     self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
-            var c = self.ui_renderer.currCoords;
-            if (c) {
-                c = self.gs_renderer.project(c);
-                renderText("x: " + c.x + ", y: " + c.y);
-            }
-            delta = new THREE.Vector3(0, 0, 0);
+            var d1 = new THREE.Vector3(0, 0, 0);
+            var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
+            var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
+            var d4 = new THREE.Vector3(0, window.innerHeight, 0);
+            d1 = self.gs_renderer.project(d1);
+            d2 = self.gs_renderer.project(d2);
+            d3 = self.gs_renderer.project(d3);
+            d4 = self.gs_renderer.project(d4);
+
+            // self.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
+            // self.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
+            // self.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
+            // self.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
+
+            self.ui_renderer.renderMap();
+            self.ui_renderer.renderViewPort(d1, d2, d3, d4);
+            self.ui_renderer.renderGS(snapshot);
+            self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
+
+            var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {
                 delta.y += 100;
             }
@@ -165,23 +179,8 @@ Game.prototype.render = function() {
             if (this.keys.d) {
                 delta.x += 100;
             }
-            pos = self.gs_renderer.getViewport();
+            var pos = self.gs_renderer.getViewport();
             self.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
-
-            var screenWidth = window.innerWidth;
-            var screenHeight = window.innerHeight;
-            d1 = self.gs_renderer.project(new THREE.Vector3(0, 0, 0));
-            d2 = self.gs_renderer.project(new THREE.Vector3(screenWidth, 0, 0));
-            d3 = self.gs_renderer.project(new THREE.Vector3(screenWidth, screenHeight, 0));
-            d4 = self.gs_renderer.project(new THREE.Vector3(0, screenHeight, 0));
-            console.log(d1);
-            console.log(d2);
-            console.log(d3);
-            console.log(d4);
-            self.ui_renderer.renderMap();
-            self.ui_renderer.renderViewPort(d1, d2, d3, d4);
-            self.ui_renderer.renderGS(snapshot);
-            self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
             break;
         case Game.GAME_STATES.INIT:
             renderText("Initializing...");
@@ -284,7 +283,6 @@ Game.prototype.handleClick = function(clicktype, clickpos) {
         'player_id': this.player_id,
         'clicktype': clicktype
     };
-    console.log(data);
     this.socket.emit('click', data);
 };
 
@@ -320,7 +318,6 @@ Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
         'player_id': this.player_id,
         'clicktype': clicktype
     };
-    console.log(data);
     this.socket.emit('drag', data);
 };
 

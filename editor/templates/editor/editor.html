@@ -19,7 +19,11 @@
             });
 
             $('#load-button').click(function() {
-                editor.loadMap($('#load-id').val());
+                var map_id = $('#load-id').val();
+                window.location.hash = map_id;
+            });
+            $(window).bind('hashchange', function() {
+                editor.loadMap(window.location.hash.substring(1));
             });
 
             window.palettes = [new UnitPalette(editor), new ObstaclePalette(editor)];

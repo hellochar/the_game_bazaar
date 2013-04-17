@@ -12,6 +12,10 @@ Editor.prototype.init = function() {
     this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
 
+Editor.prototype.error = function(msg) {
+    alert(msg); //replace this later with a better error message
+}
+
 //======================
 //Palette
 //======================
@@ -73,14 +77,18 @@ Editor.prototype.saveMap = function() {
 //Load a map from the server with the given map id
 Editor.prototype.loadMap = function(map_id) {
     var self = this;
-    var successCallback = function (data_json) {
-        self.setEditingMap( Editor.createMapFromResponse(data_json) );
+    var callback = function (response) {
+        if(response.success) {
+            self.setEditingMap( Editor.createMapFromResponse(response) );
+        } else {
+            self.error("Could not load map " + map_id + ": " + response.reason);
+        }
     };
 
     $.ajax({
         type: "GET",
         url: '/map/' + map_id,
-        success: successCallback,
+        success: callback,
         dataType: 'json'
     });
 };
@@ -97,8 +105,11 @@ Editor.createDefaultMap = function() {
 };
 
 Editor.createMapFromResponse = function(response) {
-    var map = GameState.fromJSON(JSON.parse(response.map_data));
-    map.id = response.map_id;
-    return map;
+    if(response.success) {
+        var map = GameState.fromJSON(JSON.parse(response.map_data));
+        map.id = response.map_id;
+        return map;
+    } else {
+        this.error("Tried to createMap on a bad response: " + JSON.stringify(response));
+    }
 };
-

@@ -171,6 +171,8 @@ def ajax_login(request):
         # the password verified for the user
         auth_login(request, user)
         resp['success'] = True
+        resp["username"] = user.username
+        resp["gravatar"] = ajax_gravatar(request).content
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

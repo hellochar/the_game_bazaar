@@ -19,6 +19,7 @@ templates['register'] = template_register();
 templates['stuff'] = template_stuff();
 templates['play'] = template_play();
 templates['edit'] = template_edit();
+templates['profile'] = template_profile();
 
 $().ready(function(){
     //create a new user
@@ -32,6 +33,7 @@ $().ready(function(){
 
     //adds click functions
     bind_divs();
+
 });
 
 function change_page(templates, page){
@@ -65,6 +67,7 @@ function change_page(templates, page){
 function initialize(){
     $('.sign-in').hide();
     $('#signed').hide();
+    $('#signed #user-dropdown').hide();
 
     render_logged_in();
 }
@@ -120,6 +123,20 @@ function bind_divs(){
         });
     });
 
+    //bind the user-corner
+    $('#signed #user-nav').click(function(){
+        $('#signed #user-dropdown').slideToggle(300);
+    });
+
+    $('#signed #user-dropdown').click(function(){
+        $('#signed #user-dropdown').slideToggle(300);
+    })
+
+    //bind profile link
+    $('#signed #user-dropdown #dropdown-profile').click(function(){
+        change_page(templates, 'profile');
+    })
+
     //bind the logout button
     $('#navbar-logout').click(function(){
         user.logout(function(){
@@ -146,7 +163,9 @@ function render_logged_in(from_logged_in){
 
     if(user.loggedin){
         $('#signed #user-nav #username').html(user.username);
-        $('#signed #user-nav #gravatar').html(user.getGravatar());
+        var gurl = user.getGravatar(40);
+        console.log(gurl);
+        $('#signed #user-nav #gravatar').html(gurl);
         $('.login_required').slideToggle(300);
     } else {
         if (from_logged_in){
@@ -162,9 +181,11 @@ function User(){
 	this.loggedin = false;
 	this.username = '';
 	this.gravatar_img = '';
+    this.email = '';
 
 	//methods
 	this.getGravatar = getGravatar;
+    this.refreshGravatar = refreshGravatar;
 	this.login = login;
 	this.logout = logout;
     this.checkLoggedIn = checkLoggedIn;
@@ -191,6 +212,7 @@ function User(){
                         this.loggedin = true;
                         this.username = data['username'];
                         this.gravatar_img = data['gravatar'];
+                        this.email = data['email'];
                         result = true;
                     } else {
                         result = false;
@@ -201,9 +223,26 @@ function User(){
         }
     }
 
-	function getGravatar(){
-		return this.gravatar_img;
+	function getGravatar(size){
+        var g_url = this.gravatar_img.replace('?s=40', '?s='+size);
+        return g_url;
 	}
+
+    function refreshGravatar(){
+        g_url = '';
+        $.ajax({
+            type: "GET",
+            url: "/ajax/gravatar/",
+            async: false,
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                g_url = data;
+            }
+        });
+        this.gravatar_img = g_url;
+    }
 
 	function login(username, password, callback){
 		$.ajax({
@@ -569,5 +608,183 @@ function template_play(){
             <div class="play-table">'+getHostTable()+'</div>\
         </div>\
         ';
+    return pg;
+}
+
+function template_profile(){
+    function changePassword(){
+        if($('#newPassword').val() !== $('#newPasswordConfirm').val()){
+            $('#content #password-error').html("new passwords must match");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/auth/change/",
+                headers: {
+                    "X-CSRFToken": $.cookie('csrftoken'),
+                },
+                data: {
+                    "old_pass": $('#oldPassword').val(),
+                    "new_pass": $('#newPassword').val(),
+                },
+                success: function(data){
+                    if (data.success == true){
+                        //clear out the form
+                        $('#oldPassword').val('');
+                        $('#newPassword').val('');
+                        $('#newPasswordConfirm').val('');
+
+                        //set the message  
+                        $('#content #password-error').html('Your password has been changed');
+                    } else if (data.success == false){
+                        $('#content #password-error').html(data.error);
+                    } else {
+                        $('#content #password-error').html("server error");
+
+                    }
+                }
+            });
+        }
+    }
+
+    function changeEmail(){
+        if($('#newEmail').val() !== $('#newEmailConfirm').val()){
+            $('#content #email-error').html("Your email fields must match");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/auth/change/",
+                headers: {
+                    "X-CSRFToken": $.cookie('csrftoken'),
+                },
+                data: {
+                    "email": $('#newEmail').val(),
+                },
+                success: function(data){
+                    if (data.success == true){
+                        $('#curr_email').html($('#newEmail').val());
+                        $('#content #email-error').html("Your email has been changed");
+                        user.email = $('#newEmail').val();
+                        $('#content #gravatar').html(function(){
+                            user.refreshGravatar();
+                            return user.getGravatar(150);
+                        });
+
+                        $('#user-nav #gravatar').html(function(){
+                            return user.getGravatar(40);
+                        });
+
+                    } else if (data.success == false){
+                        $('#content #email-error').html(data.error);
+                    } else {
+                        $('#content #email-error').html("server error");
+                    }
+                }
+            });
+        }
+    }
+
+    function template_binding(){
+        //fill in content
+        $('#content #profile-username').html(user.username);
+        $('#content #curr-email').html(user.email);
+        $('#content #gravatar').html(user.getGravatar(150));
+
+        //bind the forms
+        $('#change_pass_form').submit(function(e){
+            e.preventDefault();
+            changePassword();
+            return false;
+        });
+
+        $('#change_email_form').submit(function(e){
+            e.preventDefault();
+            changeEmail();
+            return false;
+        });
+
+        //do some css
+        $('#content #one-line').css({
+            'position':'relative',
+        })
+
+        $('#content #one-line #profile-username').css({
+            'position':'absolute',
+            'margin-bottom':'15px',
+            'margin-left':'5px',
+            'bottom':'0px',
+            'display':'inline',
+            'font-size':'4em',
+        });
+        $('#content #one-line #gravatar').css({
+            'display':'inline',
+        });
+        $('#content legend').css({
+            'color':'white',
+        });
+        $('#content #change_pass_form #password-error').css({
+            'display':'inline',
+            'float':'right',
+            'margin-left': '10px',
+            'color':'red',
+        });
+        $('#content #change_email_form #email-error').css({
+            'display':'inline',
+            'float':'right',
+            'margin-left': '10px',
+            'color':'red',
+        });
+    }
+
+    var pg = new page();
+    pg.binding = template_binding;
+    pg.dom_html = '\
+            <div id="one-line">\
+                <div id="gravatar"></div>\
+                <div id="profile-username"></div>\
+            </div>\
+            <div class="row">\
+                <form class="form-horizontal" id="change_pass_form">\
+                    <legend>Change Password<div id="password-error"></div></legend>\
+                    <div class="control-group">\
+                        <label class="control-label" for="oldPassword">Old Password</label>\
+                        <div class="controls">\
+                            <input type="password" id="oldPassword" placeholder=".....">\
+                        </div>\
+                    </div>\
+                    <div class="control-group">\
+                        <label class="control-label" for="newPassword">New Password</label>\
+                        <div class="controls">\
+                            <input type="password" id="newPassword" placeholder=".....">\
+                        </div>\
+                    </div>\
+                    <div class="control-group">\
+                        <label class="control-label" for="newPasswordConfirm">New Password (confirm)</label>\
+                        <div class="controls">\
+                            <input type="password" id="newPasswordConfirm" placeholder=".....">\
+                            <button style="margin-left:10px" type="submit" class="btn">Change</button>\
+                        </div>\
+                    </div>\
+                </form>\
+            </div>\
+            <div class="row">\
+                <form class="form-horizontal" id="change_email_form">\
+                    <legend>Change Email<div id="email-error"></div></legend>\
+                    <p style="float:left">current email:&nbsp&nbsp<div id="curr-email"></div></p>\
+                    <div class="control-group">\
+                        <label class="control-label" for="newEmail">New Email</label>\
+                        <div class="controls">\
+                            <input type="text" id="newEmail" placeholder=".....">\
+                        </div>\
+                    </div>\
+                    <div class="control-group">\
+                        <label class="control-label" for="newEmailConfirm">New Email (confirm)</label>\
+                        <div class="controls">\
+                            <input type="text" id="newEmailConfirm" placeholder=".....">\
+                            <button style="margin-left:10px" type="submit" class="btn">Change</button>\
+                        </div>\
+                    </div>\
+                </form>\
+            </div>\
+    ';
     return pg;
 }

@@ -127,6 +127,7 @@ def ajax_is_authenticated(request):
     if logged_in:
         resp["username"] = request.user.username
         resp["gravatar"] = ajax_gravatar(request).content
+        resp["email"] = request.user.email
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 
@@ -173,6 +174,7 @@ def ajax_login(request):
         resp['success'] = True
         resp["username"] = user.username
         resp["gravatar"] = ajax_gravatar(request).content
+        resp["email"] = user.email
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

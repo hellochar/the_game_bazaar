@@ -8,190 +8,6 @@
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/home.js"></script>
-
-        <style>
-            /* Because I hate bullets*/
-            ul {
-                list-style-type: none;
-            }
-
-            #content{
-                position: absolute;
-                top:50%;
-                left:50%;
-                width: 600px;
-                height: 80%;
-                color: white;
-                top: 100px;
-                margin-left: -300px;
-            }
-
-            .title {
-                margin-top: -50px;
-                margin-left: -210px;
-                position: absolute;
-                top:50%;
-                left:50%;
-                width:100%;
-                -webkit-text-stroke: 1px;
-                font-family: 'Julius Sans One', sans-serif;
-            }
-
-            .navigation {
-                font-family: 'Geo', sans-serif;
-                position:absolute;
-                width:140px;
-                margin: 10px;
-                background: rgb(256, 50, 50); /* Fall-back for browsers that don't support rgba */
-                background: rgba(256, 50, 50, .3);
-                color: rgb(220, 220, 220);
-                padding-bottom: 10px;
-            }
-
-            .navigation ul {
-                font-size: 2em;
-                margin: 0px 5px;
-            }
-
-            .navigation .link {
-                cursor: pointer;
-                width: 130px;
-                height: 40px;
-            }
-
-            .navigation .link:hover {
-                color: white;
-                background: rgb(180, 25, 25);
-                background: rgb(180, 25, 25, 1.0);
-            }
-
-            .navigation .link h3 {
-                text-align: right;
-            }
-
-            .navigation .link h3 i {
-                margin-top: 5px;
-                margin-left: 10px;
-                margin-right: 10px;
-            }
-
-            .news {
-                display: none;
-                width: 400px;
-                height: 200px;
-                position:absolute;
-                right: 0;
-                padding-bottom: 0px;
-                margin-bottom:0px;
-                bottom: 0px;
-            }
-
-            .news ul {
-                position: absolute;
-                list-style-type: none;
-                margin: 0px 5px;
-                bottom: 0px;
-            }
-
-            .news .item {
-                padding: 5px;
-                margin-top: 5px;
-                margin-bottom: 5px;
-                background: rgb(256, 50, 50); /* Fall-back for browsers that don't support rgba */
-                background: rgba(256, 50, 50, .4);
-                color: white;
-            }
-
-            .news .item h5 {
-                margin: 0px;
-            }
-            .news .item p {
-                line-height: 1em;
-
-            }
-
-            .sign-in {
-                top: 60px;
-                right: 15px;
-                position: absolute;
-                background: rgba(256, 256, 256, .3);
-                padding: 5px;
-                -moz-border-radius: 15px;
-                border-radius: 5px;
-            }
-
-            .sign-in form {
-                margin: 0px;
-            }
-
-            .sign-in button {
-                padding: 0px;
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-
-            .sign-in p {
-                color: white;
-                margin: 5px;
-            }
-
-            .user-corner {
-                position: absolute;
-                margin: 10px;
-                right: 0px;
-            }
-
-            .user-corner p:hover {
-                background: rgba(180, 25, 25, 1.0);
-                cursor: pointer;
-            }
-
-            .user-corner p{
-                background: rgba(256, 50, 50, .4);
-                padding:5px;
-                margin: 5px;
-                font-size: 1.0em;
-                float:left;
-                color: white;
-            }
-
-            #signed {
-                margin: 20px;
-                padding: 5px;
-                background: rgba(256, 25, 25, 0.4);
-            }
-
-            #signed:hover {
-                background: rgba(180, 25, 25, 1.0);
-            }
-
-            #signed a{
-                color: white;
-            }
-
-            #signed ul{
-                margin: 0px;
-            }
-
-            #signed #user-nav #username {
-                line-height: 40px;
-                font-size: 1em;
-                float:left;
-            }
-
-            #signed #user-nav #gravatar {
-                float:left;
-                margin-right: 10px;
-            }
-
-            #logo {
-                color: white;
-                position: absolute;
-                top:10px;
-                left:160px;
-            }
-
-        </style>
     </head>
     <body>
         <!-- top right user corner stuff -->
@@ -214,22 +30,20 @@
         <!-- top right user corner stuff-->
         <!-- user is signed in -->
         <div id="signed" class="user-corner login_required">
-            <ul>
-                <!-- Piggy backing off bootstrap's menu system for now, will fix -->
-                <li id="fat-menu" class="dropdown">
-                    <a id="user-nav" href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                        <div id="gravatar"></div>
-                        <div id="username"></div>
-                    </a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/admin">Profile</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/history">History</a></li>
-                        <li role="presentation" class="divider"></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="navbar-logout">logout
-                        </a></li>
-                    </ul>
-                </li>
-            </ul>
+            <div id="user-nav">
+                <a>
+                    <div id="gravatar"></div>
+                    <div id="username"></div>
+                </a>
+            </div>
+            <div>
+                <ul id="user-dropdown">
+                    <li id="dropdown-profile"><a>Profile</a></li>
+                    <li><a href="/user/history">History</a></li>
+                    <li><a href="#" id="navbar-logout">logout
+                    </a></li>
+                </ul>
+            </div>
         </div>
 
 
@@ -254,6 +68,7 @@
         </div>
 
         <!-- News Updates -->
+        <!-- currently being hidden because its causing more pain that its worth -->
         <div class="news">
             <ul>
                 <li class="item">

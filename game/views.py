@@ -53,14 +53,14 @@ class LobbiesView(View):
 
 class GameView(View):
     """
-    Handles all requests that go to /game/#gameid
+    Handles all requests that go to /game/<gameid>
     """
 
     http_method_names = ['get', 'options']
 
-    # GET /game/#gameid
+    # GET /game/<gameid>
     def get(self, request, gameid):
-        """ Get the page for game #gameid and join the player to the game """
+        """ Get the page for game <gameid> and join the player to the game """
         try:
             gameid = int(gameid)
         except ValueError:

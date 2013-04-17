@@ -77,7 +77,7 @@ describe("Map Editor", function() {
             });
         });
 
-        it("should POST to /map/#mapid with map data", function() {
+        it("should POST to /map/<mapid> with map data", function() {
             editor.map.id = 10;
             editor.saveMap();
 
@@ -114,7 +114,7 @@ describe("Map Editor", function() {
                             ajax_params = params;
                     });
             });
-            it("should GET /map/#mapid", function() {
+            it("should GET /map/<mapid>", function() {
                     editor.loadMap(10);
 
                     var request = $.ajax.mostRecentCall.args[0];

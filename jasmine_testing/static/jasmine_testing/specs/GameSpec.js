@@ -133,7 +133,7 @@ describe("Game", function() {
         beforeEach(function() {
             game.map_id = 120;
         });
-        it("should make a GET request to /map/#mapid", function() {
+        it("should make a GET request to /map/<mapid>", function() {
             spyOn($, 'ajax');
             game.instantiateGameState();
 

@@ -77,14 +77,14 @@ describe("Map Editor", function() {
             });
         });
 
-        it("should POST to /map/ with map id and map data", function() {
+        it("should POST to /map/<mapid> with map data", function() {
             editor.map.id = 10;
             editor.saveMap();
 
             var request = $.ajax.mostRecentCall.args[0];
-            expect(request.url).toBe('/map/');
+            expect(request.url).toBe('/map/10');
             expect(request.type).toBe('POST');
-            expect(request.data).toEqual({map_id: 10, map_data: JSON.stringify(editor.map.toJSON())});
+            expect(request.data).toEqual({map_data: JSON.stringify(editor.map.toJSON())});
         });
 
         it("should call setEditingMap with its own map", function() {
@@ -114,13 +114,12 @@ describe("Map Editor", function() {
                             ajax_params = params;
                     });
             });
-            it("should GET /map/ with map_id as a param", function() {
+            it("should GET /map/<mapid>", function() {
                     editor.loadMap(10);
 
                     var request = $.ajax.mostRecentCall.args[0];
-                    expect(request.url).toBe('/map/');
+                    expect(request.url).toBe('/map/10');
                     expect(request.type).toBe('GET');
-                    expect(request.data).toEqual({map_id: 10});
             });
 
             it("should load a map it gets back", function() {

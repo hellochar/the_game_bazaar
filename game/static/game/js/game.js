@@ -125,6 +125,21 @@ Game.prototype.render = function() {
     var self = this;
     var now_time = Date.now();
     var start_time = self.client_start_time;
+    // TODO detect bullet collisions and send messages to the server if appropriate.
+    var deadUnitIndexList = [];
+    self.gamestate.players[self.player_id].units.forEach(function(unit, index) {
+        if (unit.deadTime <= (now_time - start_time)) {
+            deadUnitIndexList.push(index);
+        }
+    });
+    if (deadUnitIndexList.length > 0) {
+        data = {
+            'game_id': this.game_id,
+            'player_id': this.player_id,
+            'deadUnitIndexList': deadUnitIndexList
+        };
+        self.socket.emit('deadUnits', data);
+    }
     var snapshot = self.gamestate.evaluate(now_time - start_time);
 
     var renderText = function(text) {
@@ -179,13 +194,7 @@ Game.prototype.instantiateGameState = function() {
     this.gamestate = false;
     $.ajax({
         type: "GET",
-        url: "/map/",
-        data: {
-            "map_id": parseInt(this.map_id, 10)
-        },
-        headers: {
-            "X-CSRFToken": $.cookie('csrftoken')
-        },
+        url: "/map/" + parseInt(this.map_id, 10),
         success: function (data){
             if(data['success'] === true){
                 map_data_json = JSON.parse(data.map_data);
@@ -319,6 +328,19 @@ Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
     var unit_list = this.gamestate.players[player_id].selectedUnits;
     unit_list.forEach(function(unit) {
         unit.update(updateTime, clickpos);
+    });
+    this.updateBullets();
+};
+
+// Make sure all bullets are actually detecting collision correctly.
+// This method forces all bullets to recalculate their collision paths.
+Game.prototype.updateBullets = function() {
+    this.gamestate.players.forEach(function(player) {
+        player.units.forEach(function(unit) {
+            unit.bullets.forEach(function(bullet) {
+                bullet.updatePath();
+            });
+        });
     });
 };
 

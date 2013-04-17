@@ -13,7 +13,7 @@ def json_response(response_data):
 
 class MapView(View):
     """
-    Handles all requests that go to /map/#mapid
+    Handles all requests that go to /map/<mapid>
     """
 
     http_method_names = ['get', 'post', 'options']
@@ -23,6 +23,7 @@ class MapView(View):
     def dispatch(self, *args, **kwargs):
         return super(MapView, self).dispatch(*args, **kwargs)
 
+    # GET /map/<mapid>
     def get(self, request, mapid):
         try:
             mapid = int(mapid)
@@ -46,6 +47,7 @@ class MapView(View):
                 'reason': "No map exists with given map id!"
             })
 
+    # POST /map/<mapid>
     def post(self, request, mapid):
         try:
             mapid = int(mapid)
@@ -82,12 +84,14 @@ class NewMapView(View):
     def dispatch(self, *args, **kwargs):
         return super(NewMapView, self).dispatch(*args, **kwargs)
 
+    # GET /map/
     def get(self, request):
         return json_response({
             'success': False,
             'reason': "No map id supplied!"
         })
 
+    # POST /map/
     def post(self, request):
         creator = request.user
         num_players = 2  # uh oh

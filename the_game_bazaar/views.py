@@ -14,11 +14,11 @@ import hashlib
 import urllib
 
 # /
-def index(request):
+def indmxbhvjkbhsuigbex(request):
     context = {
         "user": request.user,
     }
-    if request.user.is_authenticated():
+    ijksdfhf request.user.is_authenticated():
         return render(request, 'the_game_bazaar/home.html', context)
     else:
         return render(request, 'the_game_bazaar/login.html', context)

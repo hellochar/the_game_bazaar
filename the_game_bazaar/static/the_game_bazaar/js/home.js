@@ -20,6 +20,7 @@ templates['stuff'] = template_stuff();
 templates['play'] = template_play();
 templates['edit'] = template_edit();
 templates['profile'] = template_profile();
+templates['history'] = template_history();
 
 $().ready(function(){
     //create a new user
@@ -406,6 +407,47 @@ function template_stuff(){
 }
 
 function template_edit(){
+    function getMyMaps(){
+        html = '';
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/ajax/maps/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                console.log(data);
+                html += '\
+                <table class="table table-striped">\
+                    <thead><tr>\
+                        <th>Map ID</th>\
+                        <th>Map name</th>\
+                        <th>Max Players</th>\
+                        <th>Creator</th>\
+                    </tr></thead>\
+                    <tbody>';
+
+                for (var i = 0; i < data.length; i++){
+                    var map = data[i];
+                    if (map.creator === user.username){
+                        html += '\
+                            <tr>\
+                                <td>'+map.id+'</td>\
+                                <td>'+map.name+'</td>\
+                                <td>'+map.max_players+'</td>\
+                                <td>'+map.creator+'</td>\
+                                <td><a class="btn btn-warning" href="/editor/#'+map.id+'">Edit</a></td>\
+                            </tr>';                 
+                    }
+                }
+
+                html += '</tbody></tabl>';
+            }
+        });
+        return html;
+    }
+
     function getAllMaps(){
         html = '';
         $.ajax({
@@ -435,7 +477,7 @@ function template_edit(){
                             <td>'+map.name+'</td>\
                             <td>'+map.max_players+'</td>\
                             <td>'+map.creator+'</td>\
-                            <td><a class="btn" href="/editor/#'+map.id+'">Edit</a></td>\
+                            <td><a class="btn btn-warning" href="/editor/#'+map.id+'">Edit</a></td>\
                         </tr>';
                 }
 
@@ -443,9 +485,19 @@ function template_edit(){
             }
         });
         return html;
-    }
+    };
 
     function template_binding(){
+        $('#content #my-maps').html(function(){
+            return getMyMaps();
+        });
+
+        console.log('hwat');
+        $('#content #all-maps').html(function(){
+            return getAllMaps();
+        });
+
+        //css stuff
         $('.edit-table').css({
             backgroundColor: 'white',
         });
@@ -454,8 +506,14 @@ function template_edit(){
     pg.binding = template_binding;
     pg.dom_html = '\
         <div>\
+            <h4>Create maps:</h4>\
+            <a class="btn btn-large btn-success" href="/editor/">Create new map!</a>\
+            <br />\
+            <h4>Your Maps:</h4>\
+            <div class="edit-table" id="my-maps"></div>\
+            <br />\
             <h4>All Maps:</h4>\
-            <div class="edit-table">'+getAllMaps()+'</div>\
+            <div class="edit-table" id="all-maps"></div>\
         </div>';
     return pg;
 }
@@ -787,4 +845,10 @@ function template_profile(){
             </div>\
     ';
     return pg;
+}
+
+function template_history(){
+    var pg = new page();
+    pg.binding = null;
+    pg.dom_html = '';
 }

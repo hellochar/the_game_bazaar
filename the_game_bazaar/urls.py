@@ -1,23 +1,27 @@
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from the_game_bazaar import views
-from lib.views import get_map
 from jasmine_testing.views import tests
+import lib.sdjango
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('',
+lib.sdjango.autodiscover()
+
+urlpatterns = patterns(
+    '',
     url(r'^$',
         views.index,
         name="index"),
 
-    url(r'^socket.io/', include('game.urls')),
+    url(r'^socket\.io', include(lib.sdjango.urls)),
 
     url(r'^home/$',
         views.home,
         name="home"),
+
     # User menu items
     url(r'^user/admin$',
         views.user_admin,
@@ -26,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^user/history$',
         views.user_history,
         name="user_history"),
-    
+
     # Ajax Calls
     url(r'^ajax/lobby/$',
         views.ajax_lobby_games,
@@ -39,7 +43,7 @@ urlpatterns = patterns('',
     url(r'^ajax/gravatar/$',
         views.ajax_gravatar,
         name="ajax_gravatar"),
-    
+
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
         views.login,
@@ -66,10 +70,6 @@ urlpatterns = patterns('',
         name="ajax_change"),
 
     # Game related
-    url(r'^play/$',
-        views.play,
-        name="play"),
-
     url(r'^edit/$',
         views.edit,
         name="edit"),
@@ -81,7 +81,7 @@ urlpatterns = patterns('',
     url(r'^jasmine/$', tests, name="tests"),
 
     # Retrieving and saving maps
-    url(r'^map/$', get_map, name="get_map"),
+    url(r'^map/', include('lib.urls'))
 
 
     # Examples:

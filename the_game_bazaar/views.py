@@ -13,6 +13,7 @@ from django.db import IntegrityError
 import hashlib
 import urllib
 
+
 # /
 def index(request):
     context = {
@@ -21,24 +22,12 @@ def index(request):
     return render(request, 'the_game_bazaar/home.html', context)
 
 # /home
-@login_required(login_url='/', redirect_field_name=None)
 def home(request):
     context = {}
     return render(request, 'the_game_bazaar/home.html', context)
 
 
-# /play
-@login_required(login_url='/', redirect_field_name=None)
-def play(request):
-    context = {
-        "maps": Map.objects.all(),
-        "lobby_games": Game.get_games_in_state(Game.LOBBY).order_by('id').reverse(),
-    }
-    return render(request, 'the_game_bazaar/play.html', context)
-
-
 # /edit
-@login_required(login_url='/', redirect_field_name=None)
 def edit(request):
     context = {
         "user": request.user,
@@ -48,20 +37,20 @@ def edit(request):
 
 
 # /list
-def list_games(request):
-    context = {
-    }
-    return render(request, 'the_game_bazaar/play.html', context)
+# What does this even do?
+# def list_games(request):
+#   context = {
+#   }
+#   return render(request, 'the_game_bazaar/play.html', context)
 
 # /user stuff
-@login_required(login_url='/', redirect_field_name=None)
 def user_admin(request):
     context = {
-        "user":request.user,
+        "user": request.user,
     }
     return render(request, 'the_game_bazaar/user_admin.html', context)
 
-@login_required(login_url='/', redirect_field_name=None)
+
 def user_history(request):
     games = Game.objects.all()
     owned_games = []
@@ -71,14 +60,15 @@ def user_history(request):
             owned_games.append(game)
 
     context = {
-        "user":request.user,
+        "user": request.user,
         "games": owned_games,
     }
     return render(request, 'the_game_bazaar/user_history.html', context)
+
+
 ###############################################################################
 # AJAX
 ###############################################################################
-@login_required(login_url='/', redirect_field_name=None)
 def ajax_lobby_games(request):
     game_list = []
     games = Game.get_games_in_state(Game.LOBBY).order_by('id').reverse()
@@ -86,7 +76,7 @@ def ajax_lobby_games(request):
         game_list.append(game.to_map())
     return HttpResponse(json.dumps(game_list), mimetype="application/json")
 
-@login_required(login_url='/', redirect_field_name=None)
+
 def ajax_maps(request):
     map_list = []
     maps = Map.objects.all()
@@ -94,7 +84,7 @@ def ajax_maps(request):
         map_list.append(a_map.to_map())
     return HttpResponse(json.dumps(map_list), mimetype="application/json")
 
-@login_required(login_url='/', redirect_field_name=None)
+
 def ajax_gravatar(request):
     email = request.user.email
     size = 40
@@ -104,14 +94,14 @@ def ajax_gravatar(request):
         email = request.GET['email']
 
     gravatar_url = "<img src='http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({'s':str(size)})
+    gravatar_url += urllib.urlencode({'s': str(size)})
     gravatar_url += "' />"
     return HttpResponse(gravatar_url, mimetype="text/html")
 
+
 ###############################################################################
-# AUTHENTICATION 
+# AUTHENTICATION
 ###############################################################################
-@login_required(login_url='/', redirect_field_name=None)
 def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)
@@ -158,6 +148,7 @@ def ajax_change(request):
         resp['error'] = 'Please fill out all the fields. They are all necessary'
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
+
 
 @require_http_methods(["POST"])
 def ajax_login(request):

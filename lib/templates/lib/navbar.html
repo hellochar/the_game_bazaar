@@ -2,17 +2,17 @@
     <div class="navbar-inner">
         <a href="/" class="brand">The Game Bazaar</a>
         <ul class="nav">
-            <li id="navbar-home"><a href="/">Home</a></li>
-            <li id="navbar-play"><a href="/play">Play</a></li>
-            <li id="navbar-edit"><a href="/edit">Edit</a></li>
+            <li id="navbar-home"><a href="{% url index %}">Home</a></li>
+            <li id="navbar-play"><a href="{% url lobbies_view %}">Play</a></li>
+            <li id="navbar-edit"><a href="{% url edit %}">Edit</a></li>
         </ul>
         {% if user.is_authenticated %}
             <ul class="nav pull-right">
                 <li id="fat-menu" class="dropdown">
                     <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/admin">Profile</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/history">History</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url user_admin %}">Profile</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url user_history %}">History</a></li>
                         <li role="presentation" class="divider"></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="" id="navbar-logout">logout
                         </a></li>

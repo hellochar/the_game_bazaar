@@ -1,8 +1,10 @@
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
+from lib.sdjango import namespace
 import time
 
 
+@namespace('/game')
 class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def broadcast_to_room(self, room, event, *args):
@@ -18,37 +20,31 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
             if room_name in socket.session['rooms']:
                 socket.send_packet(pkt)
 
+    # Returns UNIX time in milliseconds
     def get_time(self):
         return int(time.time() * 1000)
 
-    def on_click(self, data):
+    def broadcast_message(self, message, data):
         game_id = str(data['game_id'])
         del data['game_id']
         data['timestamp'] = self.get_time()
-        self.broadcast_to_room(game_id, 'click', data)
+        self.broadcast_to_room(game_id, message, data)
+
+    def on_click(self, data):
+        self.broadcast_message('click', data)
 
     def on_drag(self, data):
-        game_id = str(data['game_id'])
-        del data['game_id']
-        data['timestamp'] = self.get_time()
-        self.broadcast_to_room(game_id, 'drag', data)
+        self.broadcast_message('drag', data)
 
     def on_start(self, data):
-        game_id = str(data['game_id'])
-        del data['game_id']
-        data['timestamp'] = self.get_time()
-        self.broadcast_to_room(game_id, 'start', data)
+        self.broadcast_message('start', data)
 
     def on_join(self, data):
         game_id = str(data['game_id'])
-        del data['game_id']
         self.join(game_id)
-        data['timestamp'] = self.get_time()
-        self.emit_to_room(game_id, 'join', data)
+        self.broadcast_message('join', data)
 
     def on_leave(self, data):
         game_id = str(data['game_id'])
-        del data['game_id']
         self.leave(game_id)
-        data['timestamp'] = self.get_time()
-        self.broadcast_to_room(game_id, 'leave', data)
+        self.broadcast_message('leave', data)

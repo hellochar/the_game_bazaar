@@ -9,12 +9,12 @@ UnitPalette.domElement = (function() {
     var container = $('<div/>');
 
     $('<input/>', {type: 'radio', name: 'player', value: 0, checked: 'yes'}).appendTo(container);
-    $(container).append('Player 0');
-    $(container).append('<br/>');
+    container.append('Player 0');
+    container.append('<br/>');
 
     $('<input/>', {type: 'radio', name: 'player', value: 1}).appendTo(container);
-    $(container).append('Player 1');
-    $(container).append('<br/>');
+    container.append('Player 1');
+    container.append('<br/>');
 
     return container;
 })();

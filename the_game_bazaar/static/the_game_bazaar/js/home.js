@@ -110,6 +110,7 @@ function bind_divs(){
             if (user.loggedin){
                 $('.sign-in').slideToggle(300);
                 render_logged_in();
+                change_page(templates, 'play');
             } else {
                 $('.sign-in p').remove();
                 var error_msg = $('<p id="err">incorrect username or password</p>').hide();
@@ -261,15 +262,9 @@ function page(){
 }
 
 function template_title(){
-    
-    function template_bind(){
-        console.log('omg the bind works');
-    }
-
     var pg = new page();
-    pg.binding = template_bind;
+    pg.binding = null;
     pg.dom_html = '<div class="title"><h1>The Game Bazaar</h1></div>';
-
     return pg;
 }
 
@@ -372,9 +367,57 @@ function template_stuff(){
 }
 
 function template_edit(){
+    function getAllMaps(){
+        html = '';
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/ajax/maps/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                console.log(data);
+                html += '\
+                <table class="table table-striped">\
+                    <thead><tr>\
+                        <th>Map ID</th>\
+                        <th>Map name</th>\
+                        <th>Max Players</th>\
+                        <th>Creator</th>\
+                    </tr></thead>\
+                    <tbody>';
+
+                for (var i = 0; i < data.length; i++){
+                    var map = data[i];
+                    html += '\
+                        <tr>\
+                            <td>'+map.id+'</td>\
+                            <td>'+map.name+'</td>\
+                            <td>'+map.max_players+'</td>\
+                            <td>'+map.creator+'</td>\
+                            <td><a class="btn" href="/editor/#'+map.id+'">Edit</a></td>\
+                        </tr>';
+                }
+
+                html += '</tbody></tabl>';
+            }
+        });
+        return html;
+    }
+
+    function template_binding(){
+        $('.edit-table').css({
+            backgroundColor: 'white',
+        });
+    }
     var pg = new page();
-    pg.binding = null;
-    pg.dom_html = '';
+    pg.binding = template_binding;
+    pg.dom_html = '\
+        <div>\
+            <h4>All Maps:</h4>\
+            <div class="edit-table">'+getAllMaps()+'</div>\
+        </div>';
     return pg;
 }
 
@@ -430,7 +473,6 @@ function template_play(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log(data);
                 html += "<table class='table table-striped'>\
                             <thead><tr>\
                                     <th>Map ID</th>\
@@ -475,9 +517,33 @@ function template_play(){
     };
 
     function template_binding(){
+        //css stuff
         $('#content .play-table').css({
             backgroundColor: 'white',
-        })
+        });
+
+        $('#content h4').css({
+            'float': 'left',
+            'margin': '5px',
+        });
+
+        $('#content button').css({
+            'float': 'right',
+        });
+ 
+        $('#content #play-host-button').click(function(){
+            $('#content #play-lobby').fadeOut(200, function(){
+                $('#content #play-host').fadeIn(200);
+            });
+
+        });
+
+        $('#content #play-lobby-button').click(function(){
+            $('#content #play-host').fadeOut(200, function(){
+                $('#content #play-lobby').fadeIn(200);
+            });
+
+        });
 
         $('#content #play-lobby').show();
         $('#content #play-host').hide();
@@ -486,9 +552,22 @@ function template_play(){
     var pg = new page();
     pg.binding = template_binding;
     pg.dom_html = '\
-        <h3>Play a Game!</h3>\
-        <div class="play-table" id="play-lobby">'+getLobbyTable()+'</div>\
-        <div class="play-table" id="play-host">'+getHostTable()+'</div>\
+        <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>\
+        <div id="play-lobby">\
+            <h4>Play a Game!</h4>\
+            <button id="play-host-button" class="btn btn-primary">Host a Game</button>\
+            <br />\
+            <br />\
+            <div class="play-table">'+getLobbyTable()+'</div>\
+        </div>\
+        \
+        <div id="play-host">\
+            <h4>Host a game!</h4>\
+            <button id="play-lobby-button" class="btn btn-primary">Play a Game</button>\
+            <br />\
+            <br />\
+            <div class="play-table">'+getHostTable()+'</div>\
+        </div>\
         ';
     return pg;
 }

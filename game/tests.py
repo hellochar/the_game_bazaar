@@ -1,5 +1,5 @@
 from django.test import TestCase
-from game import views
+from game.views import LobbiesView, GameView
 from game.models import Game
 from lib.models import Map
 from django.contrib.auth.models import User
@@ -30,16 +30,16 @@ class GameControllerTest(TestCase):
         self.aMap.save()
 
     def test_create_new_game(self):
-        game, players_json = views.create_new_game(self.aMap.id, self.user)
+        game, players_json = Game.create_new_game(self.aMap.id, self.user)
         self.assertEqual(len(players_json), 3)
         self.assertEqual(players_json[0], "hosting_player")
         pass
 
     def test_add_user_to_game(self):
-        game, _ = views.create_new_game(self.aMap.id, self.user)
+        game, _ = Game.create_new_game(self.aMap.id, self.user)
 
         # Perform the join logic
-        _, players_json, player_id = views.add_user_to_game(game.id, self.joiner)
+        _, players_json, player_id = Game.add_user_to_game(game.id, self.joiner)
 
         # Check a bunch of conditions
         self.assertEqual(len(players_json), 3)

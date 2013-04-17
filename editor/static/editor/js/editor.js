@@ -19,9 +19,12 @@ Editor.prototype.init = function() {
 Editor.prototype.setPalette = function(palette) {
     if(this.palette !== undefined) {
         $(this.palette.constructor.domElement).remove();
+        $(this.palette).trigger("selectionLost", palette);
     }
+    var oldPalette = this.palette;
     this.palette = palette;
     $(this.palette.constructor.domElement).appendTo('#palette');
+    $(this.palette).trigger("selectionGained", oldPalette);
     console.log("Set palette");
 }
 

@@ -2,7 +2,7 @@ function Editor(map, ui_renderer, palette) {
     this.setEditingMap(map || Editor.createDefaultMap());
 
     this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
-    this.setPalette(palette || new Palette(this));
+    this.setPalette(palette || new UnitPalette(this));
 }
 
 Editor.prototype.init = function() {

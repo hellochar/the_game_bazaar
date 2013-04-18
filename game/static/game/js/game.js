@@ -287,24 +287,18 @@ Game.prototype.handleClick = function(clicktype, clickpos) {
 };
 
 Game.getRect = function(c1, c2) {
-    var x1 = Math.min(c1.x, c2.x);
-    var y1 = Math.min(c1.y, c2.y);
-    var x2 = Math.max(c1.x, c2.x);
-    var y2 = Math.max(c1.y, c2.y);
     return {
-        "x": x1,
-        "y": y1,
-        "w": x2 - x1,
-        "h": y2 - y1
-        };
+        "p1": new THREE.Vector3(Math.min(c1.x, c2.x), Math.min(c1.y, c2.y)),
+        "p2": new THREE.Vector3(Math.max(c1.x, c2.x), Math.max(c1.y, c2.y))
+    };
 };
 
 Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
     var rect = Game.getRect(dragstart, dragend);
-    var drag_p1 = new THREE.Vector3(rect.x, rect.y, 0);
-    var drag_p2 = new THREE.Vector3(rect.x + rect.w, rect.y, 0);
-    var drag_p3 = new THREE.Vector3(rect.x + rect.w, rect.y + rect.h, 0);
-    var drag_p4 = new THREE.Vector3(rect.x, rect.y + rect.h, 0);
+    var drag_p1 = new THREE.Vector3(rect.p1.x, rect.p1.y, 0);
+    var drag_p2 = new THREE.Vector3(rect.p2.x, rect.p1.y, 0);
+    var drag_p3 = new THREE.Vector3(rect.p2.x, rect.p2.y, 0);
+    var drag_p4 = new THREE.Vector3(rect.p1.x, rect.p2.y, 0);
     drag_p1 = this.gs_renderer.project(drag_p1);
     drag_p2 = this.gs_renderer.project(drag_p2);
     drag_p3 = this.gs_renderer.project(drag_p3);

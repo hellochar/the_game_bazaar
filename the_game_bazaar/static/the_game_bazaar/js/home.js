@@ -294,6 +294,18 @@ function User(){
 	}
 }
 
+/* Utility function to print players */
+function printPlayers(json_players){
+    var html = '';
+    for (var key in json_players){
+        var player = json_players[key];
+        if (player !== ""){
+            html += json_players[key] + ', ';
+        }
+    }
+    html = html.slice(0,-2);
+    return html;
+};
 /**********************************************************
  * TEMPLATES
  * try to prepend the word 'template' onto the funciton so
@@ -605,18 +617,6 @@ function template_play(){
         return html;
     }
 
-    function printPlayers(json_players){
-        var html = '';
-        for (var key in json_players){
-            var player = json_players[key];
-            if (player !== ""){
-                html += json_players[key] + ', ';
-            }
-        }
-        html = html.slice(0,-2);
-        return html;
-    };
-
     function template_binding(){
         //css stuff
         $('#content .play-table').css({
@@ -854,6 +854,7 @@ function template_profile(){
 function template_history(){
 
     function template_binding(){
+        html = '';
         $.ajax({
             type: "GET",
             async: false,
@@ -867,7 +868,6 @@ function template_history(){
                 html += "<th>Game ID</th>";
                 html += "<th>Map Name</th>";
                 html += "<th>Players</th>";
-                html += "<th></th>";
                 html += "</tr></thead><tbody>";
                 //iterator down data and get stuff
                 for (var i = 0; i < data.length; i++){
@@ -876,18 +876,17 @@ function template_history(){
                                 <td>"+game.id+"</td>\
                                 <td>"+game.map_name+"</td>\
                                 <td>"+printPlayers(game.players)+"</td>\
-                                <td>\
-                                    <form action='/game/join' method='POST' style='margin:0px'>\
-                                        <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
-                                        <input name='game-id' type='hidden' value='"+game.id+"'/>\
-                                        <button class='btn'>Join</button>\
-                                    </form>\
-                                </td>\
                             </tr>";
                 }
                 //close table
                 html += "</tbody></table>";
             }
+        });
+
+        $('#content #history-table').html(html);
+
+        $('#content #history-table').css({
+            'backgroundColor':'white',
         });
     }
 

@@ -44,6 +44,10 @@ urlpatterns = patterns(
         views.ajax_gravatar,
         name="ajax_gravatar"),
 
+    url(r'^ajax/history/$',
+        views.ajax_history,
+        name="ajax_history"),
+
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
         views.login,

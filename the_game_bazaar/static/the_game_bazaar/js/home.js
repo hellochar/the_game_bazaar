@@ -124,7 +124,7 @@ function bind_divs(){
         });
     });
 
-    //bind the user-corner
+    //USER CORNER BINDINGS
     $('#signed #user-nav').click(function(){
         $('#signed #user-dropdown').slideToggle(300);
     });
@@ -133,9 +133,13 @@ function bind_divs(){
         $('#signed #user-dropdown').slideToggle(300);
     })
 
-    //bind profile link
+    //DROPDOWN MENU BINDINGS
     $('#signed #user-dropdown #dropdown-profile').click(function(){
         change_page(templates, 'profile');
+    })
+
+    $('#signed #user-dropdown #dropdown-history').click(function(){
+        change_page(templates, 'history');
     })
 
     //bind the logout button
@@ -848,7 +852,50 @@ function template_profile(){
 }
 
 function template_history(){
+
+    function template_binding(){
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/ajax/history/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                html += "<table class='table table-striped'>";
+                html += "<thead><tr>";
+                html += "<th>Game ID</th>";
+                html += "<th>Map Name</th>";
+                html += "<th>Players</th>";
+                html += "<th></th>";
+                html += "</tr></thead><tbody>";
+                //iterator down data and get stuff
+                for (var i = 0; i < data.length; i++){
+                    var game = data[i];
+                    html += "<tr>\
+                                <td>"+game.id+"</td>\
+                                <td>"+game.map_name+"</td>\
+                                <td>"+printPlayers(game.players)+"</td>\
+                                <td>\
+                                    <form action='/game/join' method='POST' style='margin:0px'>\
+                                        <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
+                                        <input name='game-id' type='hidden' value='"+game.id+"'/>\
+                                        <button class='btn'>Join</button>\
+                                    </form>\
+                                </td>\
+                            </tr>";
+                }
+                //close table
+                html += "</tbody></table>";
+            }
+        });
+    }
+
     var pg = new page();
-    pg.binding = null;
-    pg.dom_html = '';
+    pg.binding = template_binding;
+    pg.dom_html = '\
+        <h4>Your Game History</h4>\
+        <div id="history-table"></div>\
+    ';
+    return pg;
 }

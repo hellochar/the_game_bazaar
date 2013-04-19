@@ -62,14 +62,14 @@ describe("GS UI", function() {
             testClick(0, clickpos, selectedUnit);
         });
 
-        function testDrag(player_id, dragstart, dragend, selectedUnits) {
+        function testDrag(player_id, drag_p1, drag_p2, drag_p3, drag_p4, selectedUnits) {
             // Assert all units are unselected before we start
             gamestate.players.forEach(function(player) {
                 expect(player.selectedUnits.length).toBe(0);
             });
 
             // Drag on the selected points.
-            GS_UI.selectUnits(gamestate.players[player_id], 0, dragstart, dragend);
+            GS_UI.selectUnits(gamestate.players[player_id], 0, drag_p1, drag_p2, drag_p3, drag_p4);
 
             // Assert that all players have empty selected lists except for the
             // chosen player, whose list is equal to selectedUnits.
@@ -83,44 +83,32 @@ describe("GS UI", function() {
             });
         }
 
-        it("Selects a unit when you drag over it (top left to bottom right)", function() {
-            // Drag from top left to bottom right
-            var dragstart = {'x': 8, 'y': 13};
-            var dragend = {'x': 12, 'y': 17};
+        it("Selects a unit when you drag over it (four points in non-clockwise order)", function() {
+            var drag_p1 = {'x': 8, 'y': 13};
+            var drag_p2 = {'x': 12, 'y': 13};
+            var drag_p3 = {'x': 12, 'y': 17};
+            var drag_p4 = {'x': 8, 'y': 17};
             var selectedUnits = [gamestate.players[1].units[0]];
-            testDrag(1, dragstart, dragend, selectedUnits);
+            testDrag(1, drag_p1, drag_p3, drag_p2, drag_p4, selectedUnits);
         });
 
-        it("Selects a unit when you drag over it (top right to bottom left)", function() {
-            // Drag from top right to bottom left
-            var dragstart = {'x': 12, 'y': 13};
-            var dragend = {'x': 8, 'y': 17};
+        it("Selects a unit when you drag over it (four points in clockwise order)", function() {
+            var drag_p1 = {'x': 8, 'y': 13};
+            var drag_p2 = {'x': 12, 'y': 13};
+            var drag_p3 = {'x': 12, 'y': 17};
+            var drag_p4 = {'x': 8, 'y': 17};
             var selectedUnits = [gamestate.players[1].units[0]];
-            testDrag(1, dragstart, dragend, selectedUnits);
-        });
-
-        it("Selects a unit when you drag over it (bottom left to top right)", function() {
-            // Drag from bottom left to top right
-            var dragstart = {'x': 8, 'y': 17};
-            var dragend = {'x': 12, 'y': 13};
-            var selectedUnits = [gamestate.players[1].units[0]];
-            testDrag(1, dragstart, dragend, selectedUnits);
-        });
-
-        it("Selects a unit when you drag over it (bottom right to top left)", function() {
-            // Drag from bottom right to top left
-            var dragstart = {'x': 12, 'y': 17};
-            var dragend = {'x': 8, 'y': 13};
-            var selectedUnits = [gamestate.players[1].units[0]];
-            testDrag(1, dragstart, dragend, selectedUnits);
+            testDrag(1, drag_p1, drag_p2, drag_p3, drag_p4, selectedUnits);
         });
 
         it("Selects multiple units when you drag over them", function() {
             // Drag over all units of player 2
-            var dragstart = {'x': 0, 'y': 0};
-            var dragend = {'x': 10, 'y': 10};
+            var drag_p1 = {'x': 0, 'y': 0};
+            var drag_p2 = {'x': 10, 'y': 0};
+            var drag_p3 = {'x': 10, 'y': 10};
+            var drag_p4 = {'x': 0, 'y': 10};
             var selectedUnits = gamestate.players[2].units;
-            testDrag(2, dragstart, dragend, selectedUnits);
+            testDrag(2, drag_p1, drag_p2, drag_p3, drag_p4, selectedUnits);
         });
 
     });

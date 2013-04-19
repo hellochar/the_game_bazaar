@@ -5,18 +5,17 @@ function UnitSelectionPalette(editor) {
 
     //press space to go into UnitPalette
     (function() {
-        var onKeyPress = function(evt) {
+        var onKeyUp = function(evt) {
             if(evt.keyCode === 32) { //space
                 this.editor.setPalette(new UnitPalette(editor));
             }
+            if(evt.keyCode === 46) { //delete
+                this.selectedUnits.forEach(this.editor.map.removeUnit);
+                this.selectedUnits = [];
+            }
         }.bind(this);
 
-        $(this).bind("selectionGained", function(evt, oldPalette) {
-            $(document).on("keypress", onKeyPress);
-        });
-        $(this).bind("selectionLost", function(evt, newPalette) {
-            $(document).off("keypress", onKeyPress);
-        });
+        this.bindInputOnSelection(document, "keyup", onKeyUp);
     }.bind(this))();
 }
 
@@ -27,7 +26,8 @@ UnitSelectionPalette.domElement = (function() {
     var container = $('<div/>');
 
     container.append('Drag from the ground to select units.<br/>');
-    container.append('Drag selection by dragging any selected unit.<br/>');
+    // container.append('Drag selection by dragging any selected unit.<br/>');
+    container.append('Press DEL to delete selected units.<br/>');
 
     container.selectedUnits = $('<div/>');
     container.selectedUnits.appendTo(container);
@@ -41,6 +41,7 @@ UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {
     }
 };
 UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+    // if(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, dragstart)
     if(clicktype == 1) {
         this.selectedUnits = GS_UI.getIntersectingUnits(getAllUnits(this.editor.map), 0, dragstart, dragend); //selectUnits' first argument should be a player but we hack it and pass this since the only attribute it needs is a variable selectedUnits of type Array
     }

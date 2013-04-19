@@ -18,32 +18,22 @@ function UnitPalette(editor) {
             mouseDownButton = false;
         }
 
-        $(this).bind("selectionGained", function(evt, oldPalette) {
-            $(this.editor.ui_renderer.canvas).on("mousedown", onMouseDown);
-            $(this.editor.ui_renderer.canvas).on("mousemove", onMouseMove);
-            $(this.editor.ui_renderer.canvas).on("mouseup", onMouseUp);
-        });
-        $(this).bind("selectionLost", function(evt, newPalette) {
-            $(this.editor.ui_renderer.canvas).off("mousedown", onMouseDown);
-            $(this.editor.ui_renderer.canvas).off("mousemove", onMouseMove);
-            $(this.editor.ui_renderer.canvas).off("mouseup", onMouseUp);
-        });
+        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mousedown", onMouseDown);
+        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mousemove", onMouseMove);
+        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mouseup", onMouseUp);
+
     }.bind(this))();
 
     //press space to go into UnitSelectionPalette
     (function() {
-        var onKeyPress = function(evt) {
+        var onKeyUp = function(evt) {
             if(evt.keyCode === 32) { //space
                 this.editor.setPalette(new UnitSelectionPalette(editor));
             }
         }.bind(this);
 
-        $(this).bind("selectionGained", function(evt, oldPalette) {
-            $(document).on("keypress", onKeyPress);
-        });
-        $(this).bind("selectionLost", function(evt, newPalette) {
-            $(document).off("keypress", onKeyPress);
-        });
+        this.bindInputOnSelection(document, "keyup", onKeyUp);
+
     }.bind(this))();
 }
 

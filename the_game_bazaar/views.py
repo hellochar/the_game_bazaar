@@ -10,9 +10,19 @@ from django.contrib.auth import login as auth_login
 from lib.models import Map
 from game.models import Game
 from django.db import IntegrityError
+from the_game_bazaar.models import Clan
+from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 import hashlib
 import urllib
 
+# helper functions
+def getClan(user):
+    clans = user.groups.all()
+    if clans.count() > 0:
+        return clans[0].name
+    else:
+        return None
 
 # /
 def index(request):
@@ -112,9 +122,66 @@ def ajax_gravatar(request):
     gravatar_url += "' />"
     return HttpResponse(gravatar_url, mimetype="text/html")
 
+###############################################################################
+# CLAN API
+###############################################################################
+@login_required(login_url='/', redirect_field_name=None)
+@require_http_methods(["POST"])
+def create_clan(request):
+    resp = {
+        "success": False,
+    }
+
+    if('name' in request.POST):
+        clan = Clan()
+        clan.name = request.POST['name']
+        clan.creator = request.user
+        try:
+            clan.save()
+            request.user.groups.add(clan)
+            resp['success'] = True
+        except:
+            resp['error'] = "That clan already exists"
+    else:
+        resp['error'] = 'you must supply a name'
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
+@require_http_methods(["POST"])
+def join_clan(request):
+    resp = {
+        "success": False,
+    }
+    if (request.user.groups.all().count() >= 1):
+        resp['error'] = "You cannot join more than 1 clan"
+    elif ('name' in request.POST):
+        try:
+            clan = Clan.objects.get(name=request.POST['name'])
+            request.user.groups.add(clan)
+            resp['success'] = True
+        except ObjectDoesNotExist, e:
+            resp['error'] = "Clan does not exist"
+    else:
+        resp['error'] = "You must specify which clan to join"
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
+@require_http_methods(["POST"])
+def leave_clan(request):
+    resp = {
+        "success": False,
+    }
+
+    request.user.groups.clear()
+
+    resp['success'] = True
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
 
 ###############################################################################
-# AUTHENTICATION
+# AUTHENTICATION API
 ###############################################################################
 def login(request):
     context = {}
@@ -132,6 +199,7 @@ def ajax_is_authenticated(request):
         resp["username"] = request.user.username
         resp["gravatar"] = ajax_gravatar(request).content
         resp["email"] = request.user.email
+        resp["clan"] = getClan(request.user)
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 
@@ -177,9 +245,10 @@ def ajax_login(request):
         # the password verified for the user
         auth_login(request, user)
         resp['success'] = True
-        resp["username"] = user.username
-        resp["gravatar"] = ajax_gravatar(request).content
-        resp["email"] = user.email
+        resp['username'] = user.username
+        resp['gravatar'] = ajax_gravatar(request).content
+        resp['email'] = user.email
+        resp['clan'] = getClan(user)
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

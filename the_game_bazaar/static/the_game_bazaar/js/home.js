@@ -21,6 +21,7 @@ templates['play'] = template_play();
 templates['edit'] = template_edit();
 templates['profile'] = template_profile();
 templates['history'] = template_history();
+templates['clan'] = template_clan();
 
 $().ready(function(){
     //create a new user
@@ -37,8 +38,14 @@ $().ready(function(){
 
 });
 
-function change_page(templates, page){
-    if (templates.current_page !== page){
+function change_page(templates, page, force){
+    if (force){
+        force = force;
+    } else {
+        force = false;
+    }
+
+    if (templates.current_page !== page || force){
 
         template_page = templates[page];
         //do some fancy animations
@@ -142,6 +149,10 @@ function bind_divs(){
         change_page(templates, 'history');
     })
 
+    $('#signed #user-dropdown #dropdown-clan').click(function(){
+        change_page(templates, 'clan');
+    })
+
     //bind the logout button
     $('#navbar-logout').click(function(){
         user.logout(function(){
@@ -167,10 +178,16 @@ function render_logged_in(from_logged_in){
     } 
 
     if(user.loggedin){
+        //place in username
         $('#signed #user-nav #username').html(user.username);
+
+        //place in clan name
+        $('.clan-name').html(user.getFormattedClanName());
+
+        //place in gravatar
         var gurl = user.getGravatar(40);
-        console.log(gurl);
         $('#signed #user-nav #gravatar').html(gurl);
+
         $('.login_required').slideToggle(300);
     } else {
         if (from_logged_in){
@@ -187,6 +204,7 @@ function User(){
 	this.username = '';
 	this.gravatar_img = '';
     this.email = '';
+    this.clan = '';
 
 	//methods
 	this.getGravatar = getGravatar;
@@ -194,9 +212,18 @@ function User(){
 	this.login = login;
 	this.logout = logout;
     this.checkLoggedIn = checkLoggedIn;
+    this.getFormattedClanName = getFormattedClanName;
 
     //stuff to do when you initialize
     this.checkLoggedIn();
+
+    function getFormattedClanName(){
+        if (this.clan !== null){
+            return '['+this.clan+']';
+        } else {
+            return '';
+        }
+    }
 
     function checkLoggedIn(){
         //fills out stuff if you're already logged in
@@ -218,6 +245,7 @@ function User(){
                         this.username = data['username'];
                         this.gravatar_img = data['gravatar'];
                         this.email = data['email'];
+                        this.clan = data['clan'];
                         result = true;
                     } else {
                         result = false;
@@ -266,6 +294,7 @@ function User(){
                     this.loggedin = true;
                     this.username = data['username'];
                     this.gravatar_img = data['gravatar'];
+                    this.clan = data['clan'];
                     //show that you're logged in
                 } else {
                     //show an error
@@ -288,6 +317,7 @@ function User(){
                 this.loggedin = false;
                 this.username = '';
                 this.gravatar_url = '';
+                this.clan = '';
                 callback();
             }.bind(this),
         })
@@ -891,6 +921,128 @@ function template_history(){
     pg.dom_html = '\
         <h4>Your Game History</h4>\
         <div id="history-table"></div>\
+    ';
+    return pg;
+}
+
+function template_clan(){
+
+    function create_clan(name){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/create/",
+            data: {
+                "name": name,
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                if(data['success'] === true){
+                    user.clan = name;
+                    change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
+                } else {
+                    $('#content #not-a-member #error').html(data['error']);
+                }
+            }
+        });
+    }
+
+    function join_clan(name){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/join/",
+            data: {
+                "name": name,
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] == true){
+                    user.clan = name;
+                    change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
+                } else {
+                    $('#content #not-a-member #error').html(data['error']);
+                }
+            }
+        });
+    }
+
+    function leave_clan(){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/leave/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] === true){
+                    user.clan = null
+                    change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
+                } else {
+                    $('#content #already-member #error').html("A server error occurred");
+                }
+            }
+        })
+    }
+
+    function template_binding(){
+        
+        if(user.clan !== null){
+            //user is a member of a clan
+            $('#content #not-a-member').hide();
+            $('#content .clan-name').html(user.getFormattedClanName());
+            $('#content #already-member button').click(function(){
+                leave_clan();
+            });
+        } else {
+            //user is NOT a member of a clan
+            $('#content #already-member').hide();
+            $('#content #create-clan').submit(function(e){
+                e.preventDefault();
+                create_clan($('#content #create-clan #name').val());
+            });
+            $('#content #join-clan').submit(function(e){
+                e.preventDefault();
+                join_clan($('#content #join-clan #name').val());
+            })
+        }
+
+
+    }
+
+    var pg = new page();
+    pg.binding = template_binding;
+    pg.dom_html = '\
+        <div id="already-member">\
+            <h5 id="error"></h5>\
+            <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
+            <button>Leave Clan</button>\
+            <h4>Other members:</h4>\
+            <div id="clan-member-list"></div>\
+        </div>\
+        \
+        <div id="not-a-member">\
+            <h5 id="error"></h5>\
+            <form id="join-clan">\
+                <h4>Join a Clan</h4>\
+                Clan: <input id="name" type="text"></input>\
+                <input type="submit"></input>\
+            </form>\
+            \
+            <form id="create-clan">\
+                <h4>Create a Clan</h4>\
+                Clan: <input id="name" type="text"></input>\
+                <input type="submit"></input>\
+            </form>\
+        </div>\
     ';
     return pg;
 }

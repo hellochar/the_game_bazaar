@@ -51,3 +51,12 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def on_key(self, data):
         self.broadcast_message('key', data)
+
+    def on_deadUnits(self, data):
+        self.broadcast_message('deadUnits', data)
+
+    def on_lostGame(self, data):
+        self.broadcast_message('lostGame', data)
+
+    def on_wonGame(self, data):
+        self.broadcast_message('wonGame', data)

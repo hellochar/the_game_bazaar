@@ -38,7 +38,10 @@ Game.prototype.init = function(gs_renderer) {
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
         'drag' : 'handleDragMessage',
-        'key' : 'handleKeyMessage'
+        'key' : 'handleKeyMessage',
+        'deadUnits' : 'handleDeadUnits',
+        'lostGame' : 'handleLostGame',
+        'wonGame' : 'handleWonGame'
     };
 
     for(var evt in listeners) {
@@ -125,10 +128,11 @@ Game.prototype.render = function() {
     var self = this;
     var now_time = Date.now();
     var start_time = self.client_start_time;
-    // TODO detect bullet collisions and send messages to the server if appropriate.
+
+    // Detect bullet collisions and send messages to the server if appropriate.
     var deadUnitIndexList = [];
     self.gamestate.players[self.player_id].units.forEach(function(unit, index) {
-        if (unit.deadTime <= (now_time - start_time)) {
+        if (unit.deadTime && unit.deadTime <= (now_time - start_time)) {
             deadUnitIndexList.push(index);
         }
     });
@@ -140,6 +144,26 @@ Game.prototype.render = function() {
         };
         self.socket.emit('deadUnits', data);
     }
+
+    // If we've lost the game, send that message to the server.
+    if (self.loseCondition()) {
+        data = {
+            'game_id': this.game_id,
+            'player_id': this.player_id
+        };
+        self.socket.emit('lostGame', data);
+    }
+
+    // If we've won the game, send that message to the server.
+    if (self.winCondition()) {
+        data = {
+            'game_id': this.game_id,
+            'player_id': this.player_id
+        };
+        self.socket.emit('wonGame', data);
+    }
+
+    // Render this snapshot of the gamestate.
     var snapshot = self.gamestate.evaluate(now_time - start_time);
 
     var renderText = function(text) {
@@ -363,6 +387,46 @@ Game.prototype.shootBullets = function(updateTime, player_id) {
     unit_list.forEach(function(unit) {
         unit.shootBullet(updateTime);
     });
+};
+
+Game.prototype.handleDeadUnits = function(data) {
+    var timestamp = data['timestamp'];
+    var player_id = data['player_id'];
+    var deadUnitIndexList = data['deadUnitIndexList'];
+
+    var player = this.gamestate.players[player_id];
+    player.units = player.units.filter(function(unit, index) {
+        return deadUnitIndexList.indexOf(index) === -1;
+    });
+};
+
+Game.prototype.loseCondition = function() {
+    var player = this.gamestate.players[this.player_id];
+    return player.units.length === 0;
+};
+
+Game.prototype.winCondition = function() {
+    var players = this.gamestate.players.filter(function(player, index) {
+        return index !== this.player_id;
+    }.bind(this));
+    var won = true;
+    players.every(function(player) {
+        won = player.units.length === 0;
+        return won;
+    });
+    return won;
+};
+
+Game.prototype.handleLostGame = function(data) {
+    var timestamp = data['timestamp'];
+    var player_id = data['player_id'];
+    // TODO
+};
+
+Game.prototype.handleWonGame = function(data) {
+    var timestamp = data['timestamp'];
+    var player_id = data['player_id'];
+    // TODO
 };
 
 

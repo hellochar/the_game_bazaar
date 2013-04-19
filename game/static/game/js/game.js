@@ -32,7 +32,7 @@ Game.prototype.init = function(gs_renderer) {
         reconnect: false
     });
     // DEBUG
-    console.log("Attempting to connect");
+    // console.log("Attempting to connect");
 
     // BIND HANDLERS FOR SOCKET EVENTS
 
@@ -62,7 +62,7 @@ Game.prototype.init = function(gs_renderer) {
     }
 
     // DEBUG
-    console.log("Init canvas");
+    // console.log("Init canvas");
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
@@ -71,7 +71,7 @@ Game.prototype.init = function(gs_renderer) {
 //This method gets called as soon
 Game.prototype.handleConnecting = function() {
     // DEBUG
-    console.log("Connecting...");
+    // console.log("Connecting...");
 
     this.conn_state = Game.GAME_STATES.CONNECTING;
 };
@@ -90,7 +90,7 @@ Game.prototype.handleConnected = function () {
     // Do some connecting and make sure we cleanup correctly.
 
     // DEBUG
-    console.log("Connected!");
+    // console.log("Connected!");
 
     this.conn_state = Game.GAME_STATES.CONNECTED;
     $(window).unload(function() {
@@ -109,9 +109,9 @@ Game.prototype.handleConnected = function () {
 // Let client know someone has joined
 Game.prototype.handleUserJoin = function (data) {
     // DEBUG
-    console.log("Someone joined the game at: ", data.timestamp);
-    console.log("Player id: ", data.player_id);
-    console.log("Joining user's name: ", data.username);
+    // console.log("Someone joined the game at: ", data.timestamp);
+    // console.log("Player id: ", data.player_id);
+    // console.log("Joining user's name: ", data.username);
 
     this.addPlayerToHTML(data.player_id, data.username);
 };
@@ -119,7 +119,7 @@ Game.prototype.handleUserJoin = function (data) {
 // Starting a Game
 Game.prototype.handleGameStart = function (data) {
     // DEBUG
-    console.log("Timestamp: ", data.timestamp);
+    // console.log("Timestamp: ", data.timestamp);
 
     this.server_start_time = data.timestamp;
     this.client_start_time = Date.now();
@@ -253,7 +253,7 @@ Game.prototype.finishInitialization = function() {
 
     $('#start-game').click(function() {
         // DEBUG
-        console.log("start game");
+        // console.log("start game");
 
         this.start_game();
     }.bind(this));
@@ -268,7 +268,7 @@ Game.prototype.instantiateGameState = function() {
             if(data['success'] === true){
                 map_data_json = JSON.parse(data.map_data);
                 // DEBUG
-                console.log("putting the following into window.map_data: " + map_data_json);
+                // console.log("putting the following into window.map_data: " + map_data_json);
                 // DEBUG
                 window.map_data = map_data_json;
 
@@ -290,7 +290,7 @@ Game.prototype.instantiateGameState = function() {
 
 Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
     // DEBUG
-    console.log("Updating player names");
+    // console.log("Updating player names");
 
     var slot = $("#player-slot-" + new_player_id.toString(10));
     slot.text(new_player_username);
@@ -303,7 +303,7 @@ Game.prototype.getUsernameByPid = function(player_id) {
 
 Game.prototype.populatePlayerNamesInGSFromHTML = function() {
     // DEBUG
-    console.log("Populating player names");
+    // console.log("Populating player names");
 
     var usernames = $("#player-usernames");
     for (var index = 0; index < usernames.children().length; index++) {

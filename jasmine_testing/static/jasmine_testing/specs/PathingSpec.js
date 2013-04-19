@@ -9,7 +9,7 @@ describe("Pathing", function() {
                 new THREE.Vector3(20, 25),
                 new THREE.Vector3(40, 40)
             );
-            expect(val).toBe(false);
+            expect(val.onLine1 && val.onLine2).toBe(false);
         });
         // ending at the same place
         it("handles two segments ending at the same place", function() {
@@ -19,7 +19,7 @@ describe("Pathing", function() {
                 new THREE.Vector3(-40, -40),
                 new THREE.Vector3(20, 25)
             );
-            expect(val).toBe(false);
+            expect(val.onLine1 && val.onLine2).toBe(false);
         });
         // starting and ending at the same place
         it("handles two segments ending at the same place", function() {
@@ -29,7 +29,7 @@ describe("Pathing", function() {
                 new THREE.Vector3(15, -15),
                 new THREE.Vector3(20, 25)
             );
-            expect(val).toBe(false);
+            expect(val.onLine1 && val.onLine2).toBe(false);
         });
         // not intersecting
         it("handles two segments not intersecting", function() {
@@ -39,7 +39,7 @@ describe("Pathing", function() {
                 new THREE.Vector3(0, 20),
                 new THREE.Vector3(15, 19)
             );
-            expect(val).toBe(false);
+            expect(val.onLine1 && val.onLine2).toBe(false);
         });
         // intersecting
         it("handles two segments ending at the same place", function() {
@@ -49,7 +49,18 @@ describe("Pathing", function() {
                 new THREE.Vector3(0, 20),
                 new THREE.Vector3(25, 19)
             );
-            expect(val).toBe(true);
+            expect(val.onLine1 && val.onLine2).toBe(true);
+        });
+        // check simple intersection pt
+        it("handles a simple intersection pt", function() {
+            var val = segmentsIntersect(
+                new THREE.Vector3(15, 0),
+                new THREE.Vector3(-15, 0),
+                new THREE.Vector3(0, 20),
+                new THREE.Vector3(0, -20)
+            );
+            expect(val.intersectionPt.x).toBeCloseTo(0, 2);
+            expect(val.intersectionPt.y).toBeCloseTo(0, 2);
         });
     });
     describe("inRange", function() {

@@ -54,13 +54,16 @@ Editor.prototype.setEditingMap = function(map) {
     $('#map-id').text(map.id);
 };
 
-Editor.prototype.saveMap = function() {
+Editor.prototype.saveMap = function(map_name) {
     var self = this;
-    var map_id = this.map.id;
-    if (!map_id) {
-        map_id = '';
-    }
-    data = {map_data : JSON.stringify(this.map.toJSON())};
+    var map_id = this.map.id || '';
+    var num_players = this.map.players.length;
+    data = {
+        map_data : JSON.stringify(this.map.toJSON()),
+        map_id : map_id,
+        num_players : num_players,
+        map_name: map_name,
+    };
     $.ajax({
         type: "POST",
         url: '/map/' + map_id,
@@ -79,6 +82,7 @@ Editor.prototype.loadMap = function(map_id) {
     var self = this;
     var callback = function (response) {
         if(response.success) {
+            $('#map_name').val(response.map_name);
             self.setEditingMap( Editor.createMapFromResponse(response) );
         } else {
             self.error("Could not load map " + map_id + ": " + response.reason);

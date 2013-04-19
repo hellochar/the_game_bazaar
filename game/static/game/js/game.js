@@ -134,10 +134,10 @@ Game.prototype.handleGameStart = function (data) {
     $('#game-container').show();
 
     //Begin rendering!
-    this.ui_renderer.startRendering(this.render.bind(this));
+    this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
 
-Game.prototype.render = function() {
+Game.prototype.renderMethod = function() {
     var self = this;
     var now_time = Date.now();
     var start_time = self.client_start_time;
@@ -186,6 +186,7 @@ Game.prototype.render = function() {
     self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
+            self.ui_renderer.renderSelectRect();
             var d1 = new THREE.Vector3(0, 0, 0);
             var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
             var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);

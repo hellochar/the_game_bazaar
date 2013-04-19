@@ -133,14 +133,22 @@ describe("Map Editor", function() {
             });
     });
 
-    describe("currentPlayer", function() {
-            it("retrieves the checked input's val", function() {
-                    expect(editor.currentPlayer()).toEqual(editor.map.players[0]);
+    describe("Palette", function() {
+    });
+    describe("UnitPalette", function() {
+        var palette;
+        beforeEach(function() {
+            palette = new UnitPalette(editor);
+        });
+        describe("currentPlayer", function() {
+                it("retrieves the checked input's val", function() {
+                        expect(palette.currentPlayer()).toEqual(editor.map.players[0]);
 
-                    $('input[name=player]').val(1);
-                    expect(editor.currentPlayer()).toEqual(editor.map.players[1]);
+                        $('input[name=player]', palette.domElement).val(1);
+                        expect(palette.currentPlayer()).toEqual(editor.map.players[1]);
 
-            });
+                });
+        });
     });
 
 });

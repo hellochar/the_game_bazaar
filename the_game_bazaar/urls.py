@@ -48,6 +48,19 @@ urlpatterns = patterns(
         views.ajax_history,
         name="ajax_history"),
 
+    # Clan Calls
+    url(r'^clan/create/$',
+        views.create_clan,
+        name="create_clan"),
+
+    url(r'^clan/join/$',
+        views.join_clan,
+        name="join_clan"),
+
+    url(r'^clan/leave/$',
+        views.leave_clan,
+        name="leave_clan"),
+
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
         views.login,

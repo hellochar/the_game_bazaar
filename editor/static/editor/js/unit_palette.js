@@ -1,6 +1,7 @@
 function UnitPalette(editor) {
     Palette.call(this, editor);
 
+    //click and drag to add units
     (function() {
         var mouseDownButton = false; //one of: 1,2,3 or FALSE
 
@@ -26,6 +27,22 @@ function UnitPalette(editor) {
             $(this.editor.ui_renderer.canvas).off("mousedown", onMouseDown);
             $(this.editor.ui_renderer.canvas).off("mousemove", onMouseMove);
             $(this.editor.ui_renderer.canvas).off("mouseup", onMouseUp);
+        });
+    }.bind(this))();
+
+    //press space to go into UnitSelectionPalette
+    (function() {
+        var onKeyPress = function(evt) {
+            if(evt.keyCode === 32) { //space
+                this.editor.setPalette(new UnitSelectionPalette(editor));
+            }
+        }.bind(this);
+
+        $(this).bind("selectionGained", function(evt, oldPalette) {
+            $(document).on("keypress", onKeyPress);
+        });
+        $(this).bind("selectionLost", function(evt, newPalette) {
+            $(document).off("keypress", onKeyPress);
         });
     }.bind(this))();
 }

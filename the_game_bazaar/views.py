@@ -12,6 +12,7 @@ from game.models import Game
 from django.db import IntegrityError
 from the_game_bazaar.models import Clan
 from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 import hashlib
 import urllib
 
@@ -138,7 +139,7 @@ def create_clan(request):
         try:
             clan.save()
             request.user.groups.add(clan)
-            resp['success'] = True;
+            resp['success'] = True
         except ValidationError, e:
             resp['error'] = e
     else:
@@ -155,9 +156,12 @@ def join_clan(request):
     if (request.user.groups.all().count() >= 1):
         resp['error'] = "You cannot join more than 1 clan"
     elif ('name' in request.POST):
-        clan = Clan.objects.get(name=request.POST['name'])
-        request.user.groups.add(clan)
-        resp['success'] = True,
+        try:
+            clan = Clan.objects.get(name=request.POST['name'])
+            request.user.groups.add(clan)
+            resp['success'] = True
+        except ObjectDoesNotExist, e:
+            resp['error'] = "Clan does not exist"
     else:
         resp['error'] = "You must specify which clan to join"
 
@@ -171,6 +175,8 @@ def leave_clan(request):
     }
 
     request.user.groups.clear()
+
+    resp['success'] = True
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

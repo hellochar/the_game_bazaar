@@ -38,8 +38,14 @@ $().ready(function(){
 
 });
 
-function change_page(templates, page){
-    if (templates.current_page !== page){
+function change_page(templates, page, force){
+    if (force){
+        force = force;
+    } else {
+        force = false;
+    }
+
+    if (templates.current_page !== page || force){
 
         template_page = templates[page];
         //do some fancy animations
@@ -923,7 +929,9 @@ function template_clan(){
             },
             success: function (data){
                 if(data['success'] === true){
-                    change_page(templates, 'clan');
+                    user.clan = name;
+                    $('.clan-name').html(user.clan);
+                    change_page(templates, 'clan', true);
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
                 }
@@ -931,12 +939,56 @@ function template_clan(){
         });
     }
 
+    function join_clan(name){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/join/",
+            data: {
+                "name": name,
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] == true){
+                    user.clan = name;
+                    $('.clan-name').html(user.clan);
+                    change_page(templates, 'clan', true);
+                } else {
+                    $('#content #not-a-member #error').html(data['error']);
+                }
+            }
+        });
+    }
+
+    function leave_clan(){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/leave/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] === true){
+                    user.clan = null
+                    change_page(templates, 'clan', true);
+                } else {
+                    $('#content #already-member #error').html("A server error occurred");
+                }
+            }
+        })
+    }
+
     function template_binding(){
         
         if(user.clan !== null){
             //user is a member of a clan
             $('#content #not-a-member').hide();
-            $('.clan-name').html(user.clan);
+            $('#content #already-member button').click(function(){
+                leave_clan();
+            });
         } else {
             //user is NOT a member of a clan
             $('#content #already-member').hide();
@@ -944,6 +996,10 @@ function template_clan(){
                 e.preventDefault();
                 create_clan($('#content #create-clan #name').val());
             });
+            $('#content #join-clan').submit(function(e){
+                e.preventDefault();
+                join_clan($('#content #join-clan #name').val());
+            })
         }
 
 
@@ -953,6 +1009,7 @@ function template_clan(){
     pg.binding = template_binding;
     pg.dom_html = '\
         <div id="already-member">\
+            <h5 id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
         </div>\
@@ -961,7 +1018,7 @@ function template_clan(){
             <h5 id="error"></h5>\
             <form id="join-clan">\
                 <h4>Join a Clan</h4>\
-                Clan: <input type="text"></input>\
+                Clan: <input id="name" type="text"></input>\
                 <input type="submit"></input>\
             </form>\
 \

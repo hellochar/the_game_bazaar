@@ -10,7 +10,7 @@ from django.contrib.auth import login as auth_login
 from lib.models import Map
 from game.models import Game
 from django.db import IntegrityError
-from django.db import ValidationError
+from django.core.exceptions import ValidationError
 import hashlib
 import urllib
 

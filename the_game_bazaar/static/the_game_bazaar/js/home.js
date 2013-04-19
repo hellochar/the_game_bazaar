@@ -21,6 +21,7 @@ templates['play'] = template_play();
 templates['edit'] = template_edit();
 templates['profile'] = template_profile();
 templates['history'] = template_history();
+templates['clan'] = template_clan();
 
 $().ready(function(){
     //create a new user
@@ -142,6 +143,10 @@ function bind_divs(){
         change_page(templates, 'history');
     })
 
+    $('#signed #user-dropdown #dropdown-clan').click(function(){
+        change_page(templates, 'clan');
+    })
+
     //bind the logout button
     $('#navbar-logout').click(function(){
         user.logout(function(){
@@ -187,6 +192,7 @@ function User(){
 	this.username = '';
 	this.gravatar_img = '';
     this.email = '';
+    this.clan = '';
 
 	//methods
 	this.getGravatar = getGravatar;
@@ -218,6 +224,7 @@ function User(){
                         this.username = data['username'];
                         this.gravatar_img = data['gravatar'];
                         this.email = data['email'];
+                        this.clan = data['clan'];
                         result = true;
                     } else {
                         result = false;
@@ -266,6 +273,7 @@ function User(){
                     this.loggedin = true;
                     this.username = data['username'];
                     this.gravatar_img = data['gravatar'];
+                    this.clan = data['clan'];
                     //show that you're logged in
                 } else {
                     //show an error
@@ -288,6 +296,7 @@ function User(){
                 this.loggedin = false;
                 this.username = '';
                 this.gravatar_url = '';
+                this.clan = '';
                 callback();
             }.bind(this),
         })
@@ -895,6 +904,47 @@ function template_history(){
     pg.dom_html = '\
         <h4>Your Game History</h4>\
         <div id="history-table"></div>\
+    ';
+    return pg;
+}
+
+function template_clan(){
+
+    function template_binding(){
+        
+        if(user.clan !== null){
+            //user is a member of a clan
+            $('#content #not-a-member').hide();
+            $('.clan-name').html(user.clan);
+        } else {
+            //user is NOT a member of a clan
+            $('#content #already-member').hide();
+        }
+
+
+    }
+
+    var pg = new page();
+    pg.binding = template_binding;
+    pg.dom_html = '\
+        <div id="already-member">\
+            <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
+            <button>Leave Clan</button>\
+        </div>\
+\
+        <div id="not-a-member">\
+            <form>\
+                <h4>Join a Clan</h4>\
+                Clan: <input type="text"></input>\
+                <input type="submit"></input>\
+            </form>\
+\
+            <form>\
+                <h4>Create a Clan</h4>\
+                Clan: <input type="text"></input>\
+                <input type="submit"></input>\
+            </form>\
+        </div>\
     ';
     return pg;
 }

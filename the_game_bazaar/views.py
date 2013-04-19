@@ -140,8 +140,8 @@ def create_clan(request):
             clan.save()
             request.user.groups.add(clan)
             resp['success'] = True
-        except ValidationError, e:
-            resp['error'] = e
+        except:
+            resp['error'] = "That clan already exists"
     else:
         resp['error'] = 'you must supply a name'
 

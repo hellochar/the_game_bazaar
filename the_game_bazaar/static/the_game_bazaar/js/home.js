@@ -178,10 +178,16 @@ function render_logged_in(from_logged_in){
     } 
 
     if(user.loggedin){
+        //place in username
         $('#signed #user-nav #username').html(user.username);
+
+        //place in clan name
+        $('.clan-name').html(user.getFormattedClanName());
+
+        //place in gravatar
         var gurl = user.getGravatar(40);
-        console.log(gurl);
         $('#signed #user-nav #gravatar').html(gurl);
+
         $('.login_required').slideToggle(300);
     } else {
         if (from_logged_in){
@@ -206,9 +212,18 @@ function User(){
 	this.login = login;
 	this.logout = logout;
     this.checkLoggedIn = checkLoggedIn;
+    this.getFormattedClanName = getFormattedClanName;
 
     //stuff to do when you initialize
     this.checkLoggedIn();
+
+    function getFormattedClanName(){
+        if (this.clan !== null){
+            return '['+this.clan+']';
+        } else {
+            return '';
+        }
+    }
 
     function checkLoggedIn(){
         //fills out stuff if you're already logged in
@@ -930,8 +945,8 @@ function template_clan(){
             success: function (data){
                 if(data['success'] === true){
                     user.clan = name;
-                    $('.clan-name').html(user.clan);
                     change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
                 }
@@ -953,8 +968,8 @@ function template_clan(){
             success: function(data){
                 if(data['success'] == true){
                     user.clan = name;
-                    $('.clan-name').html(user.clan);
                     change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
                 }
@@ -974,6 +989,7 @@ function template_clan(){
                 if(data['success'] === true){
                     user.clan = null
                     change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #already-member #error').html("A server error occurred");
                 }
@@ -986,6 +1002,7 @@ function template_clan(){
         if(user.clan !== null){
             //user is a member of a clan
             $('#content #not-a-member').hide();
+            $('#content .clan-name').html(user.getFormattedClanName());
             $('#content #already-member button').click(function(){
                 leave_clan();
             });
@@ -1012,8 +1029,10 @@ function template_clan(){
             <h5 id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
+            <h4>Other members:</h4>\
+            <div id="clan-member-list"></div>\
         </div>\
-\
+        \
         <div id="not-a-member">\
             <h5 id="error"></h5>\
             <form id="join-clan">\
@@ -1021,7 +1040,7 @@ function template_clan(){
                 Clan: <input id="name" type="text"></input>\
                 <input type="submit"></input>\
             </form>\
-\
+            \
             <form id="create-clan">\
                 <h4>Create a Clan</h4>\
                 Clan: <input id="name" type="text"></input>\

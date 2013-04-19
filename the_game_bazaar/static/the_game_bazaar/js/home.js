@@ -601,7 +601,7 @@ function template_play(){
                                 <td>"+map.name+"</td>\
                                 <td>"+map.max_players+"</td>\
                                 <td>\
-                                    <form action='/game/host' method='POST' style='margin:0px'>\
+                                    <form action='/game/' method='POST' style='margin:0px'>\
                                         <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
                                         <input name='map-id' type='hidden' value='"+map.id+"'/>\
                                         <button class='btn'>Host</button>\

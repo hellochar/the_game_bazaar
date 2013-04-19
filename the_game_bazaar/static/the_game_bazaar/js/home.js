@@ -910,6 +910,27 @@ function template_history(){
 
 function template_clan(){
 
+    function create_clan(name){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/create/",
+            data: {
+                "name": name,
+            },
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function (data){
+                if(data['success'] === true){
+                    change_page(templates, 'clan');
+                } else {
+                    $('#content #not-a-member #error').html(data['error']);
+                }
+            }
+        });
+    }
+
     function template_binding(){
         
         if(user.clan !== null){
@@ -919,6 +940,10 @@ function template_clan(){
         } else {
             //user is NOT a member of a clan
             $('#content #already-member').hide();
+            $('#content #create-clan').submit(function(e){
+                e.preventDefault();
+                create_clan($('#content #create-clan #name').val());
+            });
         }
 
 
@@ -933,15 +958,16 @@ function template_clan(){
         </div>\
 \
         <div id="not-a-member">\
-            <form>\
+            <h5 id="error"></h5>\
+            <form id="join-clan">\
                 <h4>Join a Clan</h4>\
                 Clan: <input type="text"></input>\
                 <input type="submit"></input>\
             </form>\
 \
-            <form>\
+            <form id="create-clan">\
                 <h4>Create a Clan</h4>\
-                Clan: <input type="text"></input>\
+                Clan: <input id="name" type="text"></input>\
                 <input type="submit"></input>\
             </form>\
         </div>\

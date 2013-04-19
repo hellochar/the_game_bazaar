@@ -10,6 +10,7 @@ from django.contrib.auth import login as auth_login
 from lib.models import Map
 from game.models import Game
 from django.db import IntegrityError
+from the_game_bazaar.models import Clan
 from django.core.exceptions import ValidationError
 import hashlib
 import urllib
@@ -18,10 +19,9 @@ import urllib
 def getClan(user):
     clans = user.groups.all()
     if clans.count() > 0:
-        return clans[0]
+        return clans[0].name
     else:
         return None
-
 
 # /
 def index(request):

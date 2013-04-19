@@ -5,7 +5,7 @@ describe("Game", function() {
         window.requestAnimationFrame = function() {}; //We mock out this because it breaks in phantomjs
         // window.Renderer = jasmine.createSpyObj('Renderer', []);
 
-        var gs_renderer = jasmine.createSpyObj('GSRenderer', ['preload', 'update', 'animate']);
+        var gs_renderer = jasmine.createSpyObj('GSRenderer', ['preload', 'update', 'animate', 'project']);
 
         game = new Game();
         spyOn(io, 'connect').andReturn(jasmine.createSpyObj('socket', ['on', 'emit', 'disconnect']));
@@ -283,10 +283,19 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 1,
-                dragstart: new THREE.Vector3(10, 10),
-                dragend: new THREE.Vector3(50, 50)
+                drag_p1: new THREE.Vector3(10, 10),
+                drag_p2: new THREE.Vector3(50, 10),
+                drag_p3: new THREE.Vector3(50, 50),
+                drag_p4: new THREE.Vector3(10, 50)
             });
-            expect(GS_UI.selectUnits).toHaveBeenCalledWith(game.gamestate.players[0], 10, new THREE.Vector3(10, 10), new THREE.Vector3(50, 50));
+            expect(GS_UI.selectUnits).toHaveBeenCalledWith(
+                game.gamestate.players[0],
+                10,
+                new THREE.Vector3(10, 10),
+                new THREE.Vector3(50, 10),
+                new THREE.Vector3(50, 50),
+                new THREE.Vector3(10, 50)
+            );
             expect(game.moveUnits).not.toHaveBeenCalled();
         });
 
@@ -295,11 +304,13 @@ describe("Game", function() {
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 3,
-                dragstart: new THREE.Vector3(10, 10),
-                dragend: new THREE.Vector3(50, 50)
+                drag_p1: new THREE.Vector3(10, 10),
+                drag_p2: new THREE.Vector3(50, 10),
+                drag_p3: new THREE.Vector3(50, 50),
+                drag_p4: new THREE.Vector3(10, 50)
             });
             expect(GS_UI.selectUnits).not.toHaveBeenCalled();
-            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, new THREE.Vector3(50, 50));
+            expect(game.moveUnits).toHaveBeenCalledWith(10, 0, new THREE.Vector3(10, 50));
         });
     });
 

@@ -48,3 +48,15 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         game_id = str(data['game_id'])
         self.leave(game_id)
         self.broadcast_message('leave', data)
+
+    def on_key(self, data):
+        self.broadcast_message('key', data)
+
+    def on_deadUnits(self, data):
+        self.broadcast_message('deadUnits', data)
+
+    def on_lostGame(self, data):
+        self.broadcast_message('lostGame', data)
+
+    def on_wonGame(self, data):
+        self.broadcast_message('wonGame', data)

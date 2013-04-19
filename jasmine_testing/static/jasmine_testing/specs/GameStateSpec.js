@@ -235,4 +235,17 @@ describe("GameState", function() {
 
     });
 
+    describe("Bullets", function() {
+        it("shootBullet adds a bullet to the unit bullets list", function() {
+            gamestate.players[0].units[0].shootBullet(0);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(1);
+        });
+
+        it("get cleaned up", function() {
+            gamestate.players[0].units[0].shootBullet(0);
+            gamestate.cleanUp(6000);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(0);
+        });
+    });
+
 });

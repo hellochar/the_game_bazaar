@@ -3,8 +3,14 @@ canvas {
     border: 1px solid black;
 }
 
+#palette {
+    border: 5px ridge;
+    padding: 10px;
+    margin: 10px auto;
+}
+
 #ui_container {
     position: absolute;
-    top: 200px;
-    right: 10px;
+    top: 50px;
+    left: 810px;
 }

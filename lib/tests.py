@@ -35,7 +35,7 @@ class MapTester(TestCase):
         if map_id is None:
             map_id = Map.objects.all()[0].id
 
-        params = {'map_data': map_data}
+        params = {'map_data': map_data, 'map_name': 'qwer', 'num_players': 2}
         response = self.client.post(reverse('map_view', kwargs={'mapid': map_id}), params)
         return (response, json.loads(response.content))
 
@@ -69,7 +69,12 @@ class MapPOSTTester(MapTester):
 
     def test_successfully_post_new_map(self):
         map_data = "{'players': [{'id':0,'units':[]}, {'id':1,'units':[]}]}"
-        response_json = json.loads(self.client.post(reverse("new_map_view"), {'map_data': map_data}).content)
+        data = {
+                'map_data': map_data,
+                'num_players' : 2,
+                'map_name' : 'qwer',
+                }
+        response_json = json.loads(self.client.post(reverse("new_map_view"), data).content)
         self.assertTrue(response_json["success"])
         self.assertEqual(map_data, Map.objects.get(id=response_json['map_id']).data)
         # import code
@@ -92,6 +97,7 @@ class MapPOSTTester(MapTester):
                 'success': True,
                 'map_id': map_id,
                 'map_data': "{'foo':'bar'}",
+                'map_name': "qwer",
             },
             json
         )

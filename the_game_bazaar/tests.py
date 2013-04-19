@@ -80,6 +80,16 @@ class changeProfileTest(TestCase):
 
 
 class ourAuthTest(TestCase):
+    def test_is_authenticated(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.get(reverse('ajax_is_authenticated'))
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+
     def test_ajax_login_success(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
         c = self.client
@@ -165,3 +175,93 @@ class unauthorizedRedirectTest(TestCase):
         c = self.client
         s_resp = c.post(reverse('ajax_logout'), {}, follow=True)
         self.assertEqual(len(s_resp.redirect_chain), 1)
+
+class clanTest(TestCase):
+    def test_create_non_existent_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+    def test_create_existing_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        # first create should be okay
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        # second create should NOT be okay
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+
+    def test_join_existing_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        User.objects.create_user('bbb', 'bbb', 'bbb')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        d = self.client
+        login(d, 'bbb', 'bbb')
+        s_resp = c.post(reverse('join_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+
+    def test_join_non_existing_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post(reverse('join_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+
+    def test_join_two_clans(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        User.objects.create_user('bbb', 'bbb', 'bbb')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+        d = self.client
+        login(d, 'bbb', 'bbb')
+
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+        
+        s_resp = d.post(reverse('create_clan'), {'name': 'world'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        s_resp = c.post(reverse('join_clan'), {'name': 'world'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+
+    def test_leave_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        user = User.objects.get(username='aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        self.assertEqual(user.groups.all().count(), 1)
+
+        s_resp = c.post(reverse('leave_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        self.assertEqual(user.groups.all().count(), 0)
+

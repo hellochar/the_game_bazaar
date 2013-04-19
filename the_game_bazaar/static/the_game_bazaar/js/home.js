@@ -561,7 +561,7 @@ function template_play(){
                                 <td>"+game.map_name+"</td>\
                                 <td>"+printPlayers(game.players)+"</td>\
                                 <td>\
-                                    <form action='/game/join' method='POST' style='margin:0px'>\
+                                    <form action='/game/" + game.id + "' method='POST' style='margin:0px'>\
                                         <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
                                         <input name='game-id' type='hidden' value='"+game.id+"'/>\
                                         <button class='btn'>Join</button>\

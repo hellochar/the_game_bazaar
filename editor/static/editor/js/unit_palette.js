@@ -32,7 +32,7 @@ function UnitPalette(editor) {
             }
         }.bind(this);
 
-        this.bindInputOnSelection(document, "keyup", onKeyUp);
+        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
 
     }.bind(this))();
 }

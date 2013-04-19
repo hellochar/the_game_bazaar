@@ -2,6 +2,10 @@ function Editor(map, ui_renderer, palette) {
     this.setEditingMap(map || Editor.createDefaultMap());
 
     this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
+    this.ui_renderer.scaleRatio = 1;
+    this.ui_renderer.translatePos = function(x, y) {
+        return this.scalePos(new THREE.Vector3(x,y));
+    }.bind(this.ui_renderer);
     this.setPalette(palette || new UnitPalette(this));
 }
 

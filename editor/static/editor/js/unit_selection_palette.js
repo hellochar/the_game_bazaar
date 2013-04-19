@@ -15,7 +15,7 @@ function UnitSelectionPalette(editor) {
             }
         }.bind(this);
 
-        this.bindInputOnSelection(document, "keyup", onKeyUp);
+        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
     }.bind(this))();
 }
 
@@ -43,7 +43,12 @@ UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {
 UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
     // if(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, dragstart)
     if(clicktype == 1) {
-        this.selectedUnits = GS_UI.getIntersectingUnits(getAllUnits(this.editor.map), 0, dragstart, dragend); //selectUnits' first argument should be a player but we hack it and pass this since the only attribute it needs is a variable selectedUnits of type Array
+        var rect = Game.getRect(dragstart, dragend);
+        var drag_p1 = new THREE.Vector3(rect.p1.x, rect.p1.y, 0);
+        var drag_p2 = new THREE.Vector3(rect.p2.x, rect.p1.y, 0);
+        var drag_p3 = new THREE.Vector3(rect.p2.x, rect.p2.y, 0);
+        var drag_p4 = new THREE.Vector3(rect.p1.x, rect.p2.y, 0);
+        this.selectedUnits = GS_UI.getIntersectingUnits(getAllUnits(this.editor.map), 0, drag_p1, drag_p2, drag_p3, drag_p4); //selectUnits' first argument should be a player but we hack it and pass this since the only attribute it needs is a variable selectedUnits of type Array
     }
 };
 UnitSelectionPalette.prototype.renderMethod = function() {

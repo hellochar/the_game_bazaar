@@ -48,5 +48,6 @@ UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, drage
 UnitSelectionPalette.prototype.renderMethod = function() {
     //upate domElement UI with selected units
     UnitSelectionPalette.domElement.selectedUnits.text("You have selected " + this.selectedUnits.length+" units");
+    this.editor.ui_renderer.renderSelectRect();
     this.editor.ui_renderer.renderSelectionCircles(this.selectedUnits.map(function(unit) { return unit.evaluate(0); }));
 };

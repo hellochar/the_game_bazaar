@@ -117,10 +117,10 @@ Game.prototype.handleGameStart = function (data) {
     $('#game-container').show();
 
     //Begin rendering!
-    this.ui_renderer.startRendering(this.render.bind(this));
+    this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
 
-Game.prototype.render = function() {
+Game.prototype.renderMethod = function() {
     var self = this;
     var now_time = Date.now();
     var start_time = self.client_start_time;
@@ -133,6 +133,7 @@ Game.prototype.render = function() {
     self.gs_renderer.animate();
     switch (self.conn_state) {
         case Game.GAME_STATES.CONNECTED:
+            self.ui_renderer.renderSelectRect();
             self.ui_renderer.renderGS(snapshot);
             self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
             break;

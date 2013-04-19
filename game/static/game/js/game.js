@@ -450,6 +450,7 @@ Game.prototype.moveUnits = function(updateTime, player_id, clickpos) {
         unit.update(updateTime, clickpos);
     });
     this.updateBullets();
+    this.gamestate.cleanUp(updateTime);
 };
 
 // Make sure all bullets are actually detecting collision correctly.

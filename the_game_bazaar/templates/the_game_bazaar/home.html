@@ -1,32 +1,90 @@
-{% extends "lib/layouts/default.html" %}
+<html>
+    <head>
+        <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}the_game_bazaar/css/home.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Geo|Julius+Sans+One' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/home.js"></script>
+    </head>
+    <body>
+        <!-- top right user corner stuff -->
+        <!-- user not signed in -->
+        <div id="not-signed" class="user-corner">
+            <p id="sign-in"><i class="icon-user icon-white"></i> sign in</p>
+            <p id="register"><i class="icon-book icon-white"></i> register</p>
+        </div>
 
+        <!-- Sign In Form -->
+        <div class="sign-in">
+            <form class="form-inline">
+                {% csrf_token %}
+                <input id="username" type="text" class="input-small" placeholder="Username">
+                <input id="password" type="password" class="input-small" placeholder="Password">
+                <button type="submit" class="btn btn-danger">Sign in</button>
+            </form>
+        </div>
 
-{% block head %}
-{% with page_title='Welcome' active_tab='home' %}
-{{ block.super }}
-
-{% endwith %}
-{% endblock %}
-
-
-{% block content %}
-    <div class="container">
-        <div class="page-header"><h1><small>Welcome to</small> The Game Bazaar!</h1></div>
-        <div class="row">
-            <div class="span10">
-                <div class="row">
-                    <div class="span5">
-                        <form action="{% url lobbies_view %}" method="get">
-                            <input type="submit" value="Play a Game!"></input>
-                        </form>
-                    </div>
-                    <div class="span5">
-                        <form action="{% url edit %}" method="get">
-                            <input type="submit" value="Edit a Map!"></input>
-                        </form>
-                    </div>
-                </div>
+        <!-- top right user corner stuff-->
+        <!-- user is signed in -->
+        <div id="signed" class="user-corner login_required">
+            <div id="user-nav">
+                <a>
+                    <div id="gravatar"></div>
+                    <div id="username"></div>
+                </a>
+            </div>
+            <div>
+                <ul id="user-dropdown">
+                    <li id="dropdown-profile"><a>Profile</a></li>
+                    <li id="dropdown-history"><a>History</a></li>
+                    <li><a href="#" id="navbar-logout">logout
+                    </a></li>
+                </ul>
             </div>
         </div>
-    </div>
-{% endblock %}
+
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <ul>
+                <!-- no need to be signed in to see -->
+                <li id="nav-home" class="link" ><h3>HOME<i class="icon-home icon-white"></i></h3></li>
+                <li id="nav-stuff" class="link" ><h3>STUFF<i class="icon-star icon-white"></i></h3></li>
+                <!-- need to be signed in to see -->
+                <div class="login_required">
+                    <li id='nav-play' class="link"><h3>PLAY<i class="icon-play icon-white"></i></h3></li>
+                    <li id='nav-edit' class="link"><h3>EDIT<i class="icon-edit icon-white"></i></h3></li>
+                </div>
+            </ul>
+        </div>
+
+        <div id="logo"></div>
+
+        <!-- Page Content -->
+        <div id="content">
+        </div>
+
+        <!-- News Updates -->
+        <!-- currently being hidden because its causing more pain that its worth -->
+        <div class="news">
+            <ul>
+                <li class="item">
+                    <h5>ITERATION 1 UPDATE</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada justo faucibus lacus imperdiet fermentum.</p>
+                </li>
+                <li class="item">
+                    <h5>ITERATION 2 UPDATE</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada justo faucibus lacus imperdiet fermentum.</p>
+                </li>
+                <li class="item">
+                    <h5>ITERATION 3 UPDATE</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada justo faucibus lacus imperdiet fermentum.</p>
+                </li>
+            </ul>
+        </div>
+
+    </body>
+</html>

@@ -19,11 +19,7 @@ def index(request):
     context = {
         "user": request.user,
     }
-    if request.user.is_authenticated():
-        return render(request, 'the_game_bazaar/home.html', context)
-    else:
-        return render(request, 'the_game_bazaar/login.html', context)
-
+    return render(request, 'the_game_bazaar/home.html', context)
 
 # /home
 def home(request):
@@ -73,6 +69,7 @@ def user_history(request):
 ###############################################################################
 # AJAX
 ###############################################################################
+@login_required(login_url='/', redirect_field_name=None)
 def ajax_lobby_games(request):
     game_list = []
     games = Game.get_games_in_state(Game.LOBBY).order_by('id').reverse()
@@ -80,7 +77,20 @@ def ajax_lobby_games(request):
         game_list.append(game.to_map())
     return HttpResponse(json.dumps(game_list), mimetype="application/json")
 
+@login_required(login_url='/', redirect_field_name=None)
+def ajax_history(request):
+    # NOTE: don't need anything to pass anything because username is in
+    # the user object of the request
+    games = Game.objects.all()
+    owned_games = []
+    for game in games:
+        players = json.loads(game.players)
+        if(request.user.username in players):
+            owned_games.append(game.to_map())
 
+    return HttpResponse(json.dumps(owned_games), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
 def ajax_maps(request):
     map_list = []
     maps = Map.objects.all()
@@ -88,7 +98,7 @@ def ajax_maps(request):
         map_list.append(a_map.to_map())
     return HttpResponse(json.dumps(map_list), mimetype="application/json")
 
-
+@login_required(login_url='/', redirect_field_name=None)
 def ajax_gravatar(request):
     email = request.user.email
     size = 40
@@ -110,7 +120,22 @@ def login(request):
     context = {}
     return render(request, 'the_game_bazaar/login.html', context)
 
+@require_http_methods(["GET"])
+def ajax_is_authenticated(request):
+    logged_in = request.user.is_authenticated()
 
+    resp = {
+        "success": logged_in,
+    }
+
+    if logged_in:
+        resp["username"] = request.user.username
+        resp["gravatar"] = ajax_gravatar(request).content
+        resp["email"] = request.user.email
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+@login_required(login_url='/', redirect_field_name=None)
 @require_http_methods(["POST"])
 def ajax_change(request):
     resp = {
@@ -152,6 +177,9 @@ def ajax_login(request):
         # the password verified for the user
         auth_login(request, user)
         resp['success'] = True
+        resp["username"] = user.username
+        resp["gravatar"] = ajax_gravatar(request).content
+        resp["email"] = user.email
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

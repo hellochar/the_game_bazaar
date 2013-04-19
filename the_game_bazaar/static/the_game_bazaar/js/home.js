@@ -561,11 +561,7 @@ function template_play(){
                                 <td>"+game.map_name+"</td>\
                                 <td>"+printPlayers(game.players)+"</td>\
                                 <td>\
-                                    <form action='/game/join' method='POST' style='margin:0px'>\
-                                        <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
-                                        <input name='game-id' type='hidden' value='"+game.id+"'/>\
-                                        <button class='btn'>Join</button>\
-                                    </form>\
+                                    <a href='/game/"+game.id+"' class='btn'>Join</a>\
                                 </td>\
                             </tr>";
                 }
@@ -601,9 +597,9 @@ function template_play(){
                                 <td>"+map.name+"</td>\
                                 <td>"+map.max_players+"</td>\
                                 <td>\
-                                    <form action='/game/host' method='POST' style='margin:0px'>\
+                                    <form action='/game/' method='POST' style='margin:0px'>\
                                         <div style='display:none'><input name='csrfmiddlewaretoken' type='hidden' value='"+$.cookie('csrftoken')+"'></div>\
-                                        <input name='map-id' type='hidden' value='"+map.id+"'/>\
+                                        <input name='map_id' type='hidden' value='"+map.id+"'/>\
                                         <button class='btn'>Host</button>\
                                     </form>\
                                 </td>\

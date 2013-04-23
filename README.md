@@ -28,7 +28,7 @@ Installation Instructions
 
 1. Download and install the python dev package with `sudo apt-get install python-dev`.
 
-1. Clone the repo into a directory.
+1. Clone the\_game\_bazaar repo into a directory with `git clone https://github.com/hellochar/the_game_bazaar.git`.
 
 1. Create and activate virtualenv within the cloned repository by doing `virtualenv --distribute venv` and then `source venv/bin/activate`. Then install dependencies with `pip install -r requirements.txt`.
 

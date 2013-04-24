@@ -193,7 +193,7 @@ def members_clan(request):
     else:
         members = []
 
-        for member in Clan.get(name=clan).user_set.all():
+        for member in Clan.objects.get(name=clan).user_set.all():
             members.append(member.username)
 
         resp['success'] = True

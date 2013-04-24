@@ -37,10 +37,12 @@ function UnitPalette(editor) {
     }.bind(this))();
 
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
+    
+    $('<input value=.1 type="text" id="unit-speed">Unit Speed<br>').appendTo($('.ui', this.domElement));
     $('<input/>', {type: 'button', value: "Add player"}).click(function (evt) {
         this.tryAddPlayer(this.editor.map.players.length);
         this.editor.map.addPlayer();
-    }.bind(this)).appendTo($('.ui', this.domElement));
+    }.bind(this)).appendTo($('<div/>').appendTo($('.ui', this.domElement)));
 
     this.editor.map.players.forEach(function (player, idx) {
         this.tryAddPlayer(idx);
@@ -63,7 +65,7 @@ UnitPalette.prototype.tryAddPlayer = function(pid) {
 UnitPalette.prototype.tryAddUnit = function(pos) {
     var gamestate = this.editor.map.evaluate(0);
     if(unitsInSphere(gamestate, pos, 30).length == 0) {
-        this.editor.map.addUnit(this.currentPlayer(), pos);
+        this.editor.map.addUnit(this.currentPlayer(), pos, parseInt($('#unit-speed', this.domElement).val()));
     }
 }
 

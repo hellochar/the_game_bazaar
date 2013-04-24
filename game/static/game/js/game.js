@@ -1,6 +1,7 @@
 WEB_SOCKET_DEBUG = true;
 
-function Game() { }
+function Game() {
+}
 
 // Constants
 Game.GAME_STATES = {
@@ -196,11 +197,6 @@ Game.prototype.renderMethod = function() {
             d3 = self.gs_renderer.project(d3);
             d4 = self.gs_renderer.project(d4);
 
-            // self.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
-            // self.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
-            // self.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
-            // self.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
-
             self.ui_renderer.renderMap();
             self.ui_renderer.renderViewPort(d1, d2, d3, d4);
             self.ui_renderer.renderGS(snapshot);
@@ -277,7 +273,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-                this.gs_renderer.preload(this.gamestate.toJSON());
+                this.gs_renderer.initialize(this.gamestate.toJSON());
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }

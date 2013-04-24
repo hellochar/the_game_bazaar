@@ -1,6 +1,7 @@
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 from lib.sdjango import namespace
+from game.models import Game
 import time
 
 
@@ -37,6 +38,9 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.broadcast_message('drag', data)
 
     def on_start(self, data):
+        game = Game.objects.get(id=data['game_id'])
+        game.state = Game.ACTIVE
+        game.save()
         self.broadcast_message('start', data)
 
     def on_join(self, data):

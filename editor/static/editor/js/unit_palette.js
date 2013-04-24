@@ -35,24 +35,30 @@ function UnitPalette(editor) {
         this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
 
     }.bind(this))();
+
+    this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
+    $('<input/>', {type: 'button', value: "Add player"}).click(function (evt) {
+        this.tryAddPlayer(this.editor.map.players.length);
+        this.editor.map.addPlayer();
+    }.bind(this)).appendTo($('.ui', this.domElement));
+
+    this.editor.map.players.forEach(function (player, idx) {
+        this.tryAddPlayer(idx);
+    }.bind(this));
+    $('input[value=0]', this.domElement).attr('checked', 'yes');
+
 }
 
 UnitPalette.prototype = Object.create( Palette.prototype );
 UnitPalette.prototype.constructor = UnitPalette;
 
-UnitPalette.domElement = (function() {
-    var container = $('<div/>');
-
-    $('<input/>', {type: 'radio', name: 'player', value: 0, checked: 'yes'}).appendTo(container);
-    $(container).append('Player 0');
-    $(container).append('<br/>');
-
-    $('<input/>', {type: 'radio', name: 'player', value: 1}).appendTo(container);
-    $(container).append('Player 1');
-    $(container).append('<br/>');
-
-    return container;
-})();
+UnitPalette.prototype.tryAddPlayer = function(pid) {
+    var div = $('<div/>');
+    div.append( $('<input/>', {type: 'radio', name: 'player', value: pid}) );
+    div.append('Player '+pid);
+    div.append('<br/>');
+    div.appendTo($('.players', this.domElement));
+}
 
 UnitPalette.prototype.tryAddUnit = function(pos) {
     var gamestate = this.editor.map.evaluate(0);
@@ -71,6 +77,6 @@ UnitPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
 UnitPalette.prototype.renderMethod = function() {
 };
 UnitPalette.prototype.currentPlayer = function() {
-    var pid = $('input[name=player]:checked', Palette.domElement).val();
+    var pid = $('input[name=player]:checked', this.domElement).val();
     return this.editor.map.players[pid];
 };

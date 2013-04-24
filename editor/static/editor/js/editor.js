@@ -1,12 +1,11 @@
-function Editor(map, ui_renderer, palette) {
-    this.setEditingMap(map || Editor.createDefaultMap());
-
+function Editor(map, ui_renderer) {
     this.ui_renderer = ui_renderer || new UIRenderer(document.getElementById('game-ui'));
     this.ui_renderer.scaleRatio = 1;
     this.ui_renderer.translatePos = function(x, y) {
         return this.scalePos(new THREE.Vector3(x,y));
     }.bind(this.ui_renderer);
-    this.setPalette(palette || new UnitPalette(this));
+
+    this.setEditingMap(map || Editor.createDefaultMap());
 }
 
 Editor.prototype.init = function() {
@@ -26,12 +25,12 @@ Editor.prototype.error = function(msg) {
 
 Editor.prototype.setPalette = function(palette) {
     if(this.palette !== undefined) {
-        $(this.palette.constructor.domElement).remove();
+        $(this.palette.domElement).remove();
         $(this.palette).trigger("selectionLost", palette);
     }
     var oldPalette = this.palette;
     this.palette = palette;
-    $(this.palette.constructor.domElement).appendTo('#palette');
+    $(this.palette.domElement).appendTo('#palette');
     $(this.palette).trigger("selectionGained", oldPalette);
     console.log("Set palette");
 }
@@ -56,6 +55,7 @@ Editor.prototype.renderMethod = function() {
 Editor.prototype.setEditingMap = function(map) {
     this.map = map;
     $('#map-id').text(map.id);
+    this.setPalette(new UnitPalette(this));
 };
 
 Editor.prototype.saveMap = function(map_name) {

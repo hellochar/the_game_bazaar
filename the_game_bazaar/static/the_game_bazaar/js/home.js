@@ -992,6 +992,7 @@ function template_clan(){
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #already-member #error').html("A server error occurred");
+                    $('#content #already-member #error').show();
                 }
             }
         })
@@ -1042,10 +1043,16 @@ function template_clan(){
                 join_clan($('#content #join-clan #name').val());
             });
 
+            /************************************
+             * Make Error Message show up better
+             ************************************/
             $('#content #not-a-member #error').hide();
-            $('#content #not-a-member #error').css({
+
+            $('#content #already-member #error').hide();
+
+            $('#content .error').css({
                 'border': '1px solid',
-                'color': 'rgb(255, 0, 0)',
+                'color':'rgb(255, 0, 0)',
                 'text-align': 'center',
             });
         }
@@ -1055,7 +1062,7 @@ function template_clan(){
     pg.binding = template_binding;
     pg.dom_html = '\
         <div id="already-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
             <h4>Other members:</h4>\
@@ -1063,7 +1070,7 @@ function template_clan(){
         </div>\
         \
         <div id="not-a-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <form id="join-clan">\
                 <h4>Join a Clan</h4>\
                 Clan: <input id="name" type="text"></input>\

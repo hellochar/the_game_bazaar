@@ -15,14 +15,23 @@
             editor.init();
 
             $('#save-button').click(function () {
-                editor.saveMap();
+                editor.saveMap($('#map_name').val());
+            });
+
+            $('#save-as-button').click(function () {
+                delete editor.map.id;
+                editor.saveMap($('#map_name').val());
             });
 
             $('#load-button').click(function() {
-                editor.loadMap($('#load-id').val());
+                var map_id = $('#load-id').val();
+                window.location.hash = map_id;
+            });
+            $(window).bind('hashchange', function() {
+                editor.loadMap(window.location.hash.substring(1));
             });
 
-            window.palettes = [new UnitPalette(editor), new ObstaclePalette(editor)];
+            window.palettes = [new UnitPalette(editor), new ObstaclePalette(editor)]; //TODO figure out a good way to do this
         });
     </script>
 
@@ -38,14 +47,14 @@
                 {% include "lib/game-canvas.html" %}
                 <div id='ui_container' class="span5">
 
-                    <input type='button' value='Units' onclick='editor.setPalette(window.palettes[0])'>
-                    <input type='button' value='Obstacles' onclick='editor.setPalette(window.palettes[1])'>
+                    <input type='button' value='Units' onclick='editor.setPalette(window.palettes[0])'> <!-- TODO figure out a good way to do this -->
+                    <input type='button' value='Obstacles' onclick='editor.setPalette(window.palettes[1])'> <!-- TODO figure out a good way to do this -->
 
                     <div id='palette'></div>
 
                     <div id='map_tools'>
                         Map id: <input id='load-id' type='text'> <input id='load-button' type='button' value='Load'><br>
-                        <input id='save-button' type="button" value="Save"><br>
+                        Map name: <input id='map_name' type='text'> <input id='save-button' type="button" value="Save"><input id='save-as-button' type="button" value="Save As"><br>
                         <h3>Map id:</h3><span id='map-id'></span>
                     </div>
                 </div>

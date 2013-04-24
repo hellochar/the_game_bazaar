@@ -993,6 +993,26 @@ function template_clan(){
         })
     }
 
+    function get_members_clan(){
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/clan/leave/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] === true){
+                    user.clan = null
+                    change_page(templates, 'clan', true);
+                    $('.clan-name').html(user.getFormattedClanName());
+                } else {
+                    $('#content #already-member #error').html("A server error occurred");
+                }
+            }
+        })
+    }
+
     function template_binding(){
         
         if(user.clan !== null){

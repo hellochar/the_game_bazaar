@@ -39,6 +39,7 @@ function UnitPalette(editor) {
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
     
     $('<input value=.1 type="text" id="unit-speed">Unit Speed<br>').appendTo($('.ui', this.domElement));
+    $('<input value=15 type="text" id="unit-size">Unit Size<br>').appendTo($('.ui', this.domElement));
     $('<input/>', {type: 'button', value: "Add player"}).click(function (evt) {
         this.tryAddPlayer(this.editor.map.players.length);
         this.editor.map.addPlayer();
@@ -64,8 +65,13 @@ UnitPalette.prototype.tryAddPlayer = function(pid) {
 
 UnitPalette.prototype.tryAddUnit = function(pos) {
     var gamestate = this.editor.map.evaluate(0);
-    if(unitsInSphere(gamestate, pos, 30).length == 0) {
-        this.editor.map.addUnit(this.currentPlayer(), pos, parseInt($('#unit-speed', this.domElement).val()));
+    var unit_size = parseInt($('#unit-size', this.domElement).val());
+    if(unitsTouchingSphere(gamestate, pos, unit_size).length == 0) {
+        this.editor.map.addUnit(this.currentPlayer(),
+                                pos,
+                                parseInt($('#unit-speed', this.domElement).val()),
+                                unit_size
+                                );
     }
 }
 

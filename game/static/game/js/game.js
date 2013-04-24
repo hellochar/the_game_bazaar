@@ -273,7 +273,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-                this.gs_renderer.initialize(this.gamestate.toJSON());
+                this.gs_renderer.initialize(this.gamestate.evaluate(0));
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }

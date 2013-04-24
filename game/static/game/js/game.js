@@ -476,7 +476,7 @@ Game.prototype.handleKeyUpMessage = function(data) {
 
     // Space bar
     if (keycode === 32) {
-        this.shootBullets(updateTime, player_id);
+        this.shootBullets(updateTime, playehandleKeyUpMessr_id);
     }
 };
 

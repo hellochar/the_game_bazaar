@@ -79,12 +79,12 @@ describe("Map Editor", function() {
 
         it("should POST to /map/<mapid> with map data", function() {
             editor.map.id = 10;
-            editor.saveMap();
+            editor.saveMap("mapname");
 
             var request = $.ajax.mostRecentCall.args[0];
             expect(request.url).toBe('/map/10');
             expect(request.type).toBe('POST');
-            expect(request.data).toEqual({map_data: JSON.stringify(editor.map.toJSON())});
+            expect(request.data).toEqual({map_id: 10, num_players: 2, map_name: "mapname", map_data: JSON.stringify(editor.map.toJSON())});
         });
 
         it("should call setEditingMap with its own map", function() {
@@ -152,4 +152,3 @@ describe("Map Editor", function() {
     });
 
 });
-

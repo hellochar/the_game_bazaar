@@ -39,6 +39,7 @@ class MapView(View):
                 'success': True,
                 'map_id': game_map.id,
                 'map_data': game_map.data,  # send the string
+                'map_name': game_map.map_name,
             })
 
         except Map.DoesNotExist:
@@ -59,7 +60,9 @@ class MapView(View):
 
         try:
             game_map = Map.objects.get(id=mapid)
-            game_map.data = request.POST['map_data']
+            game_map.data        = request.POST['map_data']
+            game_map.map_name    = request.POST['map_name']
+            game_map.num_players = request.POST['num_players']
         except Map.DoesNotExist:
             return json_response({
                 'success': False,
@@ -93,14 +96,11 @@ class NewMapView(View):
 
     # POST /map/
     def post(self, request):
-        creator = request.user
-        num_players = 2  # uh oh
-        map_name = "qwer"
         game_map = Map(
-            creator=creator,
-            num_players=num_players,
-            data=request.POST['map_data'],  # gets stored as a string
-            map_name=map_name
+            creator       = request.user,
+            num_players   = request.POST['num_players'],
+            data          = request.POST['map_data'],  # gets stored as a string
+            map_name      = request.POST['map_name']
         )
 
         game_map.save()

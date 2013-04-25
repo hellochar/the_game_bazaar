@@ -4,6 +4,7 @@ function Editor(map, ui_renderer) {
     this.ui_renderer.translatePos = function(x, y) {
         return this.scalePos(new THREE.Vector3(x,y));
     }.bind(this.ui_renderer);
+    this.ui_renderer.drawUnitInfo = true;
 
     this.setEditingMap(map || Editor.createDefaultMap());
 }

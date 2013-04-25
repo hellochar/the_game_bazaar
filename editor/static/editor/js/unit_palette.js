@@ -65,11 +65,11 @@ UnitPalette.prototype.tryAddPlayer = function(pid) {
 
 UnitPalette.prototype.tryAddUnit = function(pos) {
     var gamestate = this.editor.map.evaluate(0);
-    var unit_size = parseInt($('#unit-size', this.domElement).val());
+    var unit_size = parseFloat($('#unit-size', this.domElement).val());
     if(unitsTouchingSphere(gamestate, pos, unit_size).length == 0) {
         this.editor.map.addUnit(this.currentPlayer(),
                                 pos,
-                                parseInt($('#unit-speed', this.domElement).val()),
+                                parseFloat($('#unit-speed', this.domElement).val()),
                                 unit_size
                                 );
     }

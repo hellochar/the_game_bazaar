@@ -204,16 +204,16 @@ Game.prototype.renderMethod = function() {
 
             var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {
-                delta.y += 100;
+                delta.y += 40;
             }
             if (this.keys.a) {
-                delta.x -= 100;
+                delta.x -= 40;
             }
             if (this.keys.s) {
-                delta.y -= 100;
+                delta.y -= 40;
             }
             if (this.keys.d) {
-                delta.x += 100;
+                delta.x += 40;
             }
             var pos = self.gs_renderer.getViewport();
             self.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);

@@ -1013,6 +1013,7 @@ function template_clan(){
                     });
                     member_list += '</ul>';
                     $('#content #clan-member-list').html(member_list);
+                    $('#content #clan-owner').html('<ul><li>'+data['owner']+'</li></ul>');
                 } else {
                     $('#content #already-member #error').html(data['error']);
                 }
@@ -1044,7 +1045,10 @@ function template_clan(){
             });
 
             /************************************
-             * Make Error Message show up better
+             * Make Error Message show up with:
+             *      -a red border
+             *      -red text
+             *      -centered text
              ************************************/
             $('#content #not-a-member #error').hide();
 
@@ -1065,7 +1069,9 @@ function template_clan(){
             <h5 class="error" id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
-            <h4>Other members:</h4>\
+            <h4>Clan Owner:</h4>\
+            <div id="clan-owner">getting owner...</div>\
+            <h4>Members:</h4>\
             <div id="clan-member-list">getting list...</div>\
         </div>\
         \

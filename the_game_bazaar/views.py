@@ -193,11 +193,14 @@ def members_clan(request):
     else:
         members = []
 
-        for member in Clan.objects.get(name=clan).user_set.all():
+        clan_obj = Clan.objects.get(name=clan);
+
+        for member in clan_obj.user_set.all():
             members.append(member.username)
 
         resp['success'] = True
         resp['data'] = members
+        resp['owner'] = clan_obj.creator.username
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 

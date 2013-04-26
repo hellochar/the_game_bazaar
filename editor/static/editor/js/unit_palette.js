@@ -1,4 +1,14 @@
+/**
+ *
+ * The UnitPalette provides basic functionality for placing units on the map.
+ *
+ * Controls:
+ *      Left-click and drag to place units
+ *
+ */
+
 function UnitPalette(editor) {
+    //This is equivalent to calling the super() constructor
     Palette.call(this, editor);
 
     //click and drag to add units
@@ -37,22 +47,34 @@ function UnitPalette(editor) {
     }.bind(this))();
 
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
+
+    //Add Player button and associated functionality
     $('<input/>', {type: 'button', value: "Add player"}).click(function (evt) {
-        this.tryAddPlayer(this.editor.map.players.length);
+        this.createPlayerUIElement(this.editor.map.players.length);
         this.editor.map.addPlayer();
     }.bind(this)).appendTo($('.ui', this.domElement));
 
+    //Create a UI element for each player
     this.editor.map.players.forEach(function (player, idx) {
-        this.tryAddPlayer(idx);
+        this.createPlayerUIElement(idx);
     }.bind(this));
-    $('input[value=0]', this.domElement).attr('checked', 'yes');
 
+
+    //Make player 0 selected by default
+    $('input[value=0]', this.domElement).attr('checked', 'yes');
 }
 
+
+//These two lines make UnitPalette a subclass of Palette
 UnitPalette.prototype = Object.create( Palette.prototype );
 UnitPalette.prototype.constructor = UnitPalette;
 
-UnitPalette.prototype.tryAddPlayer = function(pid) {
+/* Create a radio button and associated label for a player, and add it to the domElement
+ *
+ * PARAMETERS
+ *      pid - id of player to create
+ */
+UnitPalette.prototype.createPlayerUIElement = function(pid) {
     var div = $('<div/>');
     div.append( $('<input/>', {type: 'radio', name: 'player', value: pid}) );
     div.append('Player '+pid);

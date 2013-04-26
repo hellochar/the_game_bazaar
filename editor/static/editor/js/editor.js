@@ -23,6 +23,12 @@ Editor.prototype.error = function(msg) {
 //Palette
 //======================
 
+/* Sets the Active Palette. This method triggers selectionGained/Lost events
+ * and controls changing the domElement.
+ *
+ * PARAMETERS
+ *      palette - palette to make active
+ */
 Editor.prototype.setPalette = function(palette) {
     if(this.palette !== undefined) {
         $(this.palette.domElement).remove();
@@ -58,6 +64,13 @@ Editor.prototype.setEditingMap = function(map) {
     this.setPalette(new UnitPalette(this));
 };
 
+/*
+ * Saves the current map to the server. The return value of the save request may specify
+ * a map id, in which case the Editor will update its state.
+ *
+ * PARAMETERS
+ *      map_name - String to be passed as the map name
+ */
 Editor.prototype.saveMap = function(map_name) {
     var self = this;
     var map_id = this.map.id || '';
@@ -81,17 +94,22 @@ Editor.prototype.saveMap = function(map_name) {
     });
 };
 
-//Load a map from the server with the given map id
+/*
+ * Load a map from the server and make this Editor edit that map.
+ *
+ * PARAMETERS
+ *      map_id - id of the map
+ *
+ */
 Editor.prototype.loadMap = function(map_id) {
-    var self = this;
     var callback = function (response) {
         if(response.success) {
             $('#map_name').val(response.map_name);
-            self.setEditingMap( Editor.createMapFromResponse(response) );
+            this.setEditingMap( Editor.createMapFromResponse(response) );
         } else {
-            self.error("Could not load map " + map_id + ": " + response.reason);
+            this.error("Could not load map " + map_id + ": " + response.reason);
         }
-    };
+    }.bind(this);
 
     $.ajax({
         type: "GET",
@@ -104,6 +122,10 @@ Editor.prototype.loadMap = function(map_id) {
 //======================
 // STATIC METHODS FOR CREATING MAPS
 //======================
+
+/*
+ * Create an initial Map to edit.
+ */
 Editor.createDefaultMap = function() {
     var gamestate = new GameState([new Player(), new Player()]);
     //Parse and then read the gamestate to get it in the same format as maps retrieved from the server
@@ -112,6 +134,12 @@ Editor.createDefaultMap = function() {
     return map;
 };
 
+/*
+ * Returns a Map specified by the JSON object (with ID set appropriately), or errors.
+ *
+ * PARAMETERS
+ *      response - JSON object returned directly from ajax call
+ */
 Editor.createMapFromResponse = function(response) {
     if(response.success) {
         var map = GameState.fromJSON(JSON.parse(response.map_data));

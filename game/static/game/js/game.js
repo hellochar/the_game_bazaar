@@ -1,6 +1,7 @@
 WEB_SOCKET_DEBUG = true;
 
-function Game() { }
+function Game() {
+}
 
 // Constants
 Game.GAME_STATES = {
@@ -222,16 +223,16 @@ Game.prototype.renderMethod = function() {
 
             var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {
-                delta.y += 100;
+                delta.y += 40;
             }
             if (this.keys.a) {
-                delta.x -= 100;
+                delta.x -= 40;
             }
             if (this.keys.s) {
-                delta.y -= 100;
+                delta.y -= 40;
             }
             if (this.keys.d) {
-                delta.x += 100;
+                delta.x += 40;
             }
             var pos = this.gs_renderer.getViewport();
             this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
@@ -291,7 +292,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-                this.gs_renderer.preload(this.gamestate.toJSON());
+                this.gs_renderer.initialize(this.gamestate.evaluate(0));
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }

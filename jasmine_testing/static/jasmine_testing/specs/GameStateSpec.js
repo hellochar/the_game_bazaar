@@ -246,6 +246,16 @@ describe("GameState", function() {
             gamestate.cleanUp(6000);
             expect(gamestate.players[0].units[0].bullets.length).toBe(0);
         });
+
+        it("doesn't shoot when on cooldown", function() {
+            var unit = gamestate.players[0].units[0];
+            unit.shootBullet(0);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(1);
+            unit.shootBullet(unit.cooldown / 2);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(1);
+            unit.shootBullet(unit.cooldown);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(2);
+        });
     });
 
 });

@@ -5,7 +5,7 @@ describe("Game", function() {
         window.requestAnimationFrame = function() {}; //We mock out this because it breaks in phantomjs
         // window.Renderer = jasmine.createSpyObj('Renderer', []);
 
-        var gs_renderer = jasmine.createSpyObj('GSRenderer', ['preload', 'update', 'animate', 'project']);
+        var gs_renderer = jasmine.createSpyObj('GSRenderer', ['initialize', 'update', 'animate', 'project']);
 
         game = new Game();
         spyOn(io, 'connect').andReturn(jasmine.createSpyObj('socket', ['on', 'emit', 'disconnect']));

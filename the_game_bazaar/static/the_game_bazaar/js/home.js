@@ -8,7 +8,20 @@ var user;
  * 'logo' and 'title' is special 
  * logo is placed next to navigation when not on title
  *
- * TODO: create an object for this
+ * TEMPLATE SYSTEM
+ * --So you want to add a page--
+ * create a template by following the template examples
+ *      necessary lines are:
+            var pg = new page();
+            pg.binding = template_binding;
+            pg.dom_html = '<html>blah blah</html>'
+            return pg;
+        template_bindings is a function to be run after the page changes
+        that way you can do whatever javascriptiness after the dom has changed
+ * Note: prefix your function names by template, for sanity
+ * add your template to templates object, keyed by the page name
+        don't overlap names
+    when you want to change a page, just call change_page('name_of_key')
  */
 var templates = new Object();
 templates.current_page = '';

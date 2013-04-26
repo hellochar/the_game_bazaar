@@ -137,15 +137,13 @@ Game.prototype.handleGameStart = function (data) {
     this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
 
-Game.prototype.renderMethod = function() {
-    var self = this;
-    var now_time = Date.now();
-    var start_time = self.client_start_time;
-
+// If one of this player's units is expired, send the deadUnit message to the
+// server.
+Game.prototype.checkDeadUnits = function(game_time) {
     // Detect bullet collisions and send messages to the server if appropriate.
     var deadUnitIndexList = [];
-    self.gamestate.players[self.player_id].units.forEach(function(unit, index) {
-        if (unit.deadTime && unit.deadTime <= (now_time - start_time)) {
+    this.gamestate.players[self.player_id].units.forEach(function(unit, index) {
+        if (unit.deadTime && unit.deadTime <= (game_time)) {
             deadUnitIndexList.push(index);
         }
     });
@@ -157,24 +155,41 @@ Game.prototype.renderMethod = function() {
         };
         self.socket.emit('deadUnits', data);
     }
+};
 
+// If this player has won or has lost, send the win or lose message to the
+// server.
+Game.prototype.checkWinAndLose = function() {
     // If we've lost the game, send that message to the server.
-    if (self.loseCondition()) {
+    // Make sure that we only send this message once. i.e. if we've already
+    // lost, stop sending the lostGame message.
+    if (this.loseCondition() && !this.gamestate.players[this.player_id].lost) {
         data = {
             'game_id': this.game_id,
             'player_id': this.player_id
         };
-        self.socket.emit('lostGame', data);
+        this.socket.emit('lostGame', data);
     }
 
     // If we've won the game, send that message to the server.
-    if (self.winCondition()) {
+    // Make sure that we only send this message once. i.e. if we've already
+    // won, stop sending the wonGame message.
+    if (this.winCondition() && !this.gamestate.players[this.player_id].won) {
         data = {
             'game_id': this.game_id,
             'player_id': this.player_id
         };
-        self.socket.emit('wonGame', data);
+        this.socket.emit('wonGame', data);
     }
+};
+
+Game.prototype.renderMethod = function() {
+    var self = this;
+    var now_time = Date.now();
+    var start_time = self.client_start_time;
+
+    self.checkDeadUnits(now_time - start_time);
+    self.checkWinAndLose();
 
     // Render this snapshot of the gamestate.
     var snapshot = self.gamestate.evaluate(now_time - start_time);
@@ -494,8 +509,28 @@ Game.prototype.handleDeadUnits = function(data) {
 
     var player = this.gamestate.players[player_id];
     player.units = player.units.filter(function(unit, index) {
-        return deadUnitIndexList.indexOf(index) === -1;
+        var alive = deadUnitIndexList.indexOf(index) === -1;
+        if (!alive) {
+            // Remove references to the dead unit.
+            unit.bullets.forEach(function(bullet) {
+                bullet.collidedUnit.deadTime = false;
+                bullet.collidedUnit.killingBullet = false;
+                bullet.collidedUnit = false;
+            });
+            // Remove the other bullet from the gamestate.
+            var others_list = unit.killingBullet.unit.bullets;
+            unit.killingBullet.unit.bullets = others_list.filter(function(other_bullet) {
+                return other_bullet !== unit.killingBullet;
+            });
+            // Remove the dead unit from the selected units
+            player.selectedUnits = player.selectedUnits.filter(function(selected_unit) {
+                return selected_unit !== unit;
+            });
+        }
+        return alive;
     });
+
+    this.updateBullets();
 };
 
 Game.prototype.loseCondition = function() {
@@ -519,12 +554,18 @@ Game.prototype.handleLostGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     // TODO
+    this.gamestate.players[player_id].lost = true;
+    // DEBUG
+    console.log("Player " + player_id.toString() + "has lost.");
 };
 
 Game.prototype.handleWonGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
     // TODO
+    this.gamestate.players[player_id].won = true;
+    // DEBUG
+    console.log("Player " + player_id.toString() + "has won.");
 };
 
 

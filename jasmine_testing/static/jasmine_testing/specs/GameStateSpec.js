@@ -247,6 +247,63 @@ describe("GameState", function() {
             gamestate.cleanUp(6000);
             expect(gamestate.players[0].units[0].bullets.length).toBe(0);
         });
+
+        it("doesn't shoot when on cooldown", function() {
+            var unit = gamestate.players[0].units[0];
+            unit.shootBullet(0);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(1);
+            unit.shootBullet(unit.cooldown / 2);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(1);
+            unit.shootBullet(unit.cooldown);
+            expect(gamestate.players[0].units[0].bullets.length).toBe(2);
+        });
+    });
+
+    describe("Killing Bug", function() {
+        var gamestate;
+        beforeEach(function() {
+            map_data = {
+                players: [
+                    {units: [
+                            {pos: {'x': 0, 'y': 0}}
+                    ]},
+                    {units: [
+                            {pos: {'x': 20, 'y': 0}}
+                    ]}
+                ],
+                obstacles: new Graph().toJSON()
+            };
+            gamestate = GameState.fromJSON(map_data);
+        });
+
+        it("doesn't cause both members to die when only one should", function() {
+            var u1 = gamestate.players[0].units[0];
+            var u2 = gamestate.players[1].units[0];
+            // Face u1 at u2
+            u1.update(0, new THREE.Vector3(5, 0));
+            // Face u2 away from u1
+            u2.update(50, new THREE.Vector3(25, 0));
+
+            // u2 shoots a bullet that misses
+            u2.shootBullet(100);
+            // while u2's bullet is in transit, u1 shoots a bullet that hits u2.
+            u1.shootBullet(200);
+
+            // Check that u1's deadTime is undefined
+            expect(u1.deadTime).not.toBeTruthy();
+            // Check that u2's deadTime is defined
+            expect(u2.deadTime).toBeTruthy();
+
+            // u2 shoots another bullet that hits
+            u1.shootBullet(1200);
+            // u2 shoots another bullet that misses
+            u2.shootBullet(1300);
+
+            // Check that u1's deadTime is undefined
+            expect(u1.deadTime).not.toBeTruthy();
+            // Check that u2's deadTime is defined
+            expect(u2.deadTime).toBeTruthy();
+        });
     });
 
 });

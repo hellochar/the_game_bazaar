@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 import hashlib
 import urllib
+import urllib2
 
 # helper functions
 def getClan(user):
@@ -122,6 +123,13 @@ def ajax_gravatar(request):
     gravatar_url += "' />"
     return HttpResponse(gravatar_url, mimetype="text/html")
 
+@require_http_methods(["GET"])
+def ajax_pivotal(request):
+    url = "http://www.pivotaltracker.com/services/v3/projects/762017/activities?limit=100"
+    req = urllib2.Request(url, None, {'X-TrackerToken': '0a1a72aaf55aa64bce532441eda2d35d'})
+    response = urllib2.urlopen(req)
+
+    return HttpResponse(response, mimetype="xml")
 ###############################################################################
 # CLAN API
 ###############################################################################

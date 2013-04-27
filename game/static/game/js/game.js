@@ -67,6 +67,12 @@ Game.prototype.init = function(gs_renderer) {
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
+    // This array is used for storing all units that are dead, and we've sent a message
+    // to the server saying that they are dead, but we haven't received the deadUnit message
+    // from the server yet to remove them from the gamestate.
+    // This is necessary because if the renderer sends a duplicate unitDead message, bad
+    // stuff can happen.
+    this.waitingForDeadUnits = [];
 };
 
 //This method gets called as soon
@@ -144,10 +150,14 @@ Game.prototype.checkDeadUnits = function(game_time) {
     // Detect bullet collisions and send messages to the server if appropriate.
     var deadUnitIndexList = [];
     this.gamestate.players[this.player_id].units.forEach(function(unit, index) {
+        if (this.waitingForDeadUnits.indexOf(unit) !== -1) {
+            return;
+        }
         if (unit.deadTime && unit.deadTime <= (game_time)) {
             deadUnitIndexList.push(index);
+            this.waitingForDeadUnits.push(unit);
         }
-    });
+    }.bind(this));
     if (deadUnitIndexList.length > 0) {
         data = {
             'game_id': this.game_id,
@@ -218,7 +228,7 @@ Game.prototype.renderMethod = function() {
 
             this.ui_renderer.renderMap();
             this.ui_renderer.renderViewPort(d1, d2, d3, d4);
-            this.ui_renderer.renderGS(snapshot);
+            this.ui_renderer.renderGS(snapshot, this.player_id);
             this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
 
             var delta = new THREE.Vector3(0, 0, 0);
@@ -517,18 +527,27 @@ Game.prototype.handleDeadUnits = function(data) {
                 bullet.collidedUnit.killingBullet = false;
                 bullet.collidedUnit = false;
             });
+
             // Remove the other bullet from the gamestate.
             var others_list = unit.killingBullet.unit.bullets;
             unit.killingBullet.unit.bullets = others_list.filter(function(other_bullet) {
                 return other_bullet !== unit.killingBullet;
             });
+
             // Remove the dead unit from the selected units
             player.selectedUnits = player.selectedUnits.filter(function(selected_unit) {
                 return selected_unit !== unit;
             });
+
+            // If we received and updated the dead unit, remove it from the deadUnitQueue.
+            if (player_id === this.player_id) {
+                this.waitingForDeadUnits = this.waitingForDeadUnits.filter(function(dead_unit) {
+                    return dead_unit !== unit;
+                });
+            }
         }
         return alive;
-    });
+    }.bind(this));
 
     this.updateBullets();
 };
@@ -544,7 +563,7 @@ Game.prototype.winCondition = function() {
     }.bind(this));
     var won = true;
     players.every(function(player) {
-        won = player.units.length === 0;
+        won = player.state === PlayerState.LOST;
         return won;
     });
     return won;
@@ -553,19 +572,13 @@ Game.prototype.winCondition = function() {
 Game.prototype.handleLostGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].lost = true;
-    // DEBUG
-    console.log("Player " + player_id.toString() + "has lost.");
+    this.gamestate.players[player_id].state = PlayerState.LOST;
 };
 
 Game.prototype.handleWonGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].won = true;
-    // DEBUG
-    console.log("Player " + player_id.toString() + "has won.");
+    this.gamestate.players[player_id].state = PlayerState.WON;
 };
 
 

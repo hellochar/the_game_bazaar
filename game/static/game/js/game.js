@@ -524,8 +524,8 @@ Game.prototype.handleDeadUnits = function(data) {
             });
 
             // Remove the other bullet from the gamestate.
-            var others_list = unit.killingBullet.collidedUnit.bullets;
-            unit.killingBullet.collidedUnit.bullets = others_list.filter(function(other_bullet) {
+            var others_list = unit.killingBullet.unit.bullets;
+            unit.killingBullet.unit.bullets = others_list.filter(function(other_bullet) {
                 return other_bullet !== unit.killingBullet;
             });
 

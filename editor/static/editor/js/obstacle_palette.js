@@ -1,17 +1,17 @@
 function ObstaclePalette(editor) {
     Palette.call(this, editor);
+    this.domElement = (function() {
+        var container = $('<div/>');
+
+        container.append('Drag to create obstacles.');
+
+        return container;
+    })();
+
 }
 
 ObstaclePalette.prototype = Object.create( Palette.prototype );
 ObstaclePalette.prototype.constructor = ObstaclePalette;
-
-ObstaclePalette.domElement = (function() {
-    var container = $('<div/>');
-
-    container.append('Drag to create obstacles.');
-
-    return container;
-})();
 
 ObstaclePalette.prototype.handleClick = function(clicktype, clickpos) {
 };

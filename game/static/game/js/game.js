@@ -67,6 +67,11 @@ Game.prototype.init = function(gs_renderer) {
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
+    // This array is used for storing all units that are dead, and we've sent a message
+    // to the server saying that they are dead, but we haven't received the deadUnit message
+    // from the server yet to remove them from the gamestate.
+    // This is necessary because if the renderer sends a duplicate unitDead message, bad
+    // stuff can happen.
     this.waitingForDeadUnits = [];
 };
 

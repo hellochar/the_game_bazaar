@@ -223,7 +223,7 @@ Game.prototype.renderMethod = function() {
 
             this.ui_renderer.renderMap();
             this.ui_renderer.renderViewPort(d1, d2, d3, d4);
-            this.ui_renderer.renderGS(snapshot);
+            this.ui_renderer.renderGS(snapshot, this.player_id);
             this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
 
             var delta = new THREE.Vector3(0, 0, 0);
@@ -558,7 +558,7 @@ Game.prototype.winCondition = function() {
     }.bind(this));
     var won = true;
     players.every(function(player) {
-        won = player.units.length === 0;
+        won = player.state === PlayerState.LOST;
         return won;
     });
     return won;
@@ -567,23 +567,13 @@ Game.prototype.winCondition = function() {
 Game.prototype.handleLostGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].lost = true;
-    // DEBUG
-    if (player_id === this.player_id) {
-        this.ui_renderer.lost = true;
-    }
+    this.gamestate.players[player_id].state = PlayerState.LOST;
 };
 
 Game.prototype.handleWonGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].won = true;
-    // DEBUG
-    if (player_id === this.player_id) {
-        this.ui_renderer.won = true;
-    }
+    this.gamestate.players[player_id].state = PlayerState.WON;
 };
 
 

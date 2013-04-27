@@ -66,6 +66,7 @@ Game.prototype.init = function(gs_renderer) {
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
+    this.waitingForDeadUnits = [];
 };
 
 //This method gets called as soon
@@ -140,17 +141,17 @@ Game.prototype.handleGameStart = function (data) {
 // If one of this player's units is expired, send the deadUnit message to the
 // server.
 Game.prototype.checkDeadUnits = function(game_time) {
-    // Check if we're okay to send dead units again.
-    if (this.waitingForDeadUnits) {
-        return;
-    }
     // Detect bullet collisions and send messages to the server if appropriate.
     var deadUnitIndexList = [];
     this.gamestate.players[this.player_id].units.forEach(function(unit, index) {
+        if (this.waitingForDeadUnits.indexOf(unit) !== -1) {
+            return;
+        }
         if (unit.deadTime && unit.deadTime <= (game_time)) {
             deadUnitIndexList.push(index);
+            this.waitingForDeadUnits.push(unit);
         }
-    });
+    }.bind(this));
     if (deadUnitIndexList.length > 0) {
         data = {
             'game_id': this.game_id,
@@ -158,7 +159,6 @@ Game.prototype.checkDeadUnits = function(game_time) {
             'deadUnitIndexList': deadUnitIndexList
         };
         this.socket.emit('deadUnits', data);
-        this.waitingForDeadUnits = true;
     }
 };
 
@@ -511,11 +511,6 @@ Game.prototype.handleDeadUnits = function(data) {
     var player_id = data['player_id'];
     var deadUnitIndexList = data['deadUnitIndexList'];
 
-    // If we are the player whose units are dying, set waiting to false.
-    if (player_id === this.player_id) {
-        this.waitingForDeadUnits = false;
-    }
-
     var player = this.gamestate.players[player_id];
     player.units = player.units.filter(function(unit, index) {
         var alive = deadUnitIndexList.indexOf(index) === -1;
@@ -537,9 +532,16 @@ Game.prototype.handleDeadUnits = function(data) {
             player.selectedUnits = player.selectedUnits.filter(function(selected_unit) {
                 return selected_unit !== unit;
             });
+
+            // If we received and updated the dead unit, remove it from the deadUnitQueue.
+            if (player_id === this.player_id) {
+                this.waitingForDeadUnits = this.waitingForDeadUnits.filter(function(dead_unit) {
+                    return dead_unit !== unit;
+                });
+            }
         }
         return alive;
-    });
+    }.bind(this));
 
     this.updateBullets();
 };

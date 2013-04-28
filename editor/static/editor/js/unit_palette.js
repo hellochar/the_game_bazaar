@@ -7,6 +7,56 @@
  *
  */
 
+//An array of properties that you should be able to modify/control
+UnitPalette.EDITABLE_PROPERTIES =
+    [
+        {
+            name: "speed",
+            attr: {
+                min: .01,
+                max: .6,
+                step: .01,
+                value: .1
+            }
+        },
+        {
+            name: "size",
+            attr: {
+                min: 5,
+                max: 100,
+                step: 1,
+                value: 15
+            }
+        },
+        {
+            name: "cooldown",
+            attr: {
+                min: 100,
+                max: 10000,
+                step: 100,
+                value: 1000
+            }
+        }
+    ];
+
+UnitPalette.makeInputForProperty = function(property) {
+    var inputAttributes = new Object(property);
+    inputAttributes.type = 'range';
+
+    var control = $('<input/>', inputAttributes);
+    var indicator = $('<span class="badge"/>');
+    var label = $('<span class="label">Unit '+ property.name +'</span>');
+
+    control.change(function (evt) {
+        indicator.text(control.val());
+    });
+
+    control.trigger('change');
+
+    var div = $('<div/>', {class: 'property_input', id: 'unit-'+property.name}).append(label).append(control).append(indicator);
+    return div;
+}
+
 function UnitPalette(editor) {
     //This is equivalent to calling the super() constructor
     Palette.call(this, editor);
@@ -47,8 +97,10 @@ function UnitPalette(editor) {
     }.bind(this))();
 
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
-    $('<input value=.1 type="text" id="unit-speed">Unit Speed<br>').appendTo($('.ui', this.domElement));
-    $('<input value=15 type="text" id="unit-size">Unit Size<br>').appendTo($('.ui', this.domElement));
+
+    UnitPalette.EDITABLE_PROPERTIES.forEach(function (property) {
+        UnitPalette.makeInputForProperty(property).appendTo($('.ui', this.domElement));
+    }.bind(this));
 
     //Add Player button and associated functionality
     $('<input/>', {type: 'button', value: "Add player"}).click(function (evt) {
@@ -86,12 +138,17 @@ UnitPalette.prototype.createPlayerUIElement = function(pid) {
 
 UnitPalette.prototype.tryAddUnit = function(pos) {
     var gamestate = this.editor.map.evaluate(0);
-    var unit_size = parseFloat($('#unit-size', this.domElement).val());
+
+    var unit_speed = parseFloat($('#unit-speed input', this.domElement).val());
+    var unit_size = parseFloat($('#unit-size input', this.domElement).val());
+    var unit_cooldown = parseFloat($('#unit-cooldown input', this.domElement).val());
+
     if(unitsTouchingSphere(gamestate, pos, unit_size).length == 0) {
         this.editor.map.addUnit(this.currentPlayer(),
                                 pos,
-                                parseFloat($('#unit-speed', this.domElement).val()),
-                                unit_size
+                                unit_speed,
+                                unit_size,
+                                unit_cooldown
                                 );
     }
 }

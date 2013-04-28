@@ -1,5 +1,3 @@
-UnitSelectionPalette.EDITABLE_PROPERTIES = ["speed", "size"];
-
 function UnitSelectionPalette(editor) {
     Palette.call(this, editor);
 
@@ -29,16 +27,16 @@ function UnitSelectionPalette(editor) {
                   '</div>' + 
               '</div>');
 
-        UnitSelectionPalette.EDITABLE_PROPERTIES.forEach(function (property) {
-            $('<input type="text" id="unit-' + property + '">Unit ' + property + '<br>').
-                on('keypress', function(evt) {
-                    if(evt.keyCode === 13) { //13 = enter
-                        this.selectedUnits.forEach(function (unit) {
-                            unit[property] = $('#unit-'+property, container).val();
-                        });
-                    }
-                }.bind(this)).
-                appendTo($('.ui', container));
+        UnitPalette.EDITABLE_PROPERTIES.forEach(function (property) {
+            var inputElement = UnitPalette.makeInputForProperty(property);
+
+            $('input', inputElement).change(function(evt) {
+                this.selectedUnits.forEach(function (unit) {
+                    unit[property.name] = parseFloat($(evt.target).val());
+                });
+            }.bind(this));
+
+            inputElement.appendTo($('.ui', container));
         }.bind(this));
 
         container.selectedUnits = $('<div/>');
@@ -60,13 +58,15 @@ UnitSelectionPalette.prototype.setSelection = function(selection) {
     //upate domElement UI with selected units
     this.domElement.selectedUnits.text("You have selected " + this.selectedUnits.length+" units");
     
-    UnitSelectionPalette.EDITABLE_PROPERTIES.forEach(function (property) {
-        if(selection.length == 0 || selection.some(function(unit) { return unit[property] != selection[0][property]; })) {
-            $('#unit-'+property, this.domElement).val("");
+    // Set the properties UI elements to the selected units' values
+    UnitPalette.EDITABLE_PROPERTIES.forEach(function (property) {
+        var name = property.name;
+        if(selection.length == 0 || selection.some(function(unit) { return unit[name] != selection[0][name]; })) {
         } else {
-            $('#unit-'+property, this.domElement).val(selection[0][property]);
+            $('#unit-'+name+' input').val(selection[0][name]).change();
         }
     });
+
 }
 
 UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {

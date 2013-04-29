@@ -39,7 +39,6 @@ Editor.prototype.setPalette = function(palette) {
     this.palette = palette;
     $(this.palette.domElement).appendTo('#palette');
     $(this.palette).trigger("selectionGained", oldPalette);
-    console.log("Set palette");
 }
 
 Editor.prototype.handleClick = function(clicktype, clickpos) {

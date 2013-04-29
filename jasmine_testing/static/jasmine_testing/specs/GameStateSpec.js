@@ -224,7 +224,7 @@ describe("GameState", function() {
                     pos: { x: 0, y: 100, z: 0 },
                     facing: -Math.PI / 2,
                     bullets: [],
-                    size: 15
+                    size: 15,
                     cooldown: 1000,
                     selected: false
                 });

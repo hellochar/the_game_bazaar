@@ -69,6 +69,30 @@ describe("Map Editor", function() {
         });
     });
 
+    describe("setPalette", function() {
+        var oldPalette, newPalette;
+        beforeEach(function() {
+            oldPalette = editor.palette;
+            newPalette = new UnitSelectionPalette(editor);
+        });
+        it("should switch out domElements", function() {
+            editor.setPalette(newPalette);
+            expect($('#palette')).not.toContain(oldPalette.domElement);
+            expect($('#palette')).toContain(newPalette.domElement);
+        });
+        it("should trigger selectionLost/selectionGained", function() {
+            spyOnEvent(oldPalette, 'selectionLost');
+            spyOnEvent(newPalette, 'selectionGained');
+            editor.setPalette(newPalette);
+            expect('selectionLost').toHaveBeenTriggeredOn(oldPalette);
+            expect('selectionGained').toHaveBeenTriggeredOn(newPalette);
+        });
+        it("should set the active palette var", function() {
+            editor.setPalette(newPalette);
+            expect(editor.palette).toBe(newPalette);
+        });
+    });
+
     describe("saveMap", function() {
         beforeEach(function() {
             var fakeData = {success: true, map_id: 100};

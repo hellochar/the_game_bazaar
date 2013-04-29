@@ -36,21 +36,22 @@ function Palette(editor) {
 }
 
 /*
- * Convenience method to bind a given event handler function when this palette has selection, and unbind it when it loses selection.
+ * Convenience method to bind a set of event handlers when this palette has selection, and unbind it when it loses selection.
  *
  * PARAMETERS
- *     elements - any selector accepted by jQuery()
- *     eventName - the event to listen for (keypress, mousemove, etc)
- *     handler - the event handler callback function
+ *     set - an object with event names as keys and corresponding handlers as values 
+ *     element - any selector accepted by jQuery()
  */
-
-Palette.prototype.bindInputOnSelection = function(elements, eventName, handler) {
+Palette.prototype.whileActive = function(set, element) {
+    var element = element || this.editor.ui_renderer.canvas;
     $(this).bind("selectionGained", function() {
-        console.log(this.constructor.name+" just gained "+eventName+"!");
-        $(elements).on(eventName, handler);
+        for(var eventName in set) {
+            $(element).on(eventName, set[eventName]);
+        }
     });
     $(this).bind("selectionLost", function() {
-        console.log(this.constructor.name+" just lost "+eventName+"!");
-        $(elements).off(eventName, handler);
+        for(var eventName in set) {
+            $(element).off(eventName, set[eventName]);
+        }
     });
 }

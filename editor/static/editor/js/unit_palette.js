@@ -15,36 +15,29 @@ function UnitPalette(editor) {
     (function() {
         var mouseDownButton = false; //one of: 1,2,3 or FALSE
 
-        var onMouseMove = function(evt) {
-            if(mouseDownButton === 1) {
-                this.tryAddUnit(editor.ui_renderer.getCanvasCoords(evt));
-            }
-        }.bind(this);
-
-        var onMouseDown = function(evt) {
-            mouseDownButton = evt.which;
-        }
-        var onMouseUp = function(evt) {
-            mouseDownButton = false;
-        }
-
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mousedown", onMouseDown);
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mousemove", onMouseMove);
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "mouseup", onMouseUp);
-
+        this.whileActive({
+            mousedown : function(evt) {
+                            mouseDownButton = evt.which;
+                        },
+            mousemove : function(evt) {
+                            if(mouseDownButton === 1) {
+                                this.tryAddUnit(editor.ui_renderer.getCanvasCoords(evt));
+                            }
+                        }.bind(this),
+            mouseup   : function(evt) {
+                            mouseDownButton = false;
+                        }
+        });
     }.bind(this))();
 
     //press space to go into UnitSelectionPalette
-    (function() {
-        var onKeyUp = function(evt) {
-            if(evt.keyCode === 32) { //space
-                this.editor.setPalette(new UnitSelectionPalette(editor));
-            }
-        }.bind(this);
-
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
-
-    }.bind(this))();
+    this.whileActive({
+        keyup : function(evt) {
+                    if(evt.keyCode === 32) { //space
+                        this.editor.setPalette(new UnitSelectionPalette(editor));
+                    }
+                }.bind(this)
+    });
 
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");
 
@@ -58,7 +51,6 @@ function UnitPalette(editor) {
     this.editor.map.players.forEach(function (player, idx) {
         this.createPlayerUIElement(idx);
     }.bind(this));
-
 
     //Make player 0 selected by default
     $('input[value=0]', this.domElement).attr('checked', 'yes');

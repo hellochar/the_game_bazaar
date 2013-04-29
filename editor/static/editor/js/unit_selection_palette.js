@@ -4,19 +4,17 @@ function UnitSelectionPalette(editor) {
     this.selectedUnits = [];
 
     //press space to go into UnitPalette
-    (function() {
-        var onKeyUp = function(evt) {
-            if(evt.keyCode === 32) { //space
-                this.editor.setPalette(new UnitPalette(editor));
-            }
-            if(evt.keyCode === 46) { //delete
-                this.selectedUnits.forEach(this.editor.map.removeUnit);
-                this.selectedUnits = [];
-            }
-        }.bind(this);
-
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
-    }.bind(this))();
+    this.whileActive({
+        keyup: function(evt) {
+                   if(evt.keyCode === 32) { //space
+                       this.editor.setPalette(new UnitPalette(editor));
+                   }
+                   if(evt.keyCode === 46) { //delete
+                       this.selectedUnits.forEach(this.editor.map.removeUnit);
+                       this.selectedUnits = [];
+                   }
+               }.bind(this)
+    });
 
     this.domElement = (function() {
         var container = $('<div/>');

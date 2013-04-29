@@ -30,8 +30,6 @@
             $(window).bind('hashchange', function() {
                 editor.loadMap(window.location.hash.substring(1));
             });
-
-            window.palettes = [new UnitPalette(editor), new ObstaclePalette(editor)]; //TODO figure out a good way to do this
         });
     </script>
 
@@ -47,8 +45,8 @@
                 {% include "lib/game-canvas.html" %}
                 <div id='ui_container' class="span5">
 
-                    <input type='button' value='Units' onclick='editor.setPalette(window.palettes[0])'> <!-- TODO figure out a good way to do this -->
-                    <input type='button' value='Obstacles' onclick='editor.setPalette(window.palettes[1])'> <!-- TODO figure out a good way to do this -->
+                    <input type='button' value='Units' onclick='editor.setPalette(new UnitPalette(editor))'> <!-- TODO figure out a good way to do this -->
+                    <input type='button' value='Obstacles' onclick='editor.setPalette(new ObstaclePalette(editor))'> <!-- TODO figure out a good way to do this -->
 
                     <div id='palette'></div>
 

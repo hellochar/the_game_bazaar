@@ -1,6 +1,7 @@
 WEB_SOCKET_DEBUG = true;
 
-function Game() { }
+function Game() {
+}
 
 // Constants
 Game.GAME_STATES = {
@@ -66,6 +67,12 @@ Game.prototype.init = function(gs_renderer) {
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
+    // This array is used for storing all units that are dead, and we've sent a message
+    // to the server saying that they are dead, but we haven't received the deadUnit message
+    // from the server yet to remove them from the gamestate.
+    // This is necessary because if the renderer sends a duplicate unitDead message, bad
+    // stuff can happen.
+    this.waitingForDeadUnits = [];
 };
 
 //This method gets called as soon
@@ -142,18 +149,22 @@ Game.prototype.handleGameStart = function (data) {
 Game.prototype.checkDeadUnits = function(game_time) {
     // Detect bullet collisions and send messages to the server if appropriate.
     var deadUnitIndexList = [];
-    this.gamestate.players[self.player_id].units.forEach(function(unit, index) {
+    this.gamestate.players[this.player_id].units.forEach(function(unit, index) {
+        if (this.waitingForDeadUnits.indexOf(unit) !== -1) {
+            return;
+        }
         if (unit.deadTime && unit.deadTime <= (game_time)) {
             deadUnitIndexList.push(index);
+            this.waitingForDeadUnits.push(unit);
         }
-    });
+    }.bind(this));
     if (deadUnitIndexList.length > 0) {
         data = {
             'game_id': this.game_id,
             'player_id': this.player_id,
             'deadUnitIndexList': deadUnitIndexList
         };
-        self.socket.emit('deadUnits', data);
+        this.socket.emit('deadUnits', data);
     }
 };
 
@@ -184,58 +195,57 @@ Game.prototype.checkWinAndLose = function() {
 };
 
 Game.prototype.renderMethod = function() {
-    var self = this;
     var now_time = Date.now();
-    var start_time = self.client_start_time;
+    var start_time = this.client_start_time;
 
-    self.checkDeadUnits(now_time - start_time);
-    self.checkWinAndLose();
+    this.checkDeadUnits(now_time - start_time);
+    this.checkWinAndLose();
 
     // Render this snapshot of the gamestate.
-    var snapshot = self.gamestate.evaluate(now_time - start_time);
+    var snapshot = this.gamestate.evaluate(now_time - start_time);
 
     var renderText = function(text) {
-        self.ui_renderer.renderText(text, 400, 200, "red");
+        this.ui_renderer.renderText(text, 400, 200, "red");
     };
-    self.gs_renderer.update(snapshot);
-    self.gs_renderer.animate();
-    switch (self.conn_state) {
+    this.gs_renderer.update(snapshot);
+    this.gs_renderer.animate();
+    switch (this.conn_state) {
         case Game.GAME_STATES.CONNECTED:
-            self.ui_renderer.renderSelectRect();
+            this.ui_renderer.renderSelectRect();
             var d1 = new THREE.Vector3(0, 0, 0);
             var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
             var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
             var d4 = new THREE.Vector3(0, window.innerHeight, 0);
-            d1 = self.gs_renderer.project(d1);
-            d2 = self.gs_renderer.project(d2);
-            d3 = self.gs_renderer.project(d3);
-            d4 = self.gs_renderer.project(d4);
+            d1 = this.gs_renderer.project(d1);
+            d2 = this.gs_renderer.project(d2);
+            d3 = this.gs_renderer.project(d3);
+            d4 = this.gs_renderer.project(d4);
 
-            // self.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
-            // self.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
-            // self.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
-            // self.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
+            // this.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
+            // this.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
+            // this.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
+            // this.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
 
-            self.ui_renderer.renderMap();
-            self.ui_renderer.renderViewPort(d1, d2, d3, d4);
-            self.ui_renderer.renderGS(snapshot);
-            self.ui_renderer.renderSelectionCircles(snapshot.players[self.player_id].selectedUnits);
+            this.ui_renderer.renderMap();
+            this.ui_renderer.renderViewPort(d1, d2, d3, d4);
+            this.ui_renderer.renderGS(snapshot, this.player_id);
+            this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
 
             var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {
-                delta.y += 100;
+                delta.y += 40;
             }
             if (this.keys.a) {
-                delta.x -= 100;
+                delta.x -= 40;
             }
             if (this.keys.s) {
-                delta.y -= 100;
+                delta.y -= 40;
             }
             if (this.keys.d) {
-                delta.x += 100;
+                delta.x += 40;
             }
-            var pos = self.gs_renderer.getViewport();
-            self.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
+            var pos = this.gs_renderer.getViewport();
+            this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
             break;
         case Game.GAME_STATES.INIT:
             renderText("Initializing...");
@@ -292,7 +302,7 @@ Game.prototype.instantiateGameState = function() {
 
                 // DEBUG
                 window.gamestate = this.gamestate;
-                this.gs_renderer.preload(this.gamestate.toJSON());
+                this.gs_renderer.initialize(this.gamestate.evaluate(0));
                 this.populatePlayerNamesInGSFromHTML();
                 this.finishInitialization();
             }
@@ -517,18 +527,27 @@ Game.prototype.handleDeadUnits = function(data) {
                 bullet.collidedUnit.killingBullet = false;
                 bullet.collidedUnit = false;
             });
+
             // Remove the other bullet from the gamestate.
             var others_list = unit.killingBullet.unit.bullets;
             unit.killingBullet.unit.bullets = others_list.filter(function(other_bullet) {
                 return other_bullet !== unit.killingBullet;
             });
+
             // Remove the dead unit from the selected units
             player.selectedUnits = player.selectedUnits.filter(function(selected_unit) {
                 return selected_unit !== unit;
             });
+
+            // If we received and updated the dead unit, remove it from the deadUnitQueue.
+            if (player_id === this.player_id) {
+                this.waitingForDeadUnits = this.waitingForDeadUnits.filter(function(dead_unit) {
+                    return dead_unit !== unit;
+                });
+            }
         }
         return alive;
-    });
+    }.bind(this));
 
     this.updateBullets();
 };
@@ -544,7 +563,7 @@ Game.prototype.winCondition = function() {
     }.bind(this));
     var won = true;
     players.every(function(player) {
-        won = player.units.length === 0;
+        won = player.state === PlayerState.LOST;
         return won;
     });
     return won;
@@ -553,19 +572,13 @@ Game.prototype.winCondition = function() {
 Game.prototype.handleLostGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].lost = true;
-    // DEBUG
-    console.log("Player " + player_id.toString() + "has lost.");
+    this.gamestate.players[player_id].state = PlayerState.LOST;
 };
 
 Game.prototype.handleWonGame = function(data) {
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
-    // TODO
-    this.gamestate.players[player_id].won = true;
-    // DEBUG
-    console.log("Player " + player_id.toString() + "has won.");
+    this.gamestate.players[player_id].state = PlayerState.WON;
 };
 
 

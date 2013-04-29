@@ -188,7 +188,7 @@ describe("GameState", function() {
             });
 
             it("should save the players and obstacles attribute", function() {
-                expect(Object.keys(json)).toEqual(['players', 'obstacles']);
+                expect(Object.keys(json)).toEqual(['players', 'obstacles', 'terrain']);
             });
             it("should have the correct number of players", function() {
                 expect(json.players.length).toEqual(3);
@@ -205,9 +205,8 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].toJSON();
             });
-            it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['selectedUnits', 'units', 'color']);
-            });
+            // TODO write some tests that validate the values in the result
+            // by asserting what type they are. For example, units should be a list.
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);
             });
@@ -218,8 +217,9 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].units[0].toJSON();
             });
-            it("should save the position, speed, bullets, and facing and nothing else", function() {
+            it("should save whether or not it's selected, the position, speed, bullets, and facing and nothing else", function() {
                 expect(json).toEqual({
+                    selected: false,
                     pos: {
                         x: 0,
                         y: 100,

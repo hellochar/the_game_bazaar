@@ -48,6 +48,10 @@ urlpatterns = patterns(
         views.ajax_history,
         name="ajax_history"),
 
+    url(r'^ajax/pivotal/$',
+        views.ajax_pivotal,
+        name="ajax_pivotal"),
+    
     # Clan Calls
     url(r'^clan/create/$',
         views.create_clan,

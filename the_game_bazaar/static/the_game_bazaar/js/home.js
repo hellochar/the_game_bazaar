@@ -22,8 +22,10 @@ templates['edit'] = template_edit();
 templates['profile'] = template_profile();
 templates['history'] = template_history();
 templates['clan'] = template_clan();
+templates['pivotal'] = template_pivotal();
 
 $().ready(function(){
+
     //create a new user
     user = new User();
 
@@ -100,6 +102,10 @@ function bind_divs(){
 
     $('.navigation #nav-stuff').click(function(){
         change_page(templates, 'stuff');
+    });
+
+    $('.navigation #nav-pivotal').click(function(){
+        change_page(templates, 'pivotal');
     });
 
     $('.navigation #nav-play').click(function(){
@@ -1043,6 +1049,52 @@ function template_clan(){
                 <input type="submit"></input>\
             </form>\
         </div>\
+    ';
+    return pg;
+}
+
+function template_pivotal(){
+
+    function getPivotalInfo(){
+        $.ajax({
+            type: "GET",
+            url: "/ajax/pivotal/",
+            async: false,
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                html = '<table class="table">';
+                console.log(data);
+                $(data).find('activity').each(function(index, element){
+                    var description = $(element).find('description').text();
+                    if (description.match(/^[^".]+accepted "/) !== null){
+                        html += '<tr>\
+                        <td>'+$(element).find('occurred_at').text()+'</td>\
+                        <td>'+description+'</td>\
+                        </tr>';
+                    }
+                });
+                html += '</table>';
+                $('#content #list').html(html);
+            }
+        }).done(function(){
+            $('#content #list tr').css({
+                'color':'white',
+                'margin-top':'10px',
+            }); 
+        })
+    }
+
+    function template_binding(){
+        getPivotalInfo();
+    }
+
+    var pg = new page();
+    pg.binding = template_binding;
+    pg.dom_html = '\
+        <h3>Pivotal Tracker Activity</h3>\
+        <div id="list"></div>\
     ';
     return pg;
 }

@@ -205,9 +205,8 @@ describe("GameState", function() {
             beforeEach(function() {
                 json = gamestate.players[0].toJSON();
             });
-            it("should have the correct number of units", function() {
-                expect(Object.keys(json)).toEqual(['selectedUnits', 'units', 'color']);
-            });
+            // TODO write some tests that validate the values in the result
+            // by asserting what type they are. For example, units should be a list.
             it("should only save the units attributes", function() {
                 expect(json.units.length).toEqual(2);
             });

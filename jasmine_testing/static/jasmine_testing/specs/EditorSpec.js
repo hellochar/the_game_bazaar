@@ -173,6 +173,13 @@ describe("Map Editor", function() {
 
                 });
         });
+
+    });
+
+    describe("UnitSelectionPalette", function() {
+    });
+
+    describe("ObstaclePalette", function() {
     });
 
 });

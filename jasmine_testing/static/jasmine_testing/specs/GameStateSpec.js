@@ -219,16 +219,13 @@ describe("GameState", function() {
             });
             it("should save whether or not it's selected, the position, speed, bullets, and facing and nothing else", function() {
                 expect(json).toEqual({
-                    selected: false,
-                    pos: {
-                        x: 0,
-                        y: 100,
-                        z: 0
-                    },
-                    bullets: [],
                     speed: 0.1,
+                    pos: { x: 0, y: 100, z: 0 },
                     facing: -Math.PI / 2,
-                    size: 15
+                    bullets: [],
+                    size: 15,
+                    cooldown: 1000,
+                    selected: false
                 });
             });
         });

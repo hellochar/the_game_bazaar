@@ -3,7 +3,7 @@ function ObstaclePalette(editor) {
     this.domElement = (function() {
         var container = $('<div/>');
 
-        container.append('Drag to create obstacles.<br>Press escape while dragging to cancel.</br>');
+        container.append('Drag to create obstacles.');
 
         return container;
     })();
@@ -17,9 +17,6 @@ ObstaclePalette.prototype.handleClick = function(clicktype, clickpos) {
 };
 
 ObstaclePalette.prototype.handleKeyUp = function(key) {
-    if(key == 27) { //escape
-        this.nodes = undefined;
-    }
 }
 
 ObstaclePalette.prototype.handleDragMove = function(clicktype, dragstart, dragend) {

@@ -61,32 +61,23 @@ function UnitPalette(editor) {
     //This is equivalent to calling the super() constructor
     Palette.call(this, editor);
 
-    //click and drag to add units
-    (function() {
-        var mouseDownButton = false; //one of: 1,2,3 or FALSE
-
-        this.whileActive({
-            mousedown : function(evt) {
-                            mouseDownButton = evt.which;
-                        },
-            mousemove : function(evt) {
-                            if(mouseDownButton === 1) {
-                                this.tryAddUnit(editor.ui_renderer.getCanvasCoords(evt));
-                            }
-                        }.bind(this),
-            mouseup   : function(evt) {
-                            mouseDownButton = false;
-                        }
-        });
-    }.bind(this))();
-
-    //press space to go into UnitSelectionPalette
     this.whileActive({
-        keyup : function(evt) {
-                    if(evt.keyCode === 32) { //space
-                        this.editor.setPalette(new UnitSelectionPalette(editor));
-                    }
-                }.bind(this)
+
+        //press space to go into UnitSelectionPalette
+        keyup     : function(evt) {
+                        if(evt.keyCode === 32) { //space
+                            this.editor.setPalette(new UnitSelectionPalette(editor));
+                        }
+                    }.bind(this),
+
+
+        //click and drag to add units
+        mousemove : function(evt) {
+                        if(evt.which === 1) {
+                            this.tryAddUnit(editor.ui_renderer.getCanvasCoords(evt));
+                        }
+                    }.bind(this),
+
     });
 
     this.domElement = $("<div><div class='players'></div><div class='ui'></div></div>");

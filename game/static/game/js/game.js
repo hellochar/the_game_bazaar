@@ -50,7 +50,7 @@ Game.prototype.init = function(gs_renderer) {
         'join' : 'handleUserJoin',
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
-        'drag' : 'handleDragMessage',
+        'drag' : 'handleDragEndMessage',
         'deadUnits' : 'handleDeadUnits',
         'lostGame' : 'handleLostGame',
         'wonGame' : 'handleWonGame',
@@ -133,7 +133,7 @@ Game.prototype.handleGameStart = function (data) {
 
     // set up user input hooks
     this.ui_renderer.bindClick(this.handleClick.bind(this));
-    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+    this.ui_renderer.bindDragEnd(this.handleDragEnd.bind(this));
     this.ui_renderer.bindKeyUp(this.handleKeyUp.bind(this));
     this.ui_renderer.bindKeyDown(this.handleKeyDown.bind(this));
 
@@ -358,7 +358,7 @@ Game.getRect = function(c1, c2) {
     };
 };
 
-Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+Game.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     var rect = Game.getRect(dragstart, dragend);
     var drag_p1 = new THREE.Vector3(rect.p1.x, rect.p1.y, 0);
     var drag_p2 = new THREE.Vector3(rect.p2.x, rect.p1.y, 0);
@@ -439,7 +439,7 @@ Game.prototype.handleClickMessage = function (data) {
     }
 };
 
-Game.prototype.handleDragMessage = function(data) {
+Game.prototype.handleDragEndMessage = function(data) {
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];

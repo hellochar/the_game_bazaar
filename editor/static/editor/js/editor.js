@@ -10,7 +10,7 @@ function Editor(map, ui_renderer) {
 
 Editor.prototype.init = function() {
     this.ui_renderer.bindClick(this.handleClick.bind(this));
-    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+    this.ui_renderer.bindDragEnd(this.handleDragEnd.bind(this));
 
     this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
@@ -45,8 +45,8 @@ Editor.prototype.handleClick = function(clicktype, clickpos) {
     this.palette.handleClick(clicktype, clickpos);
 };
 
-Editor.prototype.handleDrag = function(clicktype, dragstart, dragend) {
-    this.palette.handleDrag(clicktype, dragstart, dragend);
+Editor.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
+    this.palette.handleDragEnd(clicktype, dragstart, dragend);
 };
 
 Editor.prototype.renderMethod = function() {

@@ -15,7 +15,7 @@ ObstaclePalette.prototype.constructor = ObstaclePalette;
 
 ObstaclePalette.prototype.handleClick = function(clicktype, clickpos) {
 };
-ObstaclePalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+ObstaclePalette.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     if(clicktype == 1) {
         this.editor.map.addWall(dragstart, dragend);
     }

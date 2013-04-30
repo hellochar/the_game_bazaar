@@ -84,11 +84,11 @@ describe("Game", function() {
         });
         it("should set up the renderer", function() {
             spyOn(game.ui_renderer, 'bindClick');
-            spyOn(game.ui_renderer, 'bindDrag');
+            spyOn(game.ui_renderer, 'bindDragEnd');
             spyOn(game.ui_renderer, 'startRendering');
             game.handleGameStart({timestamp: timestamp});
             expect(game.ui_renderer.bindClick).toHaveBeenCalled();
-            expect(game.ui_renderer.bindDrag).toHaveBeenCalled();
+            expect(game.ui_renderer.bindDragEnd).toHaveBeenCalled();
             expect(game.ui_renderer.startRendering).toHaveBeenCalled();
         });
 
@@ -223,11 +223,11 @@ describe("Game", function() {
     });
 
 
-    describe("handleDrag", function() {
+    describe("handleDragEnd", function() {
         beforeEach(function() {
             game.player_id = 120;
             game.game_id = 9999;
-            game.handleDrag(1, new THREE.Vector3(10, 100), new THREE.Vector3(15, 120));
+            game.handleDragEnd(1, new THREE.Vector3(10, 100), new THREE.Vector3(15, 120));
         });
         it("should emit a 'drag' event", function() {
             expect(game.socket.emit).toHaveBeenCalledWith('drag', jasmine.any(Object));
@@ -270,7 +270,7 @@ describe("Game", function() {
     });
 
 
-    describe("handleDragMessage", function() {
+    describe("handleDragEndMessage", function() {
         beforeEach(function() {
             game.server_start_time = 0;
             game.gamestate = Editor.createDefaultMap();
@@ -279,7 +279,7 @@ describe("Game", function() {
         });
 
         it("should select units on a left-click", function() {
-            game.handleDragMessage({
+            game.handleDragEndMessage({
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 1,
@@ -300,7 +300,7 @@ describe("Game", function() {
         });
 
         it("should move units on a right-click", function() {
-            game.handleDragMessage({
+            game.handleDragEndMessage({
                 timestamp: 10,
                 player_id: 0,
                 clicktype: 3,

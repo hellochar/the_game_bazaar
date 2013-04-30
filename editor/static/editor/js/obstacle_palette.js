@@ -93,6 +93,12 @@ ObstaclePalette.prototype.renderMethod = function() {
                 this.editor.ui_renderer.drawCircle(node.pos.x, node.pos.y, this.SNAPPING_THRESHOLD, "green");
             }
         }.bind(this));
+    } else {
+        //render snapping circle for nearest snappable circle
+        var snappableNode = this.getSnappableNode(this.editor.ui_renderer.currCoords, []);
+        if( snappableNode ) {
+            this.editor.ui_renderer.drawCircle(snappableNode.pos.x, snappableNode.pos.y, this.SNAPPING_THRESHOLD, "green");
+        }
     }
 };
 

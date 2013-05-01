@@ -30,7 +30,7 @@ $().ready(function(){
     user = new User();
 
     //show the title page
-    change_page(templates, 'title');
+    change_page(templates, 'title', false, false);
 
     //mostly just hides all the divs
     initialize();
@@ -38,9 +38,16 @@ $().ready(function(){
     //adds click functions
     bind_divs();
 
+    //look at the anchor and change page accordingly
+    var hash = window.location.hash.replace('#', '');
+    if (hash !== ''){
+        console.log(hash, "change");
+        change_page(templates, hash, false, true);
+    }
+
 });
 
-function change_page(templates, page, force){
+function change_page(templates, page, force, change_hash){
     if (force){
         force = force;
     } else {
@@ -68,6 +75,9 @@ function change_page(templates, page, force){
 
         //update some state
         templates.current_page = page;
+        if(change_hash){
+            window.location.hash = '#'+page;   
+        }
     }
 }
 

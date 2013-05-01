@@ -2,9 +2,9 @@
     <div class="navbar-inner">
         <a href="/" class="brand">The Game Bazaar</a>
         <ul class="nav">
-            <li id="navbar-home"><a href="{% url index %}">Home</a></li>
-            <li id="navbar-play"><a href="{% url lobbies_view %}">Play</a></li>
-            <li id="navbar-edit"><a href="{% url edit %}">Edit</a></li>
+            <li id="navbar-home"><a href="{% url index %}#title">Home</a></li>
+            <li id="navbar-play"><a href="{% url index %}#play">Play</a></li>
+            <li id="navbar-edit"><a href="{% url index %}#edit">Edit</a></li>
         </ul>
         {% if user.is_authenticated %}
             <ul class="nav pull-right">

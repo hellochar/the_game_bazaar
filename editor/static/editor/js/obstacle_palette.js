@@ -1,13 +1,11 @@
+ObstaclePalette.instructions = [
+    "Left-click-drag to create a wall."
+];
+
+
 function ObstaclePalette(editor) {
     Palette.call(this, editor);
-    this.domElement = (function() {
-        var container = $('<div/>');
-
-        container.append('Drag to create obstacles.');
-
-        return container;
-    })();
-
+    this.domElement = $('<div/>');
 }
 
 ObstaclePalette.prototype = Object.create( Palette.prototype );

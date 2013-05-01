@@ -1,3 +1,17 @@
+
+UnitSelectionPalette.instructions = [
+    "Left-click to select an individual unit.",
+    "Left-click-drag to select multiple units.",
+    "",
+    "Press DEL to delete selected units.",
+    "",
+    "Sliders will change to selected units' common properties.",
+    "Move sliders to set properties of selected units.",
+    "",
+    "",
+    "Press SPACE to go to Placement Mode."
+];
+
 function UnitSelectionPalette(editor) {
     Palette.call(this, editor);
 
@@ -19,10 +33,6 @@ function UnitSelectionPalette(editor) {
     this.domElement = (function() {
         var container = 
             $('<div>' + 
-                  '<div class="instructions">' + 
-                      'Drag from the ground to select units.<br/>' + 
-                      'Press DEL to delete selected units.<br/>' + 
-                  '</div>' + 
                   '<div class="ui">' + 
                   '</div>' + 
               '</div>');

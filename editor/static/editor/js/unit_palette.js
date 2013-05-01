@@ -2,10 +2,16 @@
  *
  * The UnitPalette provides basic functionality for placing units on the map.
  *
- * Controls:
- *      Left-click and drag to place units
- *
  */
+
+UnitPalette.instructions = [
+    "Left-click and drag to place units.",
+    "Use sliders to control unit properties.",
+    "Press Add Player to, well, add a player to the map.",
+    "",
+    "",
+    "Press SPACE to go to Selection Mode."
+];
 
 //An array of properties that you should be able to modify/control
 UnitPalette.EDITABLE_PROPERTIES =
@@ -166,3 +172,4 @@ UnitPalette.prototype.currentPlayer = function() {
     var pid = $('input[name=player]:checked', this.domElement).val();
     return this.editor.map.players[pid];
 };
+

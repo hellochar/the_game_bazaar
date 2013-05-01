@@ -236,8 +236,8 @@ Game.prototype.renderMethod = function() {
             if (this.keys.d) {
                 delta.x += 40;
             }
-            var pos = this.gs_renderer.getViewport();
-            this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
+            var pos = this.gs_renderer.getTarget();
+            this.gs_renderer.setTarget(pos.x + delta.x, pos.y + delta.y);
             break;
         case Game.GAME_STATES.INIT:
             this.ui_renderer.renderText("Initializing...", 400, 200, "red");

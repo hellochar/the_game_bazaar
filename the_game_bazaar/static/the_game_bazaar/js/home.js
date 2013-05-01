@@ -583,7 +583,6 @@ function template_edit(){
 function template_play(){
 
     function getLobbyTable(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/lobby/",
@@ -591,7 +590,7 @@ function template_play(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log('what....');
+                var html = '';
                 html += "<table class='table table-striped'>";
                 html += "<thead><tr>";
                 html += "<th>Game ID</th>";
@@ -613,13 +612,12 @@ function template_play(){
                 }
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-lobby .play-table').html(html);
             }
         });
-        return html;
     };
 
     function getHostTable(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/maps/",
@@ -627,6 +625,7 @@ function template_play(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += "<table class='table table-striped'>\
                             <thead><tr>\
                                     <th>Map ID</th>\
@@ -653,9 +652,9 @@ function template_play(){
 
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-host .play-table').html(html);
             }
         });
-        return html;
     }
 
     function template_binding(){
@@ -687,13 +686,8 @@ function template_play(){
 
         });
 
-        $('#content #play-lobby .play-table').html(function(){
-            return getLobbyTable();
-        });
-
-        $('#content #play-host .play-table').html(function(){
-            return getHostTable();
-        })
+        getLobbyTable();
+        getHostTable();
 
         $('#content #play-lobby').show();
         $('#content #play-host').hide();

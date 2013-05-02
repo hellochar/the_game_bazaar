@@ -204,9 +204,6 @@ Game.prototype.renderMethod = function() {
     // Render this snapshot of the gamestate.
     var snapshot = this.gamestate.evaluate(now_time - start_time);
 
-    var renderText = function(text) {
-        this.ui_renderer.renderText(text, 400, 200, "red");
-    };
     this.gs_renderer.update(snapshot);
     this.gs_renderer.animate();
     switch (this.conn_state) {
@@ -220,11 +217,6 @@ Game.prototype.renderMethod = function() {
             d2 = this.gs_renderer.project(d2);
             d3 = this.gs_renderer.project(d3);
             d4 = this.gs_renderer.project(d4);
-
-            // this.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
-            // this.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
-            // this.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
-            // this.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
 
             this.ui_renderer.renderMap();
             this.ui_renderer.renderViewPort(d1, d2, d3, d4);
@@ -248,16 +240,16 @@ Game.prototype.renderMethod = function() {
             this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
             break;
         case Game.GAME_STATES.INIT:
-            renderText("Initializing...");
+            this.ui_renderer.renderText("Initializing...", 400, 200, "red");
             break;
         case Game.GAME_STATES.CONNECTING:
-            renderText("Connecting...");
+            this.ui_renderer.renderText("Connecting...", 400, 200, "red");
             break;
         case Game.GAME_STATES.DISCONNECTED:
-            renderText("Disconnected!");
+            this.ui_renderer.renderText("Disconnected...", 400, 200, "red");
             break;
         default:
-            renderText("Problem!");
+            this.ui_renderer.renderText("Problem!", 400, 200, "red");
             break;
     }
 };

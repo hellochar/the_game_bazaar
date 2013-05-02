@@ -212,6 +212,8 @@ Game.prototype.renderMethod = function() {
     switch (this.conn_state) {
         case Game.GAME_STATES.CONNECTED:
             this.ui_renderer.renderSelectRect();
+
+            // Obtain the in-game coordinates of the edges of the window.
             var d1 = new THREE.Vector3(0, 0, 0);
             var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
             var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
@@ -221,15 +223,20 @@ Game.prototype.renderMethod = function() {
             d3 = this.gs_renderer.project(d3);
             d4 = this.gs_renderer.project(d4);
 
-            // this.ui_renderer.renderText("d1 x: " + d1.x + ", y: " + d1.y, 400, 200, "red");
-            // this.ui_renderer.renderText("d2 x: " + d2.x + ", y: " + d2.y, 400, 220, "red");
-            // this.ui_renderer.renderText("d3 x: " + d3.x + ", y: " + d3.y, 400, 240, "red");
-            // this.ui_renderer.renderText("d4 x: " + d4.x + ", y: " + d4.y, 400, 260, "red");
+            // Normalize the coordinates by the size of the map.
+            // d1.x = d1.x / map_size.width;
+            // d2.x = d2.x / map_size.width;
+            // d3.x = d3.x / map_size.width;
+            // d4.x = d4.x / map_size.width;
 
-            this.ui_renderer.renderMap();
-            this.ui_renderer.renderViewPort(d1, d2, d3, d4);
-            this.ui_renderer.renderGS(snapshot, this.player_id);
-            this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
+            // d1.y = d1.y / map_size.height;
+            // d2.y = d2.y / map_size.height;
+            // d3.y = d3.y / map_size.height;
+            // d4.y = d4.y / map_size.height;
+
+            this.ui_renderer.renderMap(snapshot, this.player_id);
+            var map_size = this.gamestate.terrain;
+            this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);
 
             var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {

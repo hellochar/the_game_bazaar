@@ -3,6 +3,7 @@ from socketio.mixins import RoomsMixin, BroadcastMixin
 from lib.sdjango import namespace
 from game.models import Game
 import time
+import logging
 
 
 @namespace('/game')
@@ -59,6 +60,12 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def on_lostGame(self, data):
         self.broadcast_message('lostGame', data)
+        # TODO: Change game.state to inactive when game is over?
 
     def on_wonGame(self, data):
         self.broadcast_message('wonGame', data)
+        # TODO: Change game.state to inactive when game is over?
+
+    def disconnect(self, silent=False):
+        super(GameNamespace, self).disconnect(silent)
+        logging.getLogger("socketio").error("Disconnect called!")

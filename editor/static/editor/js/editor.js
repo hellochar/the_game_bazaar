@@ -33,13 +33,13 @@ Editor.prototype.error = function(msg) {
 Editor.prototype.setPalette = function(palette) {
     if(this.palette !== undefined) {
         $(this.palette.domElement).remove();
-        $('.instructions').html("");
+        this.palette.constructor.instructions.remove();
         $(this.palette).trigger("selectionLost", palette);
     }
     var oldPalette = this.palette;
     this.palette = palette;
     $(this.palette.domElement).appendTo('#palette');
-    $('.instructions').html(palette.constructor.instructions.join("\n<br/>"));
+    this.palette.constructor.instructions.appendTo('#instructions');
     $(this.palette).trigger("selectionGained", oldPalette);
 }
 

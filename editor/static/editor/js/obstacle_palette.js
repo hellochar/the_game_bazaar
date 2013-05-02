@@ -1,6 +1,8 @@
-ObstaclePalette.instructions = [
-    "Left-click-drag to create a wall."
-];
+ObstaclePalette.instructions = $(
+    "<div>" + 
+    "Left-click-drag to create a wall." + 
+    "</div>"
+    );
 
 
 function ObstaclePalette(editor) {

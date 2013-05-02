@@ -4,14 +4,15 @@
  *
  */
 
-UnitPalette.instructions = [
-    "Left-click and drag to place units.",
-    "Use sliders to control unit properties.",
-    "Press Add Player to, well, add a player to the map.",
-    "",
-    "",
-    "Press SPACE to go to Selection Mode."
-];
+UnitPalette.instructions = $(
+    '<div>' + 
+        "Left-click and drag to place units.<br>" + 
+        "Use sliders to control unit properties.<br>" + 
+        "Press Add Player to, well, add a player to the map.<br>" + 
+        "<br/><br/>" + 
+        "Press SPACE to go to Selection Mode.<br/>" + 
+    '</div>'
+    );
 
 //An array of properties that you should be able to modify/control
 UnitPalette.EDITABLE_PROPERTIES =

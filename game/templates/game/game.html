@@ -13,7 +13,7 @@
                 $('#game-container').hide();
                 $('#lobby-container').show();
             });
-            var game = new Game();
+            var game = new Game({{ game_id }});
             game.init();
             window.game = game;
         });
@@ -24,7 +24,6 @@
 
 {% block content %}
     <!-- LOBBY CONTAINER -->
-    <div id="game-id" val="{{ game_id }}"></div>
     <div id="map-id" val="{{ map_id }}"></div>
     <div id="player-id" val="{{ player_id }}"></div>
     <div id="lobby-container">

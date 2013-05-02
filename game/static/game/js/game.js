@@ -1,6 +1,7 @@
 WEB_SOCKET_DEBUG = true;
 
-function Game() {
+function Game(game_id) {
+    this.game_id = parseInt(game_id, 10);
 }
 
 // Constants
@@ -29,8 +30,9 @@ Game.prototype.init = function(gs_renderer) {
     this.keys.s = false;
     this.keys.d = false;
 
-    this.socket = io.connect('/game', {
-        reconnect: false
+    this.socket = io.connect('/game?id='+this.game_id, {
+        reconnect: false, // Do not reconnect
+        'sync disconnect on unload': true // On unload send a disconnect packet
     });
     // DEBUG
     // console.log("Attempting to connect");
@@ -91,7 +93,6 @@ Game.prototype.handleConnecting = function() {
 Game.prototype.handleConnected = function () {
     // These divs are set in the context
     this.player_id = parseInt($("#player-id").attr("val"), 10);
-    this.game_id = parseInt($("#game-id").attr("val"), 10);
     this.map_id = parseInt($("#map-id").attr("val"), 10);
 
     // Do some connecting and make sure we cleanup correctly.
@@ -101,10 +102,7 @@ Game.prototype.handleConnected = function () {
 
     this.conn_state = Game.GAME_STATES.CONNECTED;
     $(window).unload(function() {
-        data = {
-            'game_id': this.game_id
-        };
-        this.socket.emit('leave', data);
+        this.socket.emit('leave');
         this.socket.disconnect();
     }.bind(this));
 
@@ -160,7 +158,6 @@ Game.prototype.checkDeadUnits = function(game_time) {
     }.bind(this));
     if (deadUnitIndexList.length > 0) {
         data = {
-            'game_id': this.game_id,
             'player_id': this.player_id,
             'deadUnitIndexList': deadUnitIndexList
         };
@@ -176,7 +173,6 @@ Game.prototype.checkWinAndLose = function() {
     // lost, stop sending the lostGame message.
     if (this.loseCondition() && !this.gamestate.players[this.player_id].lost) {
         data = {
-            'game_id': this.game_id,
             'player_id': this.player_id
         };
         this.socket.emit('lostGame', data);
@@ -187,7 +183,6 @@ Game.prototype.checkWinAndLose = function() {
     // won, stop sending the wonGame message.
     if (this.winCondition() && !this.gamestate.players[this.player_id].won) {
         data = {
-            'game_id': this.game_id,
             'player_id': this.player_id
         };
         this.socket.emit('wonGame', data);
@@ -271,7 +266,6 @@ Game.prototype.finishInitialization = function() {
     // Broadcast a join
     // If the user is the game owner, no one else should be in the game
     data = {
-        'game_id': this.game_id,
         'player_id': this.player_id,
         'username': this.getUsernameByPid(this.player_id)
     };
@@ -344,7 +338,6 @@ Game.prototype.handleClick = function(clicktype, clickpos) {
     var worldPos = this.gs_renderer.project(clickpos);
     data = {
         'clickpos': worldPos,
-        'game_id': this.game_id,
         'player_id': this.player_id,
         'clicktype': clicktype
     };
@@ -373,7 +366,6 @@ Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
         'drag_p2': drag_p2,
         'drag_p3': drag_p3,
         'drag_p4': drag_p4,
-        'game_id': this.game_id,
         'player_id': this.player_id,
         'clicktype': clicktype
     };
@@ -394,7 +386,6 @@ Game.prototype.handleKeyUp = function(keyCode) {
         this.keys.d = false;
     }
     var data = {
-        'game_id': this.game_id,
         'player_id': this.player_id,
         'keycode': keyCode
     };
@@ -598,8 +589,5 @@ Game.prototype.handleConnectError = function (e) {
 // LOBBY FUNCTIONS
 //---------------------------------------------
 Game.prototype.start_game = function() {
-    data = {
-        'game_id': this.game_id
-    };
-    this.socket.emit('start', data);
+    this.socket.emit('start');
 };

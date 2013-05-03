@@ -4,7 +4,7 @@
         $('#menu-system #dropdown').hide();
 
         $('#menu-system #button').click(function(){
-            $('#menu-system #dropdown').toggle();
+            $('#menu-system #dropdown').slideToggle();
         });
 
     })
@@ -30,12 +30,15 @@
         cursor: pointer;
     }
 
+    #menu-system #dropdown {
+        margin-top: 3px;
+    }
+
     #menu-system #dropdown ul {
         background: rgb(140, 3, 3);
         list-style-type: none;
         padding: 0px;
         margin-left: 0px;
-        margin-top: 3px;
     }
 
     #menu-system #dropdown li {
@@ -47,6 +50,15 @@
 
     #menu-system #dropdown li:hover {
         background: rgb(200, 4, 4);
+    }
+
+    #menu-system #dropdown li a:link{
+        text-decoration: none;
+        color: rgb(255, 255, 255);
+    }
+    #menu-system #dropdown li a:visited{
+        text-decoration: none;
+        color: rgb(255, 255, 255);
     }
 </style>
 

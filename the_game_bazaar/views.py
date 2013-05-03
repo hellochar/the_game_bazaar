@@ -188,6 +188,31 @@ def leave_clan(request):
 
     return HttpResponse(json.dumps(resp), mimetype="application/json")
 
+@login_required(login_url='/', redirect_field_name=None)
+@require_http_methods(["GET"])
+def members_clan(request):
+    resp = {
+        "success": False,
+    }
+
+    clan = getClan(request.user)
+    if (clan == None):
+        resp['error'] = "You are not part of a clan"
+    else:
+        members = []
+
+        clan_obj = Clan.objects.get(name=clan);
+
+        for member in clan_obj.user_set.all():
+            members.append(member.username)
+
+        resp['success'] = True
+        resp['data'] = members
+        resp['owner'] = clan_obj.creator.username
+
+    return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+
 ###############################################################################
 # AUTHENTICATION API
 ###############################################################################

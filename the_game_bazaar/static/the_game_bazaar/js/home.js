@@ -322,6 +322,7 @@ function User(){
                     this.username = data['username'];
                     this.gravatar_img = data['gravatar'];
                     this.clan = data['clan'];
+                    this.email = data['email'];
                     //show that you're logged in
                 } else {
                     //show an error
@@ -344,6 +345,7 @@ function User(){
                 this.username = '';
                 this.gravatar_url = '';
                 this.clan = '';
+                this.email = '';
                 callback();
             }.bind(this),
         })
@@ -779,7 +781,7 @@ function template_profile(){
                 },
                 success: function(data){
                     if (data.success == true){
-                        $('#curr_email').html($('#newEmail').val());
+                        $('#curr-email').html($('#newEmail').val());
                         $('#content #email-error').html("Your email has been changed");
                         user.email = $('#newEmail').val();
                         $('#content #gravatar').html(function(){

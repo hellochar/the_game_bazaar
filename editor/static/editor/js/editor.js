@@ -9,9 +9,21 @@ function Editor(map, ui_renderer) {
     this.setEditingMap(map || Editor.createDefaultMap());
 }
 
+// Should bind all input events from the UI renderer to the Editor
 Editor.prototype.init = function() {
-    this.ui_renderer.bindClick(this.handleClick.bind(this));
-    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+    // An array of all ui_renderer method names that start with 'bind'
+    var inputEventNames = Object.keys(UIRenderer.prototype).filter(function (name) { return name.match(/bind.*/); });
+    inputEventNames.forEach(function (methodName) {
+
+        // for each input that can be bound (e.g. bindKeyDown), delegate
+        // it to the currently active palette.
+        var handlerName = methodName.replace("bind", "handle");
+        this.ui_renderer[methodName](function () {
+            if( this.palette[handlerName] ) { //if the palette has defined the function, invoke it
+                this.palette[handlerName].apply(this.palette, arguments);
+            }
+        }.bind(this));
+    }.bind(this));
 
     this.ui_renderer.startRendering(this.renderMethod.bind(this));
 };
@@ -33,21 +45,15 @@ Editor.prototype.error = function(msg) {
 Editor.prototype.setPalette = function(palette) {
     if(this.palette !== undefined) {
         $(this.palette.domElement).remove();
+        this.palette.constructor.instructions.remove();
         $(this.palette).trigger("selectionLost", palette);
     }
     var oldPalette = this.palette;
     this.palette = palette;
     $(this.palette.domElement).appendTo('#palette');
+    this.palette.constructor.instructions.appendTo('#instructions');
     $(this.palette).trigger("selectionGained", oldPalette);
 }
-
-Editor.prototype.handleClick = function(clicktype, clickpos) {
-    this.palette.handleClick(clicktype, clickpos);
-};
-
-Editor.prototype.handleDrag = function(clicktype, dragstart, dragend) {
-    this.palette.handleDrag(clicktype, dragstart, dragend);
-};
 
 Editor.prototype.renderMethod = function() {
     var gamestate = this.map.evaluate(0);

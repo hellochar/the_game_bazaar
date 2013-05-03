@@ -1,28 +1,38 @@
+
+UnitSelectionPalette.instructions = $(
+    "<div>" + 
+    "Left-click to select an individual unit.<br/>" + 
+    "Left-click-drag to select multiple units.<br/>" + 
+    "<br/>" + 
+    "Press DEL to delete selected units.<br/>" + 
+    "<br/>" + 
+    "Sliders will change to selected units' common properties.<br/>" + 
+    "Move sliders to set properties of selected units.<br/>" + 
+    "<br/>" + 
+    "<br/>" + 
+    "Press SPACE to go to Placement Mode.<br/>" +
+    "</div>"
+    );
+
 function UnitSelectionPalette(editor) {
     Palette.call(this, editor);
 
     //press space to go into UnitPalette
-    (function() {
-        var onKeyUp = function(evt) {
-            if(evt.keyCode === 32) { //space
-                this.editor.setPalette(new UnitPalette(editor));
-            }
-            if(evt.keyCode === 46) { //delete
-                this.selectedUnits.forEach(this.editor.map.removeUnit);
-                this.setSelection([]);
-            }
-        }.bind(this);
-
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
-    }.bind(this))();
+    this.whileActive({
+        keyup: function(evt) {
+                   if(evt.keyCode === 32) { //space
+                       this.editor.setPalette(new UnitPalette(editor));
+                   }
+                   if(evt.keyCode === 46) { //delete
+                       this.selectedUnits.forEach(this.editor.map.removeUnit);
+                       this.setSelection([]);
+                   }
+               }.bind(this)
+    });
 
     this.domElement = (function() {
         var container = 
             $('<div>' + 
-                  '<div class="instructions">' + 
-                      'Drag from the ground to select units.<br/>' + 
-                      'Press DEL to delete selected units.<br/>' + 
-                  '</div>' + 
                   '<div class="ui">' + 
                   '</div>' + 
               '</div>');
@@ -74,7 +84,7 @@ UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {
         this.setSelection(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, clickpos));
     }
 };
-UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+UnitSelectionPalette.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     // if(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, dragstart)
     if(clicktype == 1) {
         var rect = Game.getRect(dragstart, dragend);

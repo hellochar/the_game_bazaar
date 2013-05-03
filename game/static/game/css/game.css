@@ -8,6 +8,11 @@
     /* border: 1px solid black; */
 }
 
+#lobby-container {
+	margin-left: 90px;
+	margin-top: 40px;
+}
+
 #game-ui {
     position: absolute;
     z-index: 100;

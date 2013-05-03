@@ -225,16 +225,16 @@ Game.prototype.renderMethod = function() {
 
             var delta = new THREE.Vector3(0, 0, 0);
             if (this.keys.w) {
-                delta.y += 40;
+                delta.y += 20;
             }
             if (this.keys.a) {
-                delta.x -= 40;
+                delta.x -= 20;
             }
             if (this.keys.s) {
-                delta.y -= 40;
+                delta.y -= 20;
             }
             if (this.keys.d) {
-                delta.x += 40;
+                delta.x += 20;
             }
             var pos = this.gs_renderer.getTarget();
             this.gs_renderer.setTarget(pos.x + delta.x, pos.y + delta.y);

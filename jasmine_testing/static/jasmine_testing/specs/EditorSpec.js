@@ -168,9 +168,10 @@ describe("Map Editor", function() {
 
         describe("input events", function() {
             it("should switch to unit selection when pressing space", function() {
-                $(editor.ui_renderer.canvas).trigger('keyup', {
-                    keyCode: 32 // 32 == space keycode
-                });
+                $(editor.ui_renderer.canvas).trigger($.Event('keyup', {
+                    keyCode: 32
+                }));
+                console.log(editor.palette);
                 expect(editor.palette).toEqual(jasmine.any(UnitSelectionPalette));
             });
             it("should tryAddUnit on a leftclick", function() {
@@ -181,14 +182,14 @@ describe("Map Editor", function() {
         });
 
 
-        describe("tryAddUnit", function() {
-            it("should get properties from the input elements", function() {
-            });
-            it("should addUnit if there are no unitsTouchingSphere", function() {
-            });
-            it("shouldn't addUnit if there are unitsTouchingSphere", function() {
-            });
-        });
+        // describe("tryAddUnit", function() {
+        //     it("should get properties from the input elements", function() {
+        //     });
+        //     it("should addUnit if there are no unitsTouchingSphere", function() {
+        //     });
+        //     it("shouldn't addUnit if there are unitsTouchingSphere", function() {
+        //     });
+        // });
 
         describe("currentPlayer", function() {
                 it("retrieves the checked input's val", function() {
@@ -203,6 +204,38 @@ describe("Map Editor", function() {
     });
 
     describe("UnitSelectionPalette", function() {
+
+        var palette;
+        beforeEach(function() {
+            palette = new UnitSelectionPalette(editor);
+            editor.setPalette(palette);
+        });
+
+        describe("handleDragEnd", function() {
+            it("should set selection to the dragged area", function() {
+                editor.map.addUnit(editor.map.players[0], new THREE.Vector3(50, 50, 0));
+
+                spyOn(palette, 'setSelection').andCallThrough();
+
+                palette.handleDragEnd(1, new THREE.Vector3(), new THREE.Vector3(100, 100, 0));
+
+                expect(palette.setSelection).toHaveBeenCalled();
+
+                expect(palette.selectedUnits).toEqual([editor.map.players[0].units[0]]);
+
+            });
+        });
+        describe("renderMethod", function() {
+            it("should render the selection rectangle and selection circles", function() {
+                spyOn(editor.ui_renderer, 'renderSelectRect');
+                spyOn(editor.ui_renderer, 'renderSelectionCircles');
+
+                palette.renderMethod();
+
+                expect(editor.ui_renderer.renderSelectRect).toHaveBeenCalled();
+                expect(editor.ui_renderer.renderSelectionCircles).toHaveBeenCalled();
+            });
+        });
     });
 
     describe("ObstaclePalette", function() {

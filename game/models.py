@@ -42,7 +42,7 @@ class Game(models.Model):
     def add_user_to_game(game_id, user):
         game = Game.objects.get(pk=game_id)
 
-        # Add this player to the player list for the game.
+        # Get player list for the game
         players_json = json.loads(game.players)
         # If the user isn't already in the game, add them to it.
         player_id = -1
@@ -55,10 +55,29 @@ class Game(models.Model):
 
         # TODO handle a user rejection gracefully
         assert player_id != -1, "No empty slot for player " + user.username + " in json " + json.dumps(players_json)
+
+        # Save the player list to the db
         game.players = json.dumps(players_json)
         game.save()
 
         return game, players_json, player_id
+
+    # Helper Method: Removes a user from the game
+    @staticmethod
+    def rm_user_from_game(game_id, player_id):
+        game = Game.objects.get(pk=game_id)
+
+        # Get player list for the game.
+        players_json = json.loads(game.players)
+
+        # Empty out the entry at player_id
+        players_json[player_id] = ''
+
+        # Save the player list to the db
+        game.players = json.dumps(players_json)
+        game.save()
+
+        return players_json
 
     def to_map(game):
         return {

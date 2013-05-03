@@ -55,7 +55,6 @@ $().ready(function(){
     } else {
         change_page(templates, 'title', false, false);
     }
-
 });
 
 function change_page(templates, page, force, change_hash){

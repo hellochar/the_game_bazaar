@@ -264,6 +264,15 @@ Game.prototype.handleGameData = function (gameData) {
     this.map_id = gameData.map_id;
     this.player_id = gameData.player_id;
 
+    // Show different screens depending on whether or not the player is the host
+    if (this.isHost) {
+        $('#lobby-host-screen').show();
+        $('#lobby-guest-screen').hide();
+    } else {
+        $('#lobby-host-screen').hide();
+        $('#lobby-guest-screen').show();
+    }
+
     // Make an ajax call to load the map data from the server
     $.ajax({
         type: "GET",
@@ -282,16 +291,8 @@ Game.prototype.handleGameData = function (gameData) {
                 window.gamestate = this.gamestate;
                 this.gs_renderer.initialize(this.gamestate.evaluate(0));
 
+                // This is called after the gamestate is crreated
                 this.populatePlayers(gameData.player_list);
-
-                // Show different screens depending on whether or not the player is the host
-                if (this.isHost) {
-                    $('#lobby-host-screen').show();
-                    $('#lobby-pleb-screen').hide();
-                } else {
-                    $('#lobby-host-screen').hide();
-                    $('#lobby-pleb-screen').show();
-                }
 
                 this.finishInitialization();
             }

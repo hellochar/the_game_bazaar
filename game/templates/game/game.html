@@ -13,7 +13,7 @@
                 $('#game-container').hide();
                 $('#lobby-container').hide();
                 $('#lobby-host-screen').hide();
-                $('#lobby-pleb-screen').hide();
+                $('#lobby-guest-screen').hide();
                 $('#loading-container').show();
             });
             var game = new Game({{ game_id }});
@@ -40,7 +40,7 @@
             You are the host! Start the game with this button!
             <button id="start-game">Start Game!</button>
         </div>
-        <div id="lobby-pleb-screen">
+        <div id="lobby-guest-screen">
             You are not the host. Please wait for the host to start the game.
         </div>
         <div id="player-list">

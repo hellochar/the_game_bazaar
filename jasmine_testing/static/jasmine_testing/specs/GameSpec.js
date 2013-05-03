@@ -139,6 +139,28 @@ describe("Game", function() {
             expect(request.type).toBe('GET');
         });
 
+        it("should hide the guest screen from hosts", function() {
+            spyOn(game.ui_renderer, 'startRendering');
+            game.handleGameData({
+                isHost: true,
+                map_id: 120,
+                player_id: 0,
+                player_list: ['user1', 'user2']
+            });
+            expect($('#lobby-host-screen')).not.toBeHidden();
+            expect($('#lobby-guest-screen')).toBeHidden();
+        });
+        it("should hide the host screen from guests", function() {
+            spyOn(game.ui_renderer, 'startRendering');
+            game.handleGameData({
+                isHost: false,
+                map_id: 120,
+                player_id: 1,
+                player_list: ['user1', 'user2']
+            });
+            expect($('#lobby-guest-screen')).not.toBeHidden();
+            expect($('#lobby-host-screen')).toBeHidden();
+        });
         describe("on success", function() {
             var fakeData = {
                 success: true,
@@ -171,7 +193,7 @@ describe("Game", function() {
                     player_list: ['user1', 'user2']
                 });
 
-                expect(game.populatePlayers).toHaveBeenCalled();
+                expect(game.populatePlayers).toHaveBeenCalledWith(['user1', 'user2']);
             });
             it("should finish initialization", function() {
                 game.handleGameData({
@@ -192,6 +214,13 @@ describe("Game", function() {
         //     game.player_id = 120;
         //     spyOn(game, 'getUsernameByPid').andReturn('user1');
         // });
+
+        it("should hide the loading screen and show the lobby", function() {
+            spyOn(game.ui_renderer, 'startRendering');
+            game.finishInitialization();
+            expect($('#lobby-container')).not.toBeHidden();
+            expect($('#loading-container')).toBeHidden();
+        });
 
         it("should start the game when the #start-game button is clicked", function() {
             spyOn(game, 'start_game');

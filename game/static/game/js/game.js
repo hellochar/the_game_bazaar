@@ -1,6 +1,7 @@
 WEB_SOCKET_DEBUG = true;
 
-function Game() {
+function Game(game_id) {
+    this.game_id = parseInt(game_id, 10);
 }
 
 // Constants
@@ -29,8 +30,9 @@ Game.prototype.init = function(gs_renderer) {
     this.keys.s = false;
     this.keys.d = false;
 
-    this.socket = io.connect('/game', {
-        reconnect: false
+    this.socket = io.connect('/game?id='+this.game_id, {
+        reconnect: false, // Do not reconnect
+        'sync disconnect on unload': true // On unload send a disconnect packet
     });
     // DEBUG
     // console.log("Attempting to connect");
@@ -48,9 +50,11 @@ Game.prototype.init = function(gs_renderer) {
 
         // Game logic handling
         'join' : 'handleUserJoin',
+        'game_data' : 'handleGameData',
+        'leave' : 'handleUserLeave',
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
-        'drag' : 'handleDragMessage',
+        'drag' : 'handleDragEndMessage',
         'deadUnits' : 'handleDeadUnits',
         'lostGame' : 'handleLostGame',
         'wonGame' : 'handleWonGame',
@@ -81,6 +85,7 @@ Game.prototype.handleConnecting = function() {
     // console.log("Connecting...");
 
     this.conn_state = Game.GAME_STATES.CONNECTING;
+    $('#loading-message').text("Connecting...");
 };
 
 //---------------------------------------------
@@ -89,22 +94,12 @@ Game.prototype.handleConnecting = function() {
 
 //join the lobby as soon as we connect
 Game.prototype.handleConnected = function () {
-    // These divs are set in the context
-    this.player_id = parseInt($("#player-id").attr("val"), 10);
-    this.game_id = parseInt($("#game-id").attr("val"), 10);
-    this.map_id = parseInt($("#map-id").attr("val"), 10);
-
-    // Do some connecting and make sure we cleanup correctly.
-
     // DEBUG
     // console.log("Connected!");
 
     this.conn_state = Game.GAME_STATES.CONNECTED;
     $(window).unload(function() {
-        data = {
-            'game_id': this.game_id
-        };
-        this.socket.emit('leave', data);
+        this.socket.emit('leave');
         this.socket.disconnect();
     }.bind(this));
 
@@ -120,7 +115,12 @@ Game.prototype.handleUserJoin = function (data) {
     // console.log("Player id: ", data.player_id);
     // console.log("Joining user's name: ", data.username);
 
-    this.addPlayerToHTML(data.player_id, data.username);
+    this.addPlayer(data.player_id, data.username);
+};
+
+// Let client know someone has left
+Game.prototype.handleUserLeave = function (data) {
+    this.rmPlayer(data.player_id);
 };
 
 // Starting a Game
@@ -133,10 +133,11 @@ Game.prototype.handleGameStart = function (data) {
 
     // set up user input hooks
     this.ui_renderer.bindClick(this.handleClick.bind(this));
-    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+    this.ui_renderer.bindDragEnd(this.handleDragEnd.bind(this));
     this.ui_renderer.bindKeyUp(this.handleKeyUp.bind(this));
     this.ui_renderer.bindKeyDown(this.handleKeyDown.bind(this));
 
+    // Hide the lobby and show the game
     $('#lobby-container').hide();
     $('#game-container').show();
 
@@ -160,8 +161,6 @@ Game.prototype.checkDeadUnits = function(game_time) {
     }.bind(this));
     if (deadUnitIndexList.length > 0) {
         data = {
-            'game_id': this.game_id,
-            'player_id': this.player_id,
             'deadUnitIndexList': deadUnitIndexList
         };
         this.socket.emit('deadUnits', data);
@@ -175,22 +174,14 @@ Game.prototype.checkWinAndLose = function() {
     // Make sure that we only send this message once. i.e. if we've already
     // lost, stop sending the lostGame message.
     if (this.loseCondition() && !this.gamestate.players[this.player_id].lost) {
-        data = {
-            'game_id': this.game_id,
-            'player_id': this.player_id
-        };
-        this.socket.emit('lostGame', data);
+        this.socket.emit('lostGame');
     }
 
     // If we've won the game, send that message to the server.
     // Make sure that we only send this message once. i.e. if we've already
     // won, stop sending the wonGame message.
     if (this.winCondition() && !this.gamestate.players[this.player_id].won) {
-        data = {
-            'game_id': this.game_id,
-            'player_id': this.player_id
-        };
-        this.socket.emit('wonGame', data);
+        this.socket.emit('wonGame');
     }
 };
 
@@ -204,75 +195,50 @@ Game.prototype.renderMethod = function() {
     // Render this snapshot of the gamestate.
     var snapshot = this.gamestate.evaluate(now_time - start_time);
 
-    var renderText = function(text) {
-        this.ui_renderer.renderText(text, 400, 200, "red");
-    };
     this.gs_renderer.update(snapshot);
     this.gs_renderer.animate();
-    switch (this.conn_state) {
-        case Game.GAME_STATES.CONNECTED:
-            this.ui_renderer.renderSelectRect();
 
-            // Obtain the in-game coordinates of the edges of the window.
-            var d1 = new THREE.Vector3(0, 0, 0);
-            var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
-            var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
-            var d4 = new THREE.Vector3(0, window.innerHeight, 0);
-            d1 = this.gs_renderer.project(d1);
-            d2 = this.gs_renderer.project(d2);
-            d3 = this.gs_renderer.project(d3);
-            d4 = this.gs_renderer.project(d4);
+    this.ui_renderer.renderSelectRect();
 
-            this.ui_renderer.renderMap(snapshot, this.player_id);
-            var map_size = this.gamestate.terrain;
-            this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);
+    // Obtain the in-game coordinates of the edges of the window.
+    var d1 = new THREE.Vector3(0, 0, 0);
+    var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
+    var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
+    var d4 = new THREE.Vector3(0, window.innerHeight, 0);
+    d1 = this.gs_renderer.project(d1);
+    d2 = this.gs_renderer.project(d2);
+    d3 = this.gs_renderer.project(d3);
+    d4 = this.gs_renderer.project(d4);
 
-            var delta = new THREE.Vector3(0, 0, 0);
-            if (this.keys.w) {
-                delta.y += 40;
-            }
-            if (this.keys.a) {
-                delta.x -= 40;
-            }
-            if (this.keys.s) {
-                delta.y -= 40;
-            }
-            if (this.keys.d) {
-                delta.x += 40;
-            }
-            var pos = this.gs_renderer.getViewport();
-            this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
-            break;
-        case Game.GAME_STATES.INIT:
-            renderText("Initializing...");
-            break;
-        case Game.GAME_STATES.CONNECTING:
-            renderText("Connecting...");
-            break;
-        case Game.GAME_STATES.DISCONNECTED:
-            renderText("Disconnected!");
-            break;
-        default:
-            renderText("Problem!");
-            break;
+    this.ui_renderer.renderMap(snapshot, this.player_id);
+    var map_size = this.gamestate.terrain;
+    this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);
+
+    var delta = new THREE.Vector3(0, 0, 0);
+    if (this.keys.w) {
+        delta.y += 40;
     }
+    if (this.keys.a) {
+        delta.x -= 40;
+    }
+    if (this.keys.s) {
+        delta.y -= 40;
+    }
+    if (this.keys.d) {
+        delta.x += 40;
+    }
+    var pos = this.gs_renderer.getViewport();
+    this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
 };
 
 //---------------------------------------------
 //MANAGING GAME STATE
 //---------------------------------------------
 
-//Send a 'join' message to everyone, bind events to the 'start game' button
+// When the game is ready, bind events to the 'start game' button
 Game.prototype.finishInitialization = function() {
-    // Broadcast a join
-    // If the user is the game owner, no one else should be in the game
-    data = {
-        'game_id': this.game_id,
-        'player_id': this.player_id,
-        'username': this.getUsernameByPid(this.player_id)
-    };
-    this.socket.emit('join', data);
-
+    $('#lobby-container').show();
+    $('#loading-container').hide();
     $('#start-game').click(function() {
         // DEBUG
         // console.log("start game");
@@ -281,8 +247,26 @@ Game.prototype.finishInitialization = function() {
     }.bind(this));
 };
 
-Game.prototype.instantiateGameState = function() {
-    this.gamestate = false;
+// Starting a Game
+Game.prototype.handleGameData = function (gameData) {
+    // DEBUG
+    // console.log("Timestamp: ", data.timestamp);
+
+    // Load essential game data from the socket
+    this.isHost = gameData.isHost;
+    this.map_id = gameData.map_id;
+    this.player_id = gameData.player_id;
+
+    // Show different screens depending on whether or not the player is the host
+    if (this.isHost) {
+        $('#lobby-host-screen').show();
+        $('#lobby-guest-screen').hide();
+    } else {
+        $('#lobby-host-screen').hide();
+        $('#lobby-guest-screen').show();
+    }
+
+    // Make an ajax call to load the map data from the server
     $.ajax({
         type: "GET",
         url: "/map/" + parseInt(this.map_id, 10),
@@ -299,7 +283,10 @@ Game.prototype.instantiateGameState = function() {
                 // DEBUG
                 window.gamestate = this.gamestate;
                 this.gs_renderer.initialize(this.gamestate.evaluate(0));
-                this.populatePlayerNamesInGSFromHTML();
+
+                // This is called after the gamestate is crreated
+                this.populatePlayers(gameData.player_list);
+
                 this.finishInitialization();
             }
             else {
@@ -310,7 +297,24 @@ Game.prototype.instantiateGameState = function() {
     });
 };
 
-Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
+Game.prototype.instantiateGameState = function() {
+    this.gamestate = false;
+    // Send a 'join' game message
+    // If the user is the game owner, no one else should be in the game
+    this.socket.emit('join');
+};
+
+Game.prototype.populatePlayers = function(player_list) {
+    player_list.forEach(function(player, pid) {
+        var field = document.createElement('li');
+        field.id = "player-slot-" + pid;
+        $(field).text(player);
+        $('#player-usernames').append(field);
+        this.gamestate.players[pid].username = player;
+    }.bind(this));
+};
+
+Game.prototype.addPlayer = function(new_player_id, new_player_username) {
     // DEBUG
     // console.log("Updating player names");
 
@@ -319,19 +323,29 @@ Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
     this.gamestate.players[new_player_id].username = new_player_username;
 };
 
+Game.prototype.rmPlayer = function(player_id) {
+    // DEBUG
+    // console.log("Updating player names");
+
+    var slot = $("#player-slot-" + player_id.toString(10));
+    slot.text("");
+    this.gamestate.players[player_id].username = "";
+};
+
+
 Game.prototype.getUsernameByPid = function(player_id) {
     return $("#player-slot-" + player_id.toString(10)).text();
 };
 
-Game.prototype.populatePlayerNamesInGSFromHTML = function() {
-    // DEBUG
-    // console.log("Populating player names");
+// Game.prototype.populatePlayerNamesInGSFromHTML = function() {
+//     // DEBUG
+//     // console.log("Populating player names");
 
-    var usernames = $("#player-usernames");
-    for (var index = 0; index < usernames.children().length; index++) {
-        this.gamestate.players[index].username = $(usernames.children()[index]).text();
-    }
-};
+//     var usernames = $("#player-usernames");
+//     for (var index = 0; index < usernames.children().length; index++) {
+//         this.gamestate.players[index].username = $(usernames.children()[index]).text();
+//     }
+// };
 
 //---------------------------------------------
 // GAME CLIENT INPUT HANDLERS
@@ -340,8 +354,6 @@ Game.prototype.handleClick = function(clicktype, clickpos) {
     var worldPos = this.gs_renderer.project(clickpos);
     data = {
         'clickpos': worldPos,
-        'game_id': this.game_id,
-        'player_id': this.player_id,
         'clicktype': clicktype
     };
     this.socket.emit('click', data);
@@ -354,7 +366,7 @@ Game.getRect = function(c1, c2) {
     };
 };
 
-Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+Game.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     var rect = Game.getRect(dragstart, dragend);
     var drag_p1 = new THREE.Vector3(rect.p1.x, rect.p1.y, 0);
     var drag_p2 = new THREE.Vector3(rect.p2.x, rect.p1.y, 0);
@@ -369,8 +381,6 @@ Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
         'drag_p2': drag_p2,
         'drag_p3': drag_p3,
         'drag_p4': drag_p4,
-        'game_id': this.game_id,
-        'player_id': this.player_id,
         'clicktype': clicktype
     };
     this.socket.emit('drag', data);
@@ -390,8 +400,6 @@ Game.prototype.handleKeyUp = function(keyCode) {
         this.keys.d = false;
     }
     var data = {
-        'game_id': this.game_id,
-        'player_id': this.player_id,
         'keycode': keyCode
     };
     this.socket.emit('key', data);
@@ -435,7 +443,7 @@ Game.prototype.handleClickMessage = function (data) {
     }
 };
 
-Game.prototype.handleDragMessage = function(data) {
+Game.prototype.handleDragEndMessage = function(data) {
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];
@@ -584,6 +592,10 @@ Game.prototype.handleWonGame = function(data) {
 
 Game.prototype.handleDisconnect = function () {
     this.conn_state = Game.GAME_STATES.DISCONNECTED;
+    // Just show the loading container again on a disconnect
+    // No need to hide the other containers unless needed
+    $('#loading-container').show();
+    $('#loading-message').text("You have been disconnected.");
 };
 
 Game.prototype.handleConnectError = function (e) {
@@ -594,8 +606,5 @@ Game.prototype.handleConnectError = function (e) {
 // LOBBY FUNCTIONS
 //---------------------------------------------
 Game.prototype.start_game = function() {
-    data = {
-        'game_id': this.game_id
-    };
-    this.socket.emit('start', data);
+    this.socket.emit('start');
 };

@@ -51,6 +51,7 @@ Game.prototype.init = function(gs_renderer) {
         // Game logic handling
         'join' : 'handleUserJoin',
         'game_data' : 'handleGameData',
+        'leave' : 'handleUserLeave',
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
         'drag' : 'handleDragMessage',
@@ -114,7 +115,17 @@ Game.prototype.handleUserJoin = function (data) {
     // console.log("Player id: ", data.player_id);
     // console.log("Joining user's name: ", data.username);
 
-    this.addPlayerToHTML(data.player_id, data.username);
+    this.addPlayer(data.player_id, data.username);
+};
+
+// Let client know someone has joined
+Game.prototype.handleUserLeave = function (data) {
+    // DEBUG
+    // console.log("Someone joined the game at: ", data.timestamp);
+    // console.log("Player id: ", data.player_id);
+    // console.log("Joining user's name: ", data.username);
+
+    this.rmPlayer(data.player_id);
 };
 
 // Starting a Game
@@ -276,7 +287,7 @@ Game.prototype.handleGameData = function (gameData) {
                 window.gamestate = this.gamestate;
                 this.gs_renderer.initialize(this.gamestate.evaluate(0));
 
-                this.populateHTMLwithPlayers(gameData.player_list);
+                this.populatePlayers(gameData.player_list);
 
                 this.finishInitialization();
             }
@@ -295,7 +306,7 @@ Game.prototype.instantiateGameState = function() {
     this.socket.emit('join');
 };
 
-Game.prototype.populateHTMLwithPlayers = function(player_list) {
+Game.prototype.populatePlayers = function(player_list) {
     player_list.forEach(function(player, pid) {
         var field = document.createElement('li');
         field.id = "player-slot-" + pid;
@@ -305,7 +316,7 @@ Game.prototype.populateHTMLwithPlayers = function(player_list) {
     }.bind(this));
 };
 
-Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
+Game.prototype.addPlayer = function(new_player_id, new_player_username) {
     // DEBUG
     // console.log("Updating player names");
 
@@ -313,6 +324,16 @@ Game.prototype.addPlayerToHTML = function(new_player_id, new_player_username) {
     slot.text(new_player_username);
     this.gamestate.players[new_player_id].username = new_player_username;
 };
+
+Game.prototype.rmPlayer = function(player_id) {
+    // DEBUG
+    // console.log("Updating player names");
+
+    var slot = $("#player-slot-" + player_id.toString(10));
+    slot.text("");
+    this.gamestate.players[player_id].username = "";
+};
+
 
 // Game.prototype.getUsernameByPid = function(player_id) {
 //     return $("#player-slot-" + player_id.toString(10)).text();

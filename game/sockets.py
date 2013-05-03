@@ -3,8 +3,16 @@ from socketio.mixins import RoomsMixin, BroadcastMixin
 from lib.sdjango import namespace
 from game.models import Game
 import time
-from urlparse import urlparse, parse_qs
+from urlparse import parse_qs
 import logging
+
+
+def error(msg):
+    logging.getLogger("socketio").error(msg)
+
+
+def debug(msg):
+    logging.getLogger("debug").debug(msg)
 
 
 @namespace('/game')
@@ -64,7 +72,7 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
             # WHICH HAPPENS TO BE player_id == 0 IN OUR IMPLEMENTATION
             # Perhaps we should fix this one day
             isHost = self.session['isHost'] = (player_id == 0)
-            player_list = [v for k, v in enumerate(players_json)]
+            player_list = [v for v in players_json]
 
             # Send the new player information needed to join the map
             selfData = {
@@ -83,12 +91,20 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
                 'player_id': self.session['player_id']
             }
             self.emit_to_room(str(self.session['game_id']), 'join', data)
-        except:
+        except Exception as e:
             # Find a better way to handle 'unable to join'
-            pass
+            error("Unable to add user to game in DB")
+            error(e)
 
     def on_leave(self):
-        self.leave(str(self.session['game_id']))
+        game_id = self.session['game_id']
+        self.leave(str(game_id))
+        try:
+            Game.rm_user_from_game(game_id, self.session['player_id'])
+        except Exception as e:
+            # You can check out any time you like but you can never leave?
+            error("Unable to remove user from game in DB")
+            error(e)
         self.broadcast_message('leave', {})
 
     def on_key(self, data):
@@ -121,4 +137,5 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def disconnect(self, silent=False):
         super(GameNamespace, self).disconnect(silent)
-        logging.getLogger("socketio").error("Disconnect called!")
+        self.on_leave()
+        debug("Disconnect called!")

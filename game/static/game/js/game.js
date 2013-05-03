@@ -289,6 +289,15 @@ Game.prototype.handleGameData = function (gameData) {
 
                 this.populatePlayers(gameData.player_list);
 
+                // Show different screens depending on whether or not the player is the host
+                if (this.isHost) {
+                    $('#lobby-host-screen').show();
+                    $('#lobby-pleb-screen').hide();
+                } else {
+                    $('#lobby-host-screen').hide();
+                    $('#lobby-pleb-screen').show();
+                }
+
                 this.finishInitialization();
             }
             else {

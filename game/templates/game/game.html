@@ -12,6 +12,8 @@
             $().ready(function() {
                 $('#game-container').hide();
                 $('#lobby-container').hide();
+                $('#lobby-host-screen').hide();
+                $('#lobby-pleb-screen').hide();
                 $('#loading-container').show();
             });
             var game = new Game({{ game_id }});

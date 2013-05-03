@@ -1,0 +1,38 @@
+<div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+        <a href="/" class="brand">The Game Bazaar</a>
+        <ul class="nav">
+            <li id="navbar-home"><a href="{% url index %}#title">Home</a></li>
+            <li id="navbar-play"><a href="{% url index %}#play">Play</a></li>
+            <li id="navbar-edit"><a href="{% url index %}#edit">Edit</a></li>
+        </ul>
+        {% if user.is_authenticated %}
+            <ul class="nav pull-right">
+                <li id="fat-menu" class="dropdown">
+                    <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url user_admin %}">Profile</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url user_history %}">History</a></li>
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="" id="navbar-logout">logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+        {% else %}
+            <form id="navbar-login" class="pull-right" style="margin:0px">
+                {% csrf_token %}
+                <input id="navbar-username" type="text" class="span2" placeholder="username" style="margin-top:10px">
+                <input id="navbar-password" type="password" class="span2" placeholder="password" style="margin-top:10px">
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div id="navbar-alert" class="alert alert-block alert-error fade in">
+      <button type="button" class="close" id="navbar-alert-close">x</button>
+      <div id="navbar-alert-text"></div>
+    </div>
+</div>

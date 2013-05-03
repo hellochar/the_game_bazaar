@@ -42,17 +42,23 @@ $().ready(function(){
     //create a new user
     user = new User();
 
-    //show the title page
-    change_page(templates, 'title');
-
     //mostly just hides all the divs
     initialize();
 
     //adds click functions
     bind_divs();
+
+    //look at the anchor and change page accordingly
+    var hash = window.location.hash.replace('#', '');
+    if (hash !== ''){
+        change_page(templates, hash, false, true);
+    } else {
+        change_page(templates, 'title', false, false);
+    }
+
 });
 
-function change_page(templates, page, force){
+function change_page(templates, page, force, change_hash){
     if (force){
         force = force;
     } else {
@@ -80,6 +86,9 @@ function change_page(templates, page, force){
 
         //update some state
         templates.current_page = page;
+        if(change_hash){
+            window.location.hash = '#'+page;   
+        }
     }
 }
 
@@ -323,7 +332,6 @@ function User(){
 	}
 
 	function logout(callback){
-        console.log('hello world');
         $.ajax({
             type: "POST",
             url: "/auth/logout/",
@@ -415,7 +423,6 @@ function template_register(){
                                 backgroundColor: 'rgb(168, 21, 45)',
                             }, 300)
                         });
-                        console.log(data);
                     }
                 }
             });
@@ -480,7 +487,6 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log(data);
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -520,7 +526,6 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log(data);
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -554,7 +559,6 @@ function template_edit(){
             return getMyMaps();
         });
 
-        console.log('hwat');
         $('#content #all-maps').html(function(){
             return getAllMaps();
         });
@@ -1123,7 +1127,6 @@ function template_pivotal(){
             },
             success: function(data){
                 html = '<table class="table">';
-                console.log(data);
                 $(data).find('activity').each(function(index, element){
                     var description = $(element).find('description').text();
                     if (description.match(/^[^".]+accepted "/) !== null){

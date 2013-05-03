@@ -18,7 +18,7 @@
  *
  *      Finally, each Palette has a renderMethod that gets called regularly by which
  * the Palette can draw custom graphics onto the editor (they also have handleClick
- * and handleDrag).
+ * and handleDragEnd).
  *
  * Summary:
  *
@@ -36,21 +36,21 @@ function Palette(editor) {
 }
 
 /*
- * Convenience method to bind a given event handler function when this palette has selection, and unbind it when it loses selection.
+ * Convenience method to bind a set of event handlers when this palette has selection, and unbind it when it loses selection.
  *
- * PARAMETERS
- *     elements - any selector accepted by jQuery()
- *     eventName - the event to listen for (keypress, mousemove, etc)
- *     handler - the event handler callback function
+ * @param {object} set - an object with event names as keys and corresponding handlers as values 
+ * @param {selector} [editor.ui_renderer.canvas] element - any selector accepted by jQuery(), to listen on
  */
-
-Palette.prototype.bindInputOnSelection = function(elements, eventName, handler) {
+Palette.prototype.whileActive = function(set, element) {
+    var element = element || this.editor.ui_renderer.canvas;
     $(this).bind("selectionGained", function() {
-        console.log(this.constructor.name+" just gained "+eventName+"!");
-        $(elements).on(eventName, handler);
+        for(var eventName in set) {
+            $(element).on(eventName, set[eventName]);
+        }
     });
     $(this).bind("selectionLost", function() {
-        console.log(this.constructor.name+" just lost "+eventName+"!");
-        $(elements).off(eventName, handler);
+        for(var eventName in set) {
+            $(element).off(eventName, set[eventName]);
+        }
     });
 }

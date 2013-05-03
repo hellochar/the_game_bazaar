@@ -2,19 +2,17 @@ function UnitSelectionPalette(editor) {
     Palette.call(this, editor);
 
     //press space to go into UnitPalette
-    (function() {
-        var onKeyUp = function(evt) {
-            if(evt.keyCode === 32) { //space
-                this.editor.setPalette(new UnitPalette(editor));
-            }
-            if(evt.keyCode === 46) { //delete
-                this.selectedUnits.forEach(this.editor.map.removeUnit);
-                this.setSelection([]);
-            }
-        }.bind(this);
-
-        this.bindInputOnSelection(this.editor.ui_renderer.canvas, "keyup", onKeyUp);
-    }.bind(this))();
+    this.whileActive({
+        keyup: function(evt) {
+                   if(evt.keyCode === 32) { //space
+                       this.editor.setPalette(new UnitPalette(editor));
+                   }
+                   if(evt.keyCode === 46) { //delete
+                       this.selectedUnits.forEach(this.editor.map.removeUnit);
+                       this.setSelection([]);
+                   }
+               }.bind(this)
+    });
 
     this.domElement = (function() {
         var container = 
@@ -74,7 +72,7 @@ UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {
         this.setSelection(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, clickpos));
     }
 };
-UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+UnitSelectionPalette.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     // if(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, dragstart)
     if(clicktype == 1) {
         var rect = Game.getRect(dragstart, dragend);

@@ -8,7 +8,20 @@ var user;
  * 'logo' and 'title' is special 
  * logo is placed next to navigation when not on title
  *
- * TODO: create an object for this
+ * TEMPLATE SYSTEM
+ * --So you want to add a page--
+ * create a template by following the template examples
+ *      necessary lines are:
+            var pg = new page();
+            pg.binding = template_binding;
+            pg.dom_html = '<html>blah blah</html>'
+            return pg;
+        template_bindings is a function to be run after the page changes
+        that way you can do whatever javascriptiness after the dom has changed
+ * Note: prefix your function names by template, for sanity
+ * add your template to templates object, keyed by the page name
+        don't overlap names
+    when you want to change a page, just call change_page('name_of_key')
  */
 var templates = new Object();
 templates.current_page = '';
@@ -29,23 +42,23 @@ $().ready(function(){
     //create a new user
     user = new User();
 
-    //show the title page
-    change_page(templates, 'title');
-
     //mostly just hides all the divs
     initialize();
 
     //adds click functions
     bind_divs();
 
+    //look at the anchor and change page accordingly
+    var hash = window.location.hash.replace('#', '');
+    if (hash !== ''){
+        change_page(templates, hash, false, true);
+    } else {
+        change_page(templates, 'title', false, false);
+    }
 });
 
-function change_page(templates, page, force){
-    if (force){
-        force = force;
-    } else {
-        force = false;
-    }
+function change_page(templates, page, force, change_hash){
+    force = force || false;
 
     if (templates.current_page !== page || force){
 
@@ -68,6 +81,9 @@ function change_page(templates, page, force){
 
         //update some state
         templates.current_page = page;
+        if(change_hash){
+            window.location.hash = '#'+page;   
+        }
     }
 }
 
@@ -92,28 +108,28 @@ function bind_divs(){
     });
 
     $('#not-signed #register').click(function(){
-        change_page(templates, 'register');
+        change_page(templates, 'register', false, true);
     });
 
     //NAVIGATION BINDINGS
     $('.navigation #nav-home').click(function(){
-        change_page(templates, 'title');
+        change_page(templates, 'title', false, true);
     });
 
     $('.navigation #nav-stuff').click(function(){
-        change_page(templates, 'stuff');
+        change_page(templates, 'stuff', false, true);
     });
 
     $('.navigation #nav-pivotal').click(function(){
-        change_page(templates, 'pivotal');
+        change_page(templates, 'pivotal', false, true);
     });
 
     $('.navigation #nav-play').click(function(){
-        change_page(templates, 'play');
+        change_page(templates, 'play', false, true);
     })
 
     $('.navigation #nav-edit').click(function(){
-        change_page(templates, 'edit');
+        change_page(templates, 'edit', false, true);
     })
 
     //submits the sign in form
@@ -148,22 +164,22 @@ function bind_divs(){
 
     //DROPDOWN MENU BINDINGS
     $('#signed #user-dropdown #dropdown-profile').click(function(){
-        change_page(templates, 'profile');
+        change_page(templates, 'profile', false, true);
     })
 
     $('#signed #user-dropdown #dropdown-history').click(function(){
-        change_page(templates, 'history');
+        change_page(templates, 'history', false, true);
     })
 
     $('#signed #user-dropdown #dropdown-clan').click(function(){
-        change_page(templates, 'clan');
+        change_page(templates, 'clan', false, true);
     })
 
     //bind the logout button
     $('#navbar-logout').click(function(){
         user.logout(function(){
             render_logged_in(true);
-            change_page(templates, 'title');
+            change_page(templates, 'title', false, true);
         });
     })
 }
@@ -301,6 +317,7 @@ function User(){
                     this.username = data['username'];
                     this.gravatar_img = data['gravatar'];
                     this.clan = data['clan'];
+                    this.email = data['email'];
                     //show that you're logged in
                 } else {
                     //show an error
@@ -311,7 +328,6 @@ function User(){
 	}
 
 	function logout(callback){
-        console.log('hello world');
         $.ajax({
             type: "POST",
             url: "/auth/logout/",
@@ -324,6 +340,7 @@ function User(){
                 this.username = '';
                 this.gravatar_url = '';
                 this.clan = '';
+                this.email = '';
                 callback();
             }.bind(this),
         })
@@ -393,6 +410,7 @@ function template_register(){
                 },
                 success: function (data){
                     if (data.success === true) {
+                        window.location.hash = '';
                         window.location.pathname = data.redirect_url;
                     } else {
                         $('#content #error').html(data.error);
@@ -403,7 +421,6 @@ function template_register(){
                                 backgroundColor: 'rgb(168, 21, 45)',
                             }, 300)
                         });
-                        console.log(data);
                     }
                 }
             });
@@ -460,16 +477,14 @@ function template_stuff(){
 
 function template_edit(){
     function getMyMaps(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log(data);
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -493,24 +508,22 @@ function template_edit(){
                             </tr>';                 
                     }
                 }
-
                 html += '</tbody></tabl>';
+
+                $('#content #my-maps').html(html);
             }
         });
-        return html;
     }
 
     function getAllMaps(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
-                console.log(data);
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -534,9 +547,9 @@ function template_edit(){
                 }
 
                 html += '</tbody></tabl>';
+                $('#content #all-maps').html(html);
             }
         });
-        return html;
     };
 
     function template_binding(){
@@ -544,7 +557,6 @@ function template_edit(){
             return getMyMaps();
         });
 
-        console.log('hwat');
         $('#content #all-maps').html(function(){
             return getAllMaps();
         });
@@ -573,15 +585,14 @@ function template_edit(){
 function template_play(){
 
     function getLobbyTable(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/lobby/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += "<table class='table table-striped'>";
                 html += "<thead><tr>";
                 html += "<th>Game ID</th>";
@@ -603,21 +614,20 @@ function template_play(){
                 }
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-lobby .play-table').html(html);
             }
         });
-        return html;
     };
 
     function getHostTable(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += "<table class='table table-striped'>\
                             <thead><tr>\
                                     <th>Map ID</th>\
@@ -644,9 +654,9 @@ function template_play(){
 
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-host .play-table').html(html);
             }
         });
-        return html;
     }
 
     function template_binding(){
@@ -678,6 +688,16 @@ function template_play(){
 
         });
 
+        $('#content #refresh-play-button').click(function(){
+            getLobbyTable();
+        })
+        $('#content #refresh-play-button').css({
+            "margin-left":"5px",
+        });
+
+        getLobbyTable();
+        getHostTable();
+
         $('#content #play-lobby').show();
         $('#content #play-host').hide();
     }
@@ -688,10 +708,11 @@ function template_play(){
         <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>\
         <div id="play-lobby">\
             <h4>Play a Game!</h4>\
+            <button id="refresh-play-button" class="btn btn-warning">Refresh</button>\
             <button id="play-host-button" class="btn btn-primary">Host a Game</button>\
             <br />\
             <br />\
-            <div class="play-table">'+getLobbyTable()+'</div>\
+            <div class="play-table"></div>\
         </div>\
         \
         <div id="play-host">\
@@ -699,9 +720,10 @@ function template_play(){
             <button id="play-lobby-button" class="btn btn-primary">Play a Game</button>\
             <br />\
             <br />\
-            <div class="play-table">'+getHostTable()+'</div>\
+            <div class="play-table"></div>\
         </div>\
         ';
+
     return pg;
 }
 
@@ -755,7 +777,7 @@ function template_profile(){
                 },
                 success: function(data){
                     if (data.success == true){
-                        $('#curr_email').html($('#newEmail').val());
+                        $('#curr-email').html($('#newEmail').val());
                         $('#content #email-error').html("Your email has been changed");
                         user.email = $('#newEmail').val();
                         $('#content #gravatar').html(function(){
@@ -938,19 +960,16 @@ function template_clan(){
             type: "POST",
             async: false,
             url: "/clan/create/",
-            data: {
-                "name": name,
-            },
-            headers: {
-                "X-CSRFToken": $.cookie('csrftoken')
-            },
+            data: { "name": name },
+            headers: { "X-CSRFToken": $.cookie('csrftoken') },
             success: function (data){
                 if(data['success'] === true){
                     user.clan = name;
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
+                    $('#content #not-a-member #error').show();
                 }
             }
         });
@@ -970,10 +989,12 @@ function template_clan(){
             success: function(data){
                 if(data['success'] == true){
                     user.clan = name;
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
+                    $('#content #not-a-member #error').show();
+
                 }
             }
         });
@@ -990,13 +1011,37 @@ function template_clan(){
             success: function(data){
                 if(data['success'] === true){
                     user.clan = null
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #already-member #error').html("A server error occurred");
+                    $('#content #already-member #error').show();
                 }
             }
         })
+    }
+
+    function get_members_clan(){
+        $.ajax({
+            type: "GET",
+            url: "/clan/members/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] === true){
+                    var member_list = '<ul>';
+                    $.each(data['data'], function (index, value) {
+                        member_list += '<li>'+value+'</li>';
+                    });
+                    member_list += '</ul>';
+                    $('#content #clan-member-list').html(member_list);
+                    $('#content #clan-owner').html('<ul><li>'+data['owner']+'</li></ul>');
+                } else {
+                    $('#content #already-member #error').html(data['error']);
+                }
+            }
+        });
     }
 
     function template_binding(){
@@ -1008,6 +1053,7 @@ function template_clan(){
             $('#content #already-member button').click(function(){
                 leave_clan();
             });
+            get_members_clan();
         } else {
             //user is NOT a member of a clan
             $('#content #already-member').hide();
@@ -1015,28 +1061,45 @@ function template_clan(){
                 e.preventDefault();
                 create_clan($('#content #create-clan #name').val());
             });
+
             $('#content #join-clan').submit(function(e){
                 e.preventDefault();
                 join_clan($('#content #join-clan #name').val());
-            })
+            });
+
+            /************************************
+             * Make Error Message show up with:
+             *      -a red border
+             *      -red text
+             *      -centered text
+             ************************************/
+            $('#content #not-a-member #error').hide();
+
+            $('#content #already-member #error').hide();
+
+            $('#content .error').css({
+                'border': '1px solid',
+                'color':'rgb(255, 0, 0)',
+                'text-align': 'center',
+            });
         }
-
-
     }
 
     var pg = new page();
     pg.binding = template_binding;
     pg.dom_html = '\
         <div id="already-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
-            <h4>Other members:</h4>\
-            <div id="clan-member-list"></div>\
+            <h4>Clan Owner:</h4>\
+            <div id="clan-owner">getting owner...</div>\
+            <h4>Members:</h4>\
+            <div id="clan-member-list">getting list...</div>\
         </div>\
         \
         <div id="not-a-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <form id="join-clan">\
                 <h4>Join a Clan</h4>\
                 Clan: <input id="name" type="text"></input>\
@@ -1065,7 +1128,6 @@ function template_pivotal(){
             },
             success: function(data){
                 html = '<table class="table">';
-                console.log(data);
                 $(data).find('activity').each(function(index, element){
                     var description = $(element).find('description').text();
                     if (description.match(/^[^".]+accepted "/) !== null){

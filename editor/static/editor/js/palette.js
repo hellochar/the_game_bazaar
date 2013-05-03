@@ -38,9 +38,8 @@ function Palette(editor) {
 /*
  * Convenience method to bind a set of event handlers when this palette has selection, and unbind it when it loses selection.
  *
- * PARAMETERS
- *     set - an object with event names as keys and corresponding handlers as values 
- *     element - any selector accepted by jQuery()
+ * @param {object} set - an object with event names as keys and corresponding handlers as values 
+ * @param {selector} [editor.ui_renderer.canvas] element - any selector accepted by jQuery(), to listen on
  */
 Palette.prototype.whileActive = function(set, element) {
     var element = element || this.editor.ui_renderer.canvas;

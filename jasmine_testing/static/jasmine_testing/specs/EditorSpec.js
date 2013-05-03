@@ -163,7 +163,33 @@ describe("Map Editor", function() {
         var palette;
         beforeEach(function() {
             palette = new UnitPalette(editor);
+            editor.setPalette(palette);
         });
+
+        describe("input events", function() {
+            it("should switch to unit selection when pressing space", function() {
+                $(editor.ui_renderer.canvas).trigger('keyup', {
+                    keyCode: 32 // 32 == space keycode
+                });
+                expect(editor.palette).toEqual(jasmine.any(UnitSelectionPalette));
+            });
+            it("should tryAddUnit on a leftclick", function() {
+                spyOn(palette, 'tryAddUnit');
+                palette.handleClick(1, new THREE.Vector3());
+                expect(palette.tryAddUnit).toHaveBeenCalled();
+            });
+        });
+
+
+        describe("tryAddUnit", function() {
+            it("should get properties from the input elements", function() {
+            });
+            it("should addUnit if there are no unitsTouchingSphere", function() {
+            });
+            it("shouldn't addUnit if there are unitsTouchingSphere", function() {
+            });
+        });
+
         describe("currentPlayer", function() {
                 it("retrieves the checked input's val", function() {
                         expect(palette.currentPlayer()).toEqual(editor.map.players[0]);

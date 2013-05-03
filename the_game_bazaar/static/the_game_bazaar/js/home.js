@@ -113,28 +113,28 @@ function bind_divs(){
     });
 
     $('#not-signed #register').click(function(){
-        change_page(templates, 'register');
+        change_page(templates, 'register', false, true);
     });
 
     //NAVIGATION BINDINGS
     $('.navigation #nav-home').click(function(){
-        change_page(templates, 'title');
+        change_page(templates, 'title', false, true);
     });
 
     $('.navigation #nav-stuff').click(function(){
-        change_page(templates, 'stuff');
+        change_page(templates, 'stuff', false, true);
     });
 
     $('.navigation #nav-pivotal').click(function(){
-        change_page(templates, 'pivotal');
+        change_page(templates, 'pivotal', false, true);
     });
 
     $('.navigation #nav-play').click(function(){
-        change_page(templates, 'play');
+        change_page(templates, 'play', false, true);
     })
 
     $('.navigation #nav-edit').click(function(){
-        change_page(templates, 'edit');
+        change_page(templates, 'edit', false, true);
     })
 
     //submits the sign in form
@@ -169,22 +169,22 @@ function bind_divs(){
 
     //DROPDOWN MENU BINDINGS
     $('#signed #user-dropdown #dropdown-profile').click(function(){
-        change_page(templates, 'profile');
+        change_page(templates, 'profile', false, true);
     })
 
     $('#signed #user-dropdown #dropdown-history').click(function(){
-        change_page(templates, 'history');
+        change_page(templates, 'history', false, true);
     })
 
     $('#signed #user-dropdown #dropdown-clan').click(function(){
-        change_page(templates, 'clan');
+        change_page(templates, 'clan', false, true);
     })
 
     //bind the logout button
     $('#navbar-logout').click(function(){
         user.logout(function(){
             render_logged_in(true);
-            change_page(templates, 'title');
+            change_page(templates, 'title', false, true);
         });
     })
 }
@@ -959,7 +959,7 @@ function template_clan(){
             success: function (data){
                 if(data['success'] === true){
                     user.clan = name;
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
@@ -983,7 +983,7 @@ function template_clan(){
             success: function(data){
                 if(data['success'] == true){
                     user.clan = name;
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
@@ -1005,7 +1005,7 @@ function template_clan(){
             success: function(data){
                 if(data['success'] === true){
                     user.clan = null
-                    change_page(templates, 'clan', true);
+                    change_page(templates, 'clan', true, true);
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #already-member #error').html("A server error occurred");

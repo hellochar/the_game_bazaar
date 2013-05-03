@@ -693,6 +693,9 @@ function template_play(){
         $('#content #refresh-play-button').click(function(){
             getLobbyTable();
         })
+        $('#content #refresh-play-button').css({
+            "margin-left":"5px",
+        });
 
         getLobbyTable();
         getHostTable();
@@ -707,7 +710,7 @@ function template_play(){
         <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>\
         <div id="play-lobby">\
             <h4>Play a Game!</h4>\
-            <button id="refresh-play-button" class="btn btn-primary">Refresh</button>\
+            <button id="refresh-play-button" class="btn btn-warning">Refresh</button>\
             <button id="play-host-button" class="btn btn-primary">Host a Game</button>\
             <br />\
             <br />\

@@ -54,7 +54,7 @@ Game.prototype.init = function(gs_renderer) {
         'leave' : 'handleUserLeave',
         'start' : 'handleGameStart',
         'click' : 'handleClickMessage',
-        'drag' : 'handleDragMessage',
+        'drag' : 'handleDragEndMessage',
         'deadUnits' : 'handleDeadUnits',
         'lostGame' : 'handleLostGame',
         'wonGame' : 'handleWonGame',
@@ -69,6 +69,9 @@ Game.prototype.init = function(gs_renderer) {
     // DEBUG
     // console.log("Init canvas");
 
+    // The default viewport scrolling speed is 20
+    this.scrollSpeed = 20;
+
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
     // This array is used for storing all units that are dead, and we've sent a message
@@ -77,6 +80,8 @@ Game.prototype.init = function(gs_renderer) {
     // This is necessary because if the renderer sends a duplicate unitDead message, bad
     // stuff can happen.
     this.waitingForDeadUnits = [];
+
+
 };
 
 //This method gets called as soon
@@ -133,7 +138,7 @@ Game.prototype.handleGameStart = function (data) {
 
     // set up user input hooks
     this.ui_renderer.bindClick(this.handleClick.bind(this));
-    this.ui_renderer.bindDrag(this.handleDrag.bind(this));
+    this.ui_renderer.bindDragEnd(this.handleDragEnd.bind(this));
     this.ui_renderer.bindKeyUp(this.handleKeyUp.bind(this));
     this.ui_renderer.bindKeyDown(this.handleKeyDown.bind(this));
 
@@ -199,6 +204,8 @@ Game.prototype.renderMethod = function() {
     this.gs_renderer.animate();
 
     this.ui_renderer.renderSelectRect();
+
+    // Obtain the in-game coordinates of the edges of the window.
     var d1 = new THREE.Vector3(0, 0, 0);
     var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
     var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
@@ -208,26 +215,25 @@ Game.prototype.renderMethod = function() {
     d3 = this.gs_renderer.project(d3);
     d4 = this.gs_renderer.project(d4);
 
-    this.ui_renderer.renderMap();
-    this.ui_renderer.renderViewPort(d1, d2, d3, d4);
-    this.ui_renderer.renderGS(snapshot, this.player_id);
-    this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
+    this.ui_renderer.renderMap(snapshot, this.player_id);
+    var map_size = this.gamestate.terrain;
+    this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);
 
     var delta = new THREE.Vector3(0, 0, 0);
     if (this.keys.w) {
-        delta.y += 40;
+        delta.y += this.scrollSpeed;
     }
     if (this.keys.a) {
-        delta.x -= 40;
+        delta.x -= this.scrollSpeed;
     }
     if (this.keys.s) {
-        delta.y -= 40;
+        delta.y -= this.scrollSpeed;
     }
     if (this.keys.d) {
-        delta.x += 40;
+        delta.x += this.scrollSpeed;
     }
-    var pos = this.gs_renderer.getViewport();
-    this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
+    var pos = this.gs_renderer.getTarget();
+    this.gs_renderer.setTarget(pos.x + delta.x, pos.y + delta.y);
 };
 
 //---------------------------------------------
@@ -365,7 +371,7 @@ Game.getRect = function(c1, c2) {
     };
 };
 
-Game.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+Game.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     var rect = Game.getRect(dragstart, dragend);
     var drag_p1 = new THREE.Vector3(rect.p1.x, rect.p1.y, 0);
     var drag_p2 = new THREE.Vector3(rect.p2.x, rect.p1.y, 0);
@@ -442,7 +448,7 @@ Game.prototype.handleClickMessage = function (data) {
     }
 };
 
-Game.prototype.handleDragMessage = function(data) {
+Game.prototype.handleDragEndMessage = function(data) {
     // Get our variables.
     var timestamp = data['timestamp'];
     var player_id = data['player_id'];

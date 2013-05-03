@@ -1,12 +1,13 @@
+ObstaclePalette.instructions = $(
+    "<div>" +
+    "Left-click-drag to create a wall." +
+    "</div>"
+    );
+
+
 function ObstaclePalette(editor) {
     Palette.call(this, editor);
-    this.domElement = (function() {
-        var container = $('<div/>');
-
-        container.append('Drag to create obstacles.');
-
-        return container;
-    })();
+    this.domElement = $('<div/>');
 
     // Obstacles being drawn an endpoint at least this close (in canvas units)
     // to another node will make the endpoint snap to that node
@@ -20,7 +21,7 @@ ObstaclePalette.prototype.constructor = ObstaclePalette;
 
 ObstaclePalette.prototype.canSnapTo = function(pos, node) {
     return node.pos.distanceTo(pos) < this.SNAPPING_THRESHOLD;
-}
+};
 
 ObstaclePalette.prototype.getSnappableNode = function(pos, toIgnore) {
     var closest = this.editor.map.obstacles.findClosestNode(pos, toIgnore);

@@ -1,5 +1,6 @@
 describe("Game", function() {
     var game;
+    var test_gameid = 9999;
     beforeEach(function() {
         loadFixtures('game.html', 'game-canvas.html');
         window.requestAnimationFrame = function() {}; //We mock out this because it breaks in phantomjs
@@ -7,7 +8,7 @@ describe("Game", function() {
 
         var gs_renderer = jasmine.createSpyObj('GSRenderer', ['initialize', 'update', 'animate', 'project']);
 
-        game = new Game();
+        game = new Game(test_gameid);
         spyOn(io, 'connect').andReturn(jasmine.createSpyObj('socket', ['on', 'emit', 'disconnect']));
         // spyOn(io, 'connect').andCallThrough();
         game.init(gs_renderer);
@@ -19,12 +20,28 @@ describe("Game", function() {
             expect(game.conn_state).toEqual(Game.GAME_STATES.INIT);
         });
         it("should create a socket.io connection", function() {
-            expect(io.connect).toHaveBeenCalledWith('/game', {
-                reconnect: false
+            expect(io.connect).toHaveBeenCalledWith('/game?id='+test_gameid, {
+                reconnect: false,
+                'sync disconnect on unload': true
             });
         });
         it("should bind listeners to the socket object", function() {
-            ['connecting', 'connect', 'disconnect', 'error', 'join', 'start', 'click', 'drag'].forEach(function (event_name) {
+            [
+            'connecting',
+            'connect',
+            'disconnect',
+            'error',
+            'join',
+            'game_data',
+            'leave',
+            'start',
+            'click',
+            'drag',
+            'deadUnits',
+            'lostGame',
+            'wonGame',
+            'key'
+            ].forEach(function (event_name) {
                 expect(game.socket.on).toHaveBeenCalledWith(event_name, jasmine.any(Function));
             });
         });
@@ -41,12 +58,12 @@ describe("Game", function() {
 
     describe("handleConnected", function() {
 
-        it("should grab my player/map/game id from the html", function() {
-            game.handleConnected();
-            expect(game.player_id).toEqual(120);
-            expect(game.game_id).toEqual(9999);
-            expect(game.map_id).toEqual(40123);
-        });
+        // it("should grab my player/map/game id from the html", function() {
+        //     game.handleConnected();
+        //     expect(game.player_id).toEqual(120);
+        //     expect(game.game_id).toEqual(9999);
+        //     expect(game.map_id).toEqual(40123);
+        // });
 
         it("should make the conn_state CONNECTED", function() {
             game.handleConnected();
@@ -63,7 +80,7 @@ describe("Game", function() {
             game.handleConnected();
 
             $(window).trigger("unload");
-            expect(game.socket.emit).toHaveBeenCalledWith('leave', {'game_id' : game.game_id} );
+            expect(game.socket.emit).toHaveBeenCalledWith('leave');
             expect(game.socket.disconnect).toHaveBeenCalled();
         });
     });
@@ -71,9 +88,18 @@ describe("Game", function() {
 
     describe("handleUserJoin", function() {
         it("should update the HTML to reflect the added player", function() {
-            spyOn(game, 'addPlayerToHTML');
+            spyOn(game, 'addPlayer');
             game.handleUserJoin({player_id: 12, username: 'testuser'});
-            expect(game.addPlayerToHTML).toHaveBeenCalledWith(12, 'testuser');
+            expect(game.addPlayer).toHaveBeenCalledWith(12, 'testuser');
+        });
+    });
+
+
+    describe("handleUserLeave", function() {
+        it("should update the HTML to reflect the removed player", function() {
+            spyOn(game, 'rmPlayer');
+            game.handleUserLeave({player_id: 12});
+            expect(game.rmPlayer).toHaveBeenCalledWith(12);
         });
     });
 
@@ -107,17 +133,102 @@ describe("Game", function() {
         });
     });
 
+    describe("handleGameData", function() {
+        it("should make a GET request to /map/<mapid>", function() {
+            spyOn($, 'ajax');
+            game.handleGameData({
+                isHost: true,
+                map_id: 120,
+                player_id: 0,
+                player_list: ['user1', 'user2']
+            });
 
-    describe("finishInitialization", function() {
-        beforeEach(function() {
-            game.game_id = 9999;
-            game.player_id = 120;
-            spyOn(game, 'getUsernameByPid').andReturn('user1');
+            var request = $.ajax.mostRecentCall.args[0];
+            expect(request.url).toBe('/map/120');
+            expect(request.type).toBe('GET');
         });
 
-        it("should send a join message", function() {
+        it("should hide the guest screen from hosts", function() {
+            spyOn(game.ui_renderer, 'startRendering');
+            game.handleGameData({
+                isHost: true,
+                map_id: 120,
+                player_id: 0,
+                player_list: ['user1', 'user2']
+            });
+            expect($('#lobby-host-screen')).not.toBeHidden();
+            expect($('#lobby-guest-screen')).toBeHidden();
+        });
+        it("should hide the host screen from guests", function() {
+            spyOn(game.ui_renderer, 'startRendering');
+            game.handleGameData({
+                isHost: false,
+                map_id: 120,
+                player_id: 1,
+                player_list: ['user1', 'user2']
+            });
+            expect($('#lobby-guest-screen')).not.toBeHidden();
+            expect($('#lobby-host-screen')).toBeHidden();
+        });
+        describe("on success", function() {
+            var fakeData = {
+                success: true,
+                map_data: JSON.stringify(Editor.createDefaultMap().toJSON())
+            };
+            beforeEach(function() {
+                spyOn($, 'ajax').andCallFake(function (params) {
+                    params.success(fakeData);
+                });
+                spyOn(game, 'populatePlayers');
+                spyOn(game, 'finishInitialization');
+            });
+
+            it("should update the gamestate with returned data", function() {
+                game.handleGameData({
+                    isHost: true,
+                    map_id: 120,
+                    player_id: 0,
+                    player_list: ['user1', 'user2']
+                });
+
+                //Test for whether the game's gamestate was updated by making sure its toJSON method is equivalent to the one we sent in as the map data
+                expect(JSON.stringify(game.gamestate.toJSON())).toEqual(fakeData.map_data);
+            });
+            it("should set the gamestate players' username fields", function() {
+                game.handleGameData({
+                    isHost: true,
+                    map_id: 120,
+                    player_id: 0,
+                    player_list: ['user1', 'user2']
+                });
+
+                expect(game.populatePlayers).toHaveBeenCalledWith(['user1', 'user2']);
+            });
+            it("should finish initialization", function() {
+                game.handleGameData({
+                    isHost: true,
+                    map_id: 120,
+                    player_id: 0,
+                    player_list: ['user1', 'user2']
+                });
+
+                expect(game.finishInitialization).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe("finishInitialization", function() {
+        // beforeEach(function() {
+        //     game.game_id = 9999;
+        //     game.player_id = 120;
+        //     spyOn(game, 'getUsernameByPid').andReturn('user1');
+        // });
+
+        it("should hide the loading screen and show the lobby", function() {
+            spyOn(game.ui_renderer, 'startRendering');
             game.finishInitialization();
-            expect(game.socket.emit).toHaveBeenCalledWith('join', {'game_id' : 9999,'player_id' : 120, 'username': 'user1'});
+            expect($('#lobby-container')).not.toBeHidden();
+            expect($('#loading-container')).toBeHidden();
         });
 
         it("should start the game when the #start-game button is clicked", function() {
@@ -130,62 +241,36 @@ describe("Game", function() {
 
 
     describe("instantiateGameState", function() {
-        beforeEach(function() {
-            game.map_id = 120;
-        });
-        it("should make a GET request to /map/<mapid>", function() {
-            spyOn($, 'ajax');
+        it("should send a join message", function() {
             game.instantiateGameState();
-
-            var request = $.ajax.mostRecentCall.args[0];
-            expect(request.url).toBe('/map/120');
-            expect(request.type).toBe('GET');
+            expect(game.socket.emit).toHaveBeenCalledWith('join');
         });
-
-        describe("on success", function() {
-            var fakeData = {
-                success: true,
-                map_data: JSON.stringify(Editor.createDefaultMap().toJSON())
-            };
-            beforeEach(function() {
-                spyOn($, 'ajax').andCallFake(function (params) {
-                    params.success(fakeData);
-                });
-                spyOn(game, 'populatePlayerNamesInGSFromHTML');
-                spyOn(game, 'finishInitialization');
-            });
-
-            it("should update the gamestate with returned data", function() {
-                game.instantiateGameState();
-
-                //Test for whether the game's gamestate was updated by making sure its toJSON method is equivalent to the one we sent in as the map data
-                expect(JSON.stringify(game.gamestate.toJSON())).toEqual(fakeData.map_data);
-            });
-            it("should set the gamestate players' username fields", function() {
-                game.instantiateGameState();
-
-                expect(game.populatePlayerNamesInGSFromHTML).toHaveBeenCalled();
-            });
-            it("should finish initialization", function() {
-                game.instantiateGameState();
-
-                expect(game.finishInitialization).toHaveBeenCalled();
-            });
-        });
-
     });
 
 
-    describe("addPlayerToHTML", function() {
+    describe("addPlayer", function() {
         beforeEach(function() {
             game.gamestate = Editor.createDefaultMap();
-            game.addPlayerToHTML(0, 'new-username');
+            game.addPlayer(0, 'new-username');
         });
         it("should update the slot with the corresponding pid", function() {
             expect($('#player-slot-0')).toHaveText('new-username');
         });
         it("should update the correct player in the gamestate's slot", function() {
             expect(game.gamestate.players[0].username).toEqual('new-username');
+        });
+    });
+
+    describe("rmPlayer", function() {
+        beforeEach(function() {
+            game.gamestate = Editor.createDefaultMap();
+            game.rmPlayer(0);
+        });
+        it("should update the slot with the corresponding pid", function() {
+            expect($('#player-slot-0')).toHaveText('');
+        });
+        it("should update the correct player in the gamestate's slot", function() {
+            expect(game.gamestate.players[0].username).toEqual('');
         });
     });
 
@@ -198,10 +283,10 @@ describe("Game", function() {
     });
 
 
-    describe("populatePlayerNamesInGSFromHTML", function() {
-        it("should update the gamestate players' username fields from the html divs", function() {
+    describe("populatePlayers", function() {
+        it("should update the gamestate players' username fields from array", function() {
             game.gamestate = Editor.createDefaultMap();
-            game.populatePlayerNamesInGSFromHTML();
+            game.populatePlayers(['user1', 'user2']);
             expect(game.gamestate.players[0].username).toEqual('user1');
             expect(game.gamestate.players[1].username).toEqual('user2');
         });
@@ -210,31 +295,27 @@ describe("Game", function() {
 
     describe("handleClick", function() {
         beforeEach(function() {
-            game.player_id = 120;
-            game.game_id = 9999;
             game.handleClick(1, new THREE.Vector3(10, 100));
         });
         it("should emit a 'click' event", function() {
             expect(game.socket.emit).toHaveBeenCalledWith('click', jasmine.any(Object));
         });
-        it("should send the game_id and player_id", function() {
-            expect(game.socket.emit.mostRecentCall.args[1]).toInclude({game_id: 9999, player_id: 120});
-        });
+        // it("should send the game_id and player_id", function() {
+        //     expect(game.socket.emit.mostRecentCall.args[1]).toInclude({game_id: 9999, player_id: 120});
+        // });
     });
 
 
     describe("handleDrag", function() {
         beforeEach(function() {
-            game.player_id = 120;
-            game.game_id = 9999;
             game.handleDrag(1, new THREE.Vector3(10, 100), new THREE.Vector3(15, 120));
         });
         it("should emit a 'drag' event", function() {
             expect(game.socket.emit).toHaveBeenCalledWith('drag', jasmine.any(Object));
         });
-        it("should send the game_id and player_id", function() {
-            expect(game.socket.emit.mostRecentCall.args[1]).toInclude({game_id: 9999, player_id: 120});
-        });
+        // it("should send the game_id and player_id", function() {
+        //     expect(game.socket.emit.mostRecentCall.args[1]).toInclude({game_id: 9999, player_id: 120});
+        // });
     });
 
 
@@ -350,10 +431,9 @@ describe("Game", function() {
     });
 
     describe("start_game", function() {
-        it("should emit a start message with the specified game_id", function() {
-            game.game_id = 9999;
+        it("should emit a start message", function() {
             game.start_game();
-            expect(game.socket.emit).toHaveBeenCalledWith('start', {'game_id': 9999});
+            expect(game.socket.emit).toHaveBeenCalledWith('start');
         });
     });
 });

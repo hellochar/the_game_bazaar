@@ -415,6 +415,7 @@ function template_register(){
                 },
                 success: function (data){
                     if (data.success === true) {
+                        window.location.hash = '';
                         window.location.pathname = data.redirect_url;
                     } else {
                         $('#content #error').html(data.error);

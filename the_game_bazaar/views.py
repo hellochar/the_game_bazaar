@@ -16,6 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import hashlib
 import urllib
 import urllib2
+from django.core.validators import email_re
 
 # helper functions
 def getClan(user):
@@ -248,17 +249,23 @@ def ajax_change(request):
         user = authenticate(username=request.user.username, password=request.POST['old_pass'])
         if(user is not None and user.is_active):
             #old pass matches, change pass to new one
-            user.set_password(request.POST['new_pass'])
-            user.save()
-            resp['success'] = True
+            if len(request.POST['new_pass']) < 8:
+                resp['error'] = 'Passwords must be at least 8 characters'
+            else:
+                user.set_password(request.POST['new_pass'])
+                user.save()
+                resp['success'] = True
         else:
             #old pass didn't match, pass back an error
             resp['error'] = 'The password is incorrect. Did you forget it?'
     elif('email' in request.POST):
         #got a change for email
-        request.user.email = request.POST['email']
-        request.user.save()
-        resp['success'] = True
+        if not email_re.match(request.POST['email']):
+            resp['error'] = 'Please enter a valid email'
+        else:
+            request.user.email = request.POST['email']
+            request.user.save()
+            resp['success'] = True
     else:
         resp['error'] = 'Please fill out all the fields. They are all necessary'
 
@@ -295,6 +302,23 @@ def ajax_register(request):
         "success": False
     }
 
+    # Check the email
+    if not email_re.match(email):
+        resp['error'] = 'Please enter a valid email'
+        return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+    # Check username length
+    if len(username) < 4:
+        resp['error'] = 'A username must be more than 3 characters'
+        return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+    # Check password length
+    if len(password) < 8:
+        resp['error'] = 'A password must be 8 or more characters'
+        return HttpResponse(json.dumps(resp), mimetype="application/json")
+
+
+    # try/except catches bad usernames and passwords
     try:
         User.objects.create_user(username, email, password)
         user = authenticate(username=username, password=password)

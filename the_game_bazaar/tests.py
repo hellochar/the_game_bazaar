@@ -177,6 +177,8 @@ class unauthorizedRedirectTest(TestCase):
         self.assertEqual(len(s_resp.redirect_chain), 1)
 
 class clanTest(TestCase):
+
+
     def test_create_non_existent_clan(self):
         User.objects.create_user('aaa', 'aaa', 'aaa')
         c = self.client
@@ -265,3 +267,27 @@ class clanTest(TestCase):
 
         self.assertEqual(user.groups.all().count(), 0)
 
+    def test_members_not_in_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.get(reverse('members_clan'))
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], False)
+        self.assertEqual(resp_object['error'], "You are not part of a clan")
+
+    def test_members_in_clan(self):
+        User.objects.create_user('aaa', 'aaa', 'aaa')
+        c = self.client
+        login(c, 'aaa', 'aaa')
+
+        s_resp = c.post(reverse('create_clan'), {'name': 'hello'})
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+
+        s_resp = c.get(reverse('members_clan'))
+        resp_object = json.loads(s_resp.content)
+        self.assertEqual(resp_object['success'], True)
+        self.assertEqual(resp_object['owner'], 'aaa')
+        self.assertEqual(resp_object['data'], ['aaa'])

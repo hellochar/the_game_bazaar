@@ -8,7 +8,20 @@ var user;
  * 'logo' and 'title' is special 
  * logo is placed next to navigation when not on title
  *
- * TODO: create an object for this
+ * TEMPLATE SYSTEM
+ * --So you want to add a page--
+ * create a template by following the template examples
+ *      necessary lines are:
+            var pg = new page();
+            pg.binding = template_binding;
+            pg.dom_html = '<html>blah blah</html>'
+            return pg;
+        template_bindings is a function to be run after the page changes
+        that way you can do whatever javascriptiness after the dom has changed
+ * Note: prefix your function names by template, for sanity
+ * add your template to templates object, keyed by the page name
+        don't overlap names
+    when you want to change a page, just call change_page('name_of_key')
  */
 var templates = new Object();
 templates.current_page = '';
@@ -473,7 +486,6 @@ function template_edit(){
         html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
@@ -514,7 +526,6 @@ function template_edit(){
         html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
@@ -583,15 +594,14 @@ function template_edit(){
 function template_play(){
 
     function getLobbyTable(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/lobby/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += "<table class='table table-striped'>";
                 html += "<thead><tr>";
                 html += "<th>Game ID</th>";
@@ -613,21 +623,20 @@ function template_play(){
                 }
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-lobby .play-table').html(html);
             }
         });
-        return html;
     };
 
     function getHostTable(){
-        html = '';
         $.ajax({
             type: "GET",
-            async: false,
             url: "/ajax/maps/",
             headers: {
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += "<table class='table table-striped'>\
                             <thead><tr>\
                                     <th>Map ID</th>\
@@ -654,9 +663,9 @@ function template_play(){
 
                 //close table
                 html += "</tbody></table>";
+                $('#content #play-host .play-table').html(html);
             }
         });
-        return html;
     }
 
     function template_binding(){
@@ -688,6 +697,9 @@ function template_play(){
 
         });
 
+        getLobbyTable();
+        getHostTable();
+
         $('#content #play-lobby').show();
         $('#content #play-host').hide();
     }
@@ -701,7 +713,7 @@ function template_play(){
             <button id="play-host-button" class="btn btn-primary">Host a Game</button>\
             <br />\
             <br />\
-            <div class="play-table">'+getLobbyTable()+'</div>\
+            <div class="play-table"></div>\
         </div>\
         \
         <div id="play-host">\
@@ -709,9 +721,10 @@ function template_play(){
             <button id="play-lobby-button" class="btn btn-primary">Play a Game</button>\
             <br />\
             <br />\
-            <div class="play-table">'+getHostTable()+'</div>\
+            <div class="play-table"></div>\
         </div>\
         ';
+
     return pg;
 }
 
@@ -948,12 +961,8 @@ function template_clan(){
             type: "POST",
             async: false,
             url: "/clan/create/",
-            data: {
-                "name": name,
-            },
-            headers: {
-                "X-CSRFToken": $.cookie('csrftoken')
-            },
+            data: { "name": name },
+            headers: { "X-CSRFToken": $.cookie('csrftoken') },
             success: function (data){
                 if(data['success'] === true){
                     user.clan = name;
@@ -961,6 +970,7 @@ function template_clan(){
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
+                    $('#content #not-a-member #error').show();
                 }
             }
         });
@@ -984,6 +994,8 @@ function template_clan(){
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #not-a-member #error').html(data['error']);
+                    $('#content #not-a-member #error').show();
+
                 }
             }
         });
@@ -1004,9 +1016,33 @@ function template_clan(){
                     $('.clan-name').html(user.getFormattedClanName());
                 } else {
                     $('#content #already-member #error').html("A server error occurred");
+                    $('#content #already-member #error').show();
                 }
             }
         })
+    }
+
+    function get_members_clan(){
+        $.ajax({
+            type: "GET",
+            url: "/clan/members/",
+            headers: {
+                "X-CSRFToken": $.cookie('csrftoken')
+            },
+            success: function(data){
+                if(data['success'] === true){
+                    var member_list = '<ul>';
+                    $.each(data['data'], function (index, value) {
+                        member_list += '<li>'+value+'</li>';
+                    });
+                    member_list += '</ul>';
+                    $('#content #clan-member-list').html(member_list);
+                    $('#content #clan-owner').html('<ul><li>'+data['owner']+'</li></ul>');
+                } else {
+                    $('#content #already-member #error').html(data['error']);
+                }
+            }
+        });
     }
 
     function template_binding(){
@@ -1018,6 +1054,7 @@ function template_clan(){
             $('#content #already-member button').click(function(){
                 leave_clan();
             });
+            get_members_clan();
         } else {
             //user is NOT a member of a clan
             $('#content #already-member').hide();
@@ -1025,28 +1062,45 @@ function template_clan(){
                 e.preventDefault();
                 create_clan($('#content #create-clan #name').val());
             });
+
             $('#content #join-clan').submit(function(e){
                 e.preventDefault();
                 join_clan($('#content #join-clan #name').val());
-            })
+            });
+
+            /************************************
+             * Make Error Message show up with:
+             *      -a red border
+             *      -red text
+             *      -centered text
+             ************************************/
+            $('#content #not-a-member #error').hide();
+
+            $('#content #already-member #error').hide();
+
+            $('#content .error').css({
+                'border': '1px solid',
+                'color':'rgb(255, 0, 0)',
+                'text-align': 'center',
+            });
         }
-
-
     }
 
     var pg = new page();
     pg.binding = template_binding;
     pg.dom_html = '\
         <div id="already-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <h4>You are a member of: <h3 class="clan-name"></h3></h4>\
             <button>Leave Clan</button>\
-            <h4>Other members:</h4>\
-            <div id="clan-member-list"></div>\
+            <h4>Clan Owner:</h4>\
+            <div id="clan-owner">getting owner...</div>\
+            <h4>Members:</h4>\
+            <div id="clan-member-list">getting list...</div>\
         </div>\
         \
         <div id="not-a-member">\
-            <h5 id="error"></h5>\
+            <h5 class="error" id="error"></h5>\
             <form id="join-clan">\
                 <h4>Join a Clan</h4>\
                 Clan: <input id="name" type="text"></input>\

@@ -29,6 +29,7 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
 
     def broadcast_message(self, message, data):
         data['timestamp'] = self.get_time()
+        data['player_id'] = self.session['player_id']
         self.broadcast_to_room(str(self.session['game_id']), message, data)
 
     def on_click(self, data):
@@ -38,15 +39,53 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.broadcast_message('drag', data)
 
     def on_start(self):
-        game = Game.objects.get(id=self.session['game_id'])
-        game.state = Game.ACTIVE
-        game.save()
-        self.broadcast_message('start', {})
+        if (self.session['isHost']):
+            game = Game.objects.get(id=self.session['game_id'])
+            game.state = Game.ACTIVE
+            game.save()
+            self.broadcast_message('start', {})
+        else:
+            # Don't do anything if the person isn't the host
+            pass
 
-    def on_join(self, data):
-        logging.getLogger("socketio").error(self.request)
-        self.join(str(self.session['game_id']))
-        self.broadcast_message('join', data)
+    def on_join(self):
+        game_id = self.session['game_id']
+        user = self.session['user']
+        # Join the game_id room on the sockets side
+        self.join(str(game_id))
+
+        # Add the user to the game on the database side
+        try:
+            game, players_json, player_id = Game.add_user_to_game(game_id, user)
+
+            self.session['player_id'] = player_id
+
+            # The host of the game is the person that created the game
+            # WHICH HAPPENS TO BE player_id == 0 IN OUR IMPLEMENTATION
+            # Perhaps we should fix this one day
+            isHost = self.session['isHost'] = (player_id == 0)
+            player_list = [v for k, v in enumerate(players_json)]
+
+            # Send the new player information needed to join the map
+            selfData = {
+                'isHost': isHost,
+                'map_id': game.map.id,
+                'player_list': player_list,
+                'player_id': player_id
+            }
+            self.emit('game_data', selfData)
+
+            # Send all other players information needed to add the current
+            # player to the game
+            data = {
+                'username': user.username,
+                'timestamp': self.get_time(),
+                'player_id': self.session['player_id']
+            }
+            self.emit_to_room(str(self.session['game_id']), 'join', data)
+        except:
+            # Find a better way to handle 'unable to join'
+            pass
 
     def on_leave(self):
         self.leave(str(self.session['game_id']))

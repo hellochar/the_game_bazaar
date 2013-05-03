@@ -11,7 +11,8 @@
             // DOM manipulation
             $().ready(function() {
                 $('#game-container').hide();
-                $('#lobby-container').show();
+                $('#lobby-container').hide();
+                $('#loading-container').show();
             });
             var game = new Game({{ game_id }});
             game.init();
@@ -23,27 +24,29 @@
 
 
 {% block content %}
+    <!-- LOADING MESSAGE CONTAINER -->
+    <div id="loading-container">
+        <h1 id="loading-message">Loading...</h1>
+    </div>
     <!-- LOBBY CONTAINER -->
-    <div id="map-id" val="{{ map_id }}"></div>
-    <div id="player-id" val="{{ player_id }}"></div>
     <div id="lobby-container">
         <h1>Welcome to the lobby!</h1>
-
         <p>
-        {% if isHost %}
-            You are the host! and therefore have this button:
+        Your game id is {{ game_id }}
+
+        <div id="lobby-host-screen">
+            You are the host! Start the game with this button!
             <button id="start-game">Start Game!</button>
-            Also, your game id is {{ game_id }}
-        {% else %}
-            You have joined the game!
-        {% endif %}
-        <h3>And the players are..........</h3>
-        <ul id='player-usernames'>
-            {% for key, value in players_json %}
-                <li id='player-slot-{{ key }}'>{{ value }}</li>
-            {% endfor %}
-        </ul>
-        </p>
+        </div>
+        <div id="lobby-pleb-screen">
+            You are not the host. Please wait for the host to start the game.
+        </div>
+        <div id="player-list">
+            <h3>And the players are..........</h3>
+            <ul id='player-usernames'>
+            </ul>
+            </p>
+        </div>
     </div>
 
     {% include "lib/game-canvas.html" %}

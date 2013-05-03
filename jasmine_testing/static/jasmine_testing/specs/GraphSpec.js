@@ -32,5 +32,29 @@ describe("Graph Object", function() {
             expect(graph.nodes[0]).toBe(graph.nodes[1].connections[0]);
         });
     });
+
+    describe("ensureConnection", function() {
+
+        var graph, n1, n2;
+
+        beforeEach(function() {
+            graph = new Graph();
+
+            n1 = new Node(new THREE.Vector3(1, 2));
+            graph.addNode(n1);
+            n2 = new Node(new THREE.Vector3(3, 3));
+            graph.addNode(n2);
+        });
+
+        it("should add a connection", function() {
+            n1.ensureConnection(n2);
+            expect(n1.hasConnection(n2)).toBeTruthy();
+        });
+        it("shouldn't add more than one", function() {
+            n1.addConnection(n2);
+            n1.ensureConnection(n2);
+            expect(n1.connections.length).toEqual(1);
+        });
+    });
 });
 

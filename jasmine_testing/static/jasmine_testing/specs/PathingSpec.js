@@ -221,10 +221,10 @@ describe("Pathing", function() {
         });
         // Just one basic test with three nodes and the start and destination
         it("handles a basic test", function() {
-            var path_graph = getPathGraph(startNode, endNode, node_graph);
+            var path_graph = getPathGraph(startNode, endNode, node_graph, 10);
             expect(startNode.connections.length).toBe(2);
-            expect(path_graph.nodes[0].connections.length).toBe(3);
-            expect(path_graph.nodes[1].connections.length).toBe(3);
+            expect(path_graph.nodes[0].connections.length).toBe(2);
+            expect(path_graph.nodes[1].connections.length).toBe(2);
             expect(path_graph.nodes[2].connections.length).toBe(2);
             expect(endNode.connections.length).toBe(0);
         });
@@ -252,7 +252,7 @@ describe("Pathing", function() {
             endNode = new Node(new THREE.Vector3(0, 25));
             endNode.domain = [-Math.PI, Math.PI];
 
-            path_graph = getPathGraph(startNode, endNode, node_graph);
+            path_graph = getPathGraph(startNode, endNode, node_graph, 10);
         });
         // Just one basic test that expands a node with two connections
         // and then another node with three connections
@@ -262,7 +262,7 @@ describe("Pathing", function() {
             expect(priority_q.size()).toBe(2);
             priority_q.pop();
             expandNode({node: path_graph.nodes[0], path: []}, 10, priority_q);
-            expect(priority_q.size()).toBe(4);
+            expect(priority_q.size()).toBe(3);
         });
     });
     describe("getPath", function() {
@@ -283,8 +283,8 @@ describe("Pathing", function() {
         });
         // Just one basic test that walks through a map of four nodes.
         it("handles a basic pathing test", function() {
-            var path = getPath(new THREE.Vector3(), new THREE.Vector3(0, 25), node_graph);
-            expect(path.map(function(item) { return item.pos; })).toEqual([n1.pos, new THREE.Vector3(0, 25)]);
+            var path = getPath(new THREE.Vector3(), new THREE.Vector3(0, 25), node_graph, 0);
+            expect(path.map(function(item) { return item.pos; })).toEqual([n1.pos, n1.pos, new THREE.Vector3(0, 25)]);
         });
     });
 });

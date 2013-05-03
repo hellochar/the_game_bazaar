@@ -65,6 +65,10 @@ urlpatterns = patterns(
         views.leave_clan,
         name="leave_clan"),
 
+    url(r'^clan/members/$',
+        views.members_clan,
+        name="members_clan"),
+
     # Loggin In, Registering, Loggin Out
     url(r'^login/$',
         views.login,

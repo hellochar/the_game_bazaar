@@ -118,13 +118,8 @@ Game.prototype.handleUserJoin = function (data) {
     this.addPlayer(data.player_id, data.username);
 };
 
-// Let client know someone has joined
+// Let client know someone has left
 Game.prototype.handleUserLeave = function (data) {
-    // DEBUG
-    // console.log("Someone joined the game at: ", data.timestamp);
-    // console.log("Player id: ", data.player_id);
-    // console.log("Joining user's name: ", data.username);
-
     this.rmPlayer(data.player_id);
 };
 
@@ -344,9 +339,9 @@ Game.prototype.rmPlayer = function(player_id) {
 };
 
 
-// Game.prototype.getUsernameByPid = function(player_id) {
-//     return $("#player-slot-" + player_id.toString(10)).text();
-// };
+Game.prototype.getUsernameByPid = function(player_id) {
+    return $("#player-slot-" + player_id.toString(10)).text();
+};
 
 // Game.prototype.populatePlayerNamesInGSFromHTML = function() {
 //     // DEBUG

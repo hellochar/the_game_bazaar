@@ -76,6 +76,7 @@ class Game(models.Model):
         # Save the player list to the db
         game.players = json.dumps(players_json)
         game.save()
+
         return players_json
 
     def to_map(game):

@@ -46,6 +46,20 @@ class GameControllerTest(TestCase):
         self.assertEqual(players_json[0], "hosting_player")
         self.assertEqual(players_json[1], "joining_player")
 
+    def test_rm_user_from_game(self):
+        game, _ = Game.create_new_game(self.aMap.id, self.user)
+
+        # Perform the join logic
+        _, _, player_id = Game.add_user_to_game(game.id, self.joiner)
+
+        # Perform the removing logic
+        players_json = Game.rm_user_from_game(game.id, 1)
+
+        # Check a bunch of conditions
+        self.assertEqual(len(players_json), 3)
+        self.assertEqual(players_json[0], "hosting_player")
+        self.assertEqual(players_json[1], "")
+
 
 class GameTest(TestCase):
     def setUp(self):

@@ -63,48 +63,39 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.join(str(game_id))
 
         # Add the user to the game on the database side
-        try:
-            game, players_json, player_id = Game.add_user_to_game(game_id, user)
+        game, players_json, player_id = Game.add_user_to_game(game_id, user)
 
-            self.session['player_id'] = player_id
+        self.session['player_id'] = player_id
 
-            # The host of the game is the person that created the game
-            # WHICH HAPPENS TO BE player_id == 0 IN OUR IMPLEMENTATION
-            # Perhaps we should fix this one day
-            isHost = self.session['isHost'] = (player_id == 0)
-            player_list = [v for v in players_json]
+        # The host of the game is the person that created the game
+        # WHICH HAPPENS TO BE player_id == 0 IN OUR IMPLEMENTATION
+        # Perhaps we should fix this one day
+        isHost = self.session['isHost'] = (player_id == 0)
+        player_list = [v for v in players_json]
 
-            # Send the new player information needed to join the map
-            selfData = {
-                'isHost': isHost,
-                'map_id': game.map.id,
-                'player_list': player_list,
-                'player_id': player_id
-            }
-            self.emit('game_data', selfData)
+        # Send the new player information needed to join the map
+        selfData = {
+            'isHost': isHost,
+            'map_id': game.map.id,
+            'player_list': player_list,
+            'player_id': player_id
+        }
+        self.emit('game_data', selfData)
 
-            # Send all other players information needed to add the current
-            # player to the game
-            data = {
-                'username': user.username,
-                'timestamp': self.get_time(),
-                'player_id': self.session['player_id']
-            }
-            self.emit_to_room(str(self.session['game_id']), 'join', data)
-        except Exception as e:
-            # Find a better way to handle 'unable to join'
-            error("Unable to add user to game in DB")
-            error(e)
+        # Send all other players information needed to add the current
+        # player to the game
+        data = {
+            'username': user.username,
+            'timestamp': self.get_time(),
+            'player_id': self.session['player_id']
+        }
+        self.emit_to_room(str(self.session['game_id']), 'join', data)
 
     def on_leave(self):
         game_id = self.session['game_id']
         self.leave(str(game_id))
-        try:
-            Game.rm_user_from_game(game_id, self.session['player_id'])
-        except Exception as e:
-            # You can check out any time you like but you can never leave?
-            error("Unable to remove user from game in DB")
-            error(e)
+        Game.rm_user_from_game(game_id, self.session['player_id'])
+
         self.broadcast_message('leave', {})
 
     def on_key(self, data):
@@ -136,6 +127,5 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.session['game_id'] = game_id
 
     def disconnect(self, silent=False):
-        super(GameNamespace, self).disconnect(silent)
         self.on_leave()
-        debug("Disconnect called!")
+        super(GameNamespace, self).disconnect(silent)

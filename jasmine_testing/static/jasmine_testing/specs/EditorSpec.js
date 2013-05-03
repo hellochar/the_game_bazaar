@@ -242,6 +242,33 @@ describe("Map Editor", function() {
     });
 
     describe("ObstaclePalette", function() {
+
+        var palette;
+        beforeEach(function() {
+            palette = new ObstaclePalette(editor);
+            editor.setPalette(palette);
+        });
+
+        describe("handleDragMove", function() {
+            it("should setup the drag nodes when first dragging", function() {
+                spyOn(editor.map.obstacles, 'addNode');
+                palette.handleDragMove(1, new THREE.Vector3(), new THREE.Vector3(10, 10, 0));
+                expect(palette.startNode).toBeDefined();
+
+                expect(editor.map.obstacles.addNode.callCount).toEqual(2);
+
+                expect(palette.startNode.connections).toContain(palette.endNode);
+            });
+            it("should update the ending node when continuing to drag", function() {
+            });
+        });
+
+        describe("handleDragEnd", function() {
+            it("should delete startNode/endNode", function() {
+                palette.handleDragEnd(1, new THREE.Vector3(), new THREE.Vector3(100, 100, 0));
+                expect(palette.startNode).toBeUndefined();
+            });
+        });
     });
 
 });

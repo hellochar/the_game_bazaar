@@ -591,10 +591,10 @@ Game.prototype.handleWonGame = function(data) {
 
 Game.prototype.handleDisconnect = function () {
     this.conn_state = Game.GAME_STATES.DISCONNECTED;
-    // Just show the loading cantainer again on a disconnect
+    // Just show the loading container again on a disconnect
     // No need to hide the other containers unless needed
     $('#loading-container').show();
-    $('#loading-message').text("Connecting...");
+    $('#loading-message').text("You have been disconnected.");
 };
 
 Game.prototype.handleConnectError = function (e) {

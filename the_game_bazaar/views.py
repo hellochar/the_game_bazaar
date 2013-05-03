@@ -249,8 +249,8 @@ def ajax_change(request):
         user = authenticate(username=request.user.username, password=request.POST['old_pass'])
         if(user is not None and user.is_active):
             #old pass matches, change pass to new one
-            if len(request.POST['new_pass']) < 8:
-                resp['error'] = 'Passwords must be at least 8 characters'
+            if len(request.POST['new_pass']) < 8 or len(request.POST['new_pass']) > 30:
+                resp['error'] = 'Passwords must be 8-30 characters'
             else:
                 user.set_password(request.POST['new_pass'])
                 user.save()
@@ -308,13 +308,13 @@ def ajax_register(request):
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 
     # Check username length
-    if len(username) < 4:
-        resp['error'] = 'A username must be more than 3 characters'
+    if len(username) < 4 or len(username) > 20:
+        resp['error'] = 'A username must be 4-20 characters'
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 
     # Check password length
-    if len(password) < 8:
-        resp['error'] = 'A password must be 8 or more characters'
+    if len(password) < 8 or len(password) > 30:
+        resp['error'] = 'A password must be 8-30 characters'
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 
 

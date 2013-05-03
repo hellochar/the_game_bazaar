@@ -59,11 +59,7 @@ $().ready(function(){
 });
 
 function change_page(templates, page, force, change_hash){
-    if (force){
-        force = force;
-    } else {
-        force = false;
-    }
+    force = force || false;
 
     if (templates.current_page !== page || force){
 

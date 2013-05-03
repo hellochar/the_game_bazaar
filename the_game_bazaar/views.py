@@ -18,6 +18,11 @@ import urllib
 import urllib2
 from django.core.validators import email_re
 
+MAX_PASS_LENGTH = 30
+MIN_PASS_LENGTH = 8
+MAX_USERNAME_LENGTH = 30
+MIN_USERNAME_LENGTH = 4
+
 # helper functions
 def getClan(user):
     clans = user.groups.all()
@@ -249,7 +254,7 @@ def ajax_change(request):
         user = authenticate(username=request.user.username, password=request.POST['old_pass'])
         if(user is not None and user.is_active):
             #old pass matches, change pass to new one
-            if len(request.POST['new_pass']) < 8 or len(request.POST['new_pass']) > 30:
+            if len(request.POST['new_pass']) < MIN_PASS_LENGTH or len(request.POST['new_pass']) > MAX_PASS_LENGTH:
                 resp['error'] = 'Passwords must be 8-30 characters'
             else:
                 user.set_password(request.POST['new_pass'])
@@ -308,12 +313,12 @@ def ajax_register(request):
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 
     # Check username length
-    if len(username) < 4 or len(username) > 20:
+    if len(username) < MIN_USERNAME_LENGTH or len(username) > MAX_USERNAME_LENGTH:
         resp['error'] = 'A username must be 4-20 characters'
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 
     # Check password length
-    if len(password) < 8 or len(password) > 30:
+    if len(password) < MIN_PASS_LENGTH or len(password) > MAX_PASS_LENGTH:
         resp['error'] = 'A password must be 8-30 characters'
         return HttpResponse(json.dumps(resp), mimetype="application/json")
 

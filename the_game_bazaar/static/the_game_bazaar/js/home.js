@@ -479,7 +479,6 @@ function template_stuff(){
 
 function template_edit(){
     function getMyMaps(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/maps/",
@@ -487,6 +486,7 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -510,15 +510,14 @@ function template_edit(){
                             </tr>';                 
                     }
                 }
-
                 html += '</tbody></tabl>';
+
+                $('#content #my-maps').html(html);
             }
         });
-        return html;
     }
 
     function getAllMaps(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/maps/",
@@ -526,6 +525,7 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -549,9 +549,9 @@ function template_edit(){
                 }
 
                 html += '</tbody></tabl>';
+                $('#content #all-maps').html(html);
             }
         });
-        return html;
     };
 
     function template_binding(){

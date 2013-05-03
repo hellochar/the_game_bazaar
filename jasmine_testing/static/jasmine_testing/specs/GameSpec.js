@@ -95,6 +95,15 @@ describe("Game", function() {
     });
 
 
+    describe("handleUserLeave", function() {
+        it("should update the HTML to reflect the removed player", function() {
+            spyOn(game, 'rmPlayer');
+            game.handleUserLeave({player_id: 12});
+            expect(game.rmPlayer).toHaveBeenCalledWith(12);
+        });
+    });
+
+
     describe("handleGameStart", function() {
         var timestamp = Date.now();
         beforeEach(function() {
@@ -249,6 +258,19 @@ describe("Game", function() {
         });
         it("should update the correct player in the gamestate's slot", function() {
             expect(game.gamestate.players[0].username).toEqual('new-username');
+        });
+    });
+
+    describe("rmPlayer", function() {
+        beforeEach(function() {
+            game.gamestate = Editor.createDefaultMap();
+            game.rmPlayer(0);
+        });
+        it("should update the slot with the corresponding pid", function() {
+            expect($('#player-slot-0')).toHaveText('');
+        });
+        it("should update the correct player in the gamestate's slot", function() {
+            expect(game.gamestate.players[0].username).toEqual('');
         });
     });
 

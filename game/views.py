@@ -71,14 +71,9 @@ class GameView(View):
             raise Http404
 
         # TODO: if the game_id is empty, you should display an error!
-        game, players_json, player_id = Game.add_user_to_game(gameid, request.user)
 
-            # Render the context with our parameters.
+        # Render the context with our parameters.
         context = {
-            'isHost': player_id == 0,
-            'game_id': game.id,
-            'map_id': game.map.id,
-            'players_json': [(k, v) for k, v in enumerate(players_json)],
-            'player_id': player_id
+            'game_id': gameid,
         }
         return render(request, 'game/game.html', context)

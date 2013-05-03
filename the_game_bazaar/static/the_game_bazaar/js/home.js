@@ -58,11 +58,7 @@ $().ready(function(){
 });
 
 function change_page(templates, page, force, change_hash){
-    if (force){
-        force = force;
-    } else {
-        force = false;
-    }
+    force = force || false;
 
     if (templates.current_page !== page || force){
 
@@ -321,6 +317,7 @@ function User(){
                     this.username = data['username'];
                     this.gravatar_img = data['gravatar'];
                     this.clan = data['clan'];
+                    this.email = data['email'];
                     //show that you're logged in
                 } else {
                     //show an error
@@ -343,6 +340,7 @@ function User(){
                 this.username = '';
                 this.gravatar_url = '';
                 this.clan = '';
+                this.email = '';
                 callback();
             }.bind(this),
         })
@@ -412,6 +410,7 @@ function template_register(){
                 },
                 success: function (data){
                     if (data.success === true) {
+                        window.location.hash = '';
                         window.location.pathname = data.redirect_url;
                     } else {
                         $('#content #error').html(data.error);
@@ -478,7 +477,6 @@ function template_stuff(){
 
 function template_edit(){
     function getMyMaps(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/maps/",
@@ -486,6 +484,7 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -509,15 +508,14 @@ function template_edit(){
                             </tr>';                 
                     }
                 }
-
                 html += '</tbody></tabl>';
+
+                $('#content #my-maps').html(html);
             }
         });
-        return html;
     }
 
     function getAllMaps(){
-        html = '';
         $.ajax({
             type: "GET",
             url: "/ajax/maps/",
@@ -525,6 +523,7 @@ function template_edit(){
                 "X-CSRFToken": $.cookie('csrftoken')
             },
             success: function (data){
+                var html = '';
                 html += '\
                 <table class="table table-striped">\
                     <thead><tr>\
@@ -548,9 +547,9 @@ function template_edit(){
                 }
 
                 html += '</tbody></tabl>';
+                $('#content #all-maps').html(html);
             }
         });
-        return html;
     };
 
     function template_binding(){
@@ -689,6 +688,13 @@ function template_play(){
 
         });
 
+        $('#content #refresh-play-button').click(function(){
+            getLobbyTable();
+        })
+        $('#content #refresh-play-button').css({
+            "margin-left":"5px",
+        });
+
         getLobbyTable();
         getHostTable();
 
@@ -702,6 +708,7 @@ function template_play(){
         <div class="page-header"><h1>Join!<small> or </small>Host!</h1></div>\
         <div id="play-lobby">\
             <h4>Play a Game!</h4>\
+            <button id="refresh-play-button" class="btn btn-warning">Refresh</button>\
             <button id="play-host-button" class="btn btn-primary">Host a Game</button>\
             <br />\
             <br />\
@@ -770,7 +777,7 @@ function template_profile(){
                 },
                 success: function(data){
                     if (data.success == true){
-                        $('#curr_email').html($('#newEmail').val());
+                        $('#curr-email').html($('#newEmail').val());
                         $('#content #email-error').html("Your email has been changed");
                         user.email = $('#newEmail').val();
                         $('#content #gravatar').html(function(){

@@ -60,11 +60,11 @@ class changeProfileTest(TestCase):
         c = self.client
         login(c, 'aaa', 'aaa')
 
-        s_resp = c.post(reverse('ajax_change'), {'old_pass': 'aaa', 'new_pass': 'bbb'})
+        s_resp = c.post(reverse('ajax_change'), {'old_pass': 'aaa', 'new_pass': '12345678'})
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], True)
 
-        user = authenticate(username='aaa', password='bbb')
+        user = authenticate(username='aaa', password='12345678')
         self.assertEqual(user.username, 'aaa')
 
     def test_email_change(self):
@@ -72,11 +72,11 @@ class changeProfileTest(TestCase):
         c = self.client
         login(c, 'aaa', 'aaa')
 
-        s_resp = c.post(reverse('ajax_change'), {'email': 'bbb'})
+        s_resp = c.post(reverse('ajax_change'), {'email': 'bbb@b.com'})
         resp_object = json.loads(s_resp.content)
         self.assertEqual(resp_object['success'], True)
         user = authenticate(username='aaa', password='aaa')
-        self.assertEqual(user.email, 'bbb')
+        self.assertEqual(user.email, 'bbb@b.com')
 
 
 class ourAuthTest(TestCase):
@@ -128,10 +128,10 @@ class ourAuthTest(TestCase):
 
     def test_ajax_register_success(self):
         c = self.client
-        resp_object = register(c, 'bbb', 'bbb', 'bbb')
+        resp_object = register(c, 'bbbb', '12345678', 'bbb@b.com')
         self.assertEqual(resp_object['success'], True)
 
-        resp_object = login(c, 'bbb', 'bbb')
+        resp_object = login(c, 'bbbb', '12345678')
         self.assertEqual(resp_object['success'], True)
 
     def test_ajax_register_empty(self):
@@ -142,10 +142,10 @@ class ourAuthTest(TestCase):
 
     def test_ajax_register_exists(self):
         c = self.client
-        resp_object = register(c, 'aaa', 'bbb', 'bbb')
+        resp_object = register(c, 'aaaa', '12345678', 'bbb@b.com')
         self.assertEqual(resp_object['success'], True)
 
-        resp_object = register(c, 'aaa', 'bbb', 'bbb')
+        resp_object = register(c, 'aaaa', '12345678', 'bbb@b.com')
         self.assertEqual(resp_object['success'], False)
         self.assertEqual('error' in resp_object, True)
 

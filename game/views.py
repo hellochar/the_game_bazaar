@@ -65,6 +65,11 @@ class GameView(View):
             gameid = int(gameid)
         except ValueError:
             raise Http404
+
+        game = Game.objects.get(id=gameid)
+        if game.state != Game.LOBBY:
+            raise Http404
+
         # TODO: if the game_id is empty, you should display an error!
         game, players_json, player_id = Game.add_user_to_game(gameid, request.user)
 

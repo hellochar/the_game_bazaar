@@ -69,6 +69,9 @@ Game.prototype.init = function(gs_renderer) {
     // DEBUG
     // console.log("Init canvas");
 
+    // The default viewport scrolling speed is 20
+    this.scrollSpeed = 20;
+
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
     this.gs_renderer = gs_renderer || new GSRenderer();
     // This array is used for storing all units that are dead, and we've sent a message
@@ -77,6 +80,8 @@ Game.prototype.init = function(gs_renderer) {
     // This is necessary because if the renderer sends a duplicate unitDead message, bad
     // stuff can happen.
     this.waitingForDeadUnits = [];
+
+
 };
 
 //This method gets called as soon
@@ -216,19 +221,19 @@ Game.prototype.renderMethod = function() {
 
     var delta = new THREE.Vector3(0, 0, 0);
     if (this.keys.w) {
-        delta.y += 40;
+        delta.y += this.scrollSpeed;
     }
     if (this.keys.a) {
-        delta.x -= 40;
+        delta.x -= this.scrollSpeed;
     }
     if (this.keys.s) {
-        delta.y -= 40;
+        delta.y -= this.scrollSpeed;
     }
     if (this.keys.d) {
-        delta.x += 40;
+        delta.x += this.scrollSpeed;
     }
-    var pos = this.gs_renderer.getViewport();
-    this.gs_renderer.setViewport(pos.x + delta.x, pos.y + delta.y);
+    var pos = this.gs_renderer.getTarget();
+    this.gs_renderer.setTarget(pos.x + delta.x, pos.y + delta.y);
 };
 
 //---------------------------------------------

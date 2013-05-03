@@ -235,20 +235,18 @@ class SocketIOTest(TestCase):
 
     def test_on_lostGame(self):
         self.setUpState()
-        self.ns.on_lostGame({'data': 'data'})
+        self.ns.on_lostGame()
         self.ns.broadcast_to_room.assert_called_with(str(self.game.id), 'lostGame', {
             'player_id': 0,
             'timestamp': 12242012,
-            'data': 'data'
         })
 
     def test_on_wonGame(self):
         self.setUpState()
-        self.ns.on_wonGame({'data': 'data'})
+        self.ns.on_wonGame()
         self.ns.broadcast_to_room.assert_called_with(str(self.game.id), 'wonGame', {
             'player_id': 0,
             'timestamp': 12242012,
-            'data': 'data'
         })
 
     def test_disconnect(self):

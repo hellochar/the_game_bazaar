@@ -104,12 +104,12 @@ class GameNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def on_deadUnits(self, data):
         self.broadcast_message('deadUnits', data)
 
-    def on_lostGame(self, data):
-        self.broadcast_message('lostGame', data)
+    def on_lostGame(self):
+        self.broadcast_message('lostGame', {})
         # TODO: Change game.state to inactive when game is over?
 
-    def on_wonGame(self, data):
-        self.broadcast_message('wonGame', data)
+    def on_wonGame(self):
+        self.broadcast_message('wonGame', {})
         # TODO: Change game.state to inactive when game is over?
 
     def recv_connect(self):

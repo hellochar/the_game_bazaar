@@ -5,7 +5,7 @@
 #canvas-container {
     position: relative;
     margin: 0px auto;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 #game-ui {

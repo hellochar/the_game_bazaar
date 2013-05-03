@@ -1,12 +1,17 @@
-canvas {
-    margin: 0px auto;
-    border: 1px solid black;
-}
-
 #palette {
     border: 5px ridge;
     padding: 10px;
     margin: 10px auto;
+}
+
+.property_input > input {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.property_input .label {
+    width: 80px;
+    margin-right: 10px;
 }
 
 #ui_container {

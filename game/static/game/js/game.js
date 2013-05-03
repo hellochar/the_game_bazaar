@@ -223,17 +223,6 @@ Game.prototype.renderMethod = function() {
             d3 = this.gs_renderer.project(d3);
             d4 = this.gs_renderer.project(d4);
 
-            // Normalize the coordinates by the size of the map.
-            // d1.x = d1.x / map_size.width;
-            // d2.x = d2.x / map_size.width;
-            // d3.x = d3.x / map_size.width;
-            // d4.x = d4.x / map_size.width;
-
-            // d1.y = d1.y / map_size.height;
-            // d2.y = d2.y / map_size.height;
-            // d3.y = d3.y / map_size.height;
-            // d4.y = d4.y / map_size.height;
-
             this.ui_renderer.renderMap(snapshot, this.player_id);
             var map_size = this.gamestate.terrain;
             this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);

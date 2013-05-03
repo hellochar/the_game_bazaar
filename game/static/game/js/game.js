@@ -199,6 +199,8 @@ Game.prototype.renderMethod = function() {
     this.gs_renderer.animate();
 
     this.ui_renderer.renderSelectRect();
+
+    // Obtain the in-game coordinates of the edges of the window.
     var d1 = new THREE.Vector3(0, 0, 0);
     var d2 = new THREE.Vector3(window.innerWidth, 0, 0);
     var d3 = new THREE.Vector3(window.innerWidth, window.innerHeight, 0);
@@ -208,10 +210,9 @@ Game.prototype.renderMethod = function() {
     d3 = this.gs_renderer.project(d3);
     d4 = this.gs_renderer.project(d4);
 
-    this.ui_renderer.renderMap();
-    this.ui_renderer.renderViewPort(d1, d2, d3, d4);
-    this.ui_renderer.renderGS(snapshot, this.player_id);
-    this.ui_renderer.renderSelectionCircles(snapshot.players[this.player_id].selectedUnits);
+    this.ui_renderer.renderMap(snapshot, this.player_id);
+    var map_size = this.gamestate.terrain;
+    this.ui_renderer.renderViewPort(d1, d2, d3, d4, map_size);
 
     var delta = new THREE.Vector3(0, 0, 0);
     if (this.keys.w) {

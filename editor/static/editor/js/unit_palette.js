@@ -158,7 +158,7 @@ UnitPalette.prototype.handleClick = function(clicktype, clickpos) {
         this.tryAddUnit(clickpos);
     }
 };
-UnitPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+UnitPalette.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
 };
 UnitPalette.prototype.renderMethod = function() {
 };

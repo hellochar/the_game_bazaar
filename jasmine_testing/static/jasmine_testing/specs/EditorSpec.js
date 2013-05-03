@@ -75,10 +75,13 @@ describe("Map Editor", function() {
             oldPalette = editor.palette;
             newPalette = new UnitSelectionPalette(editor);
         });
-        it("should switch out domElements", function() {
+        it("should switch out domElements and instructions", function() {
             editor.setPalette(newPalette);
             expect($('#palette')).not.toContain(oldPalette.domElement);
             expect($('#palette')).toContain(newPalette.domElement);
+
+            expect($('#instructions')).not.toContain(oldPalette.constructor.instructions);
+            expect($('#instructions')).toContain(newPalette.constructor.instructions);
         });
         it("should trigger selectionLost/selectionGained", function() {
             spyOnEvent(oldPalette, 'selectionLost');

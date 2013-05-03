@@ -18,7 +18,7 @@
  *
  *      Finally, each Palette has a renderMethod that gets called regularly by which
  * the Palette can draw custom graphics onto the editor (they also have handleClick
- * and handleDrag).
+ * and handleDragEnd).
  *
  * Summary:
  *

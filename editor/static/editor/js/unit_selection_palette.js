@@ -74,7 +74,7 @@ UnitSelectionPalette.prototype.handleClick = function(clicktype, clickpos) {
         this.setSelection(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, clickpos));
     }
 };
-UnitSelectionPalette.prototype.handleDrag = function(clicktype, dragstart, dragend) {
+UnitSelectionPalette.prototype.handleDragEnd = function(clicktype, dragstart, dragend) {
     // if(GS_UI.getIntersectingUnit(getAllUnits(this.editor.map), 0, dragstart)
     if(clicktype == 1) {
         var rect = Game.getRect(dragstart, dragend);

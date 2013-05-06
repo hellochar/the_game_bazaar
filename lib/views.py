@@ -3,6 +3,7 @@ from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from lib.models import Map
 from django.views.generic import View
+from django.utils.html import strip_tags
 
 # from django.contrib.auth.models import User
 
@@ -100,7 +101,7 @@ class NewMapView(View):
             creator       = request.user,
             num_players   = request.POST['num_players'],
             data          = request.POST['map_data'],  # gets stored as a string
-            map_name      = request.POST['map_name']
+            map_name      = strip_tags(request.POST['map_name'])
         )
 
         game_map.save()

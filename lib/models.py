@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import strip_tags
 
 from django.contrib.auth.models import User
 
@@ -17,5 +18,5 @@ class Map(models.Model):
             'id': this_map.id,
             'creator': this_map.creator.username,
             'max_players': this_map.num_players,
-            'name': this_map.map_name,
+            'name': strip_tags(this_map.map_name),
         }

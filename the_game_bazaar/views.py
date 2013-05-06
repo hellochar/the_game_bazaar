@@ -17,6 +17,7 @@ import hashlib
 import urllib
 import urllib2
 from django.core.validators import email_re
+from django.utils.html import strip_tags
 
 MAX_PASS_LENGTH = 30
 MIN_PASS_LENGTH = 8
@@ -148,7 +149,7 @@ def create_clan(request):
 
     if('name' in request.POST):
         clan = Clan()
-        clan.name = request.POST['name']
+        clan.name = strip_tags(request.POST['name'])
         clan.creator = request.user
         try:
             clan.save()
@@ -300,9 +301,9 @@ def ajax_login(request):
 
 @require_http_methods(["POST"])
 def ajax_register(request):
-    username = request.POST['username']
+    username = strip_tags(request.POST['username'])
     password = request.POST['password']
-    email = request.POST['email']
+    email = strip_tags(request.POST['email'])
     resp = {
         "success": False
     }

@@ -166,7 +166,34 @@ describe("Map Editor", function() {
         var palette;
         beforeEach(function() {
             palette = new UnitPalette(editor);
+            editor.setPalette(palette);
         });
+
+        describe("input events", function() {
+            it("should switch to unit selection when pressing space", function() {
+                $(editor.ui_renderer.canvas).trigger($.Event('keyup', {
+                    keyCode: 32
+                }));
+                console.log(editor.palette);
+                expect(editor.palette).toEqual(jasmine.any(UnitSelectionPalette));
+            });
+            it("should tryAddUnit on a leftclick", function() {
+                spyOn(palette, 'tryAddUnit');
+                palette.handleClick(1, new THREE.Vector3());
+                expect(palette.tryAddUnit).toHaveBeenCalled();
+            });
+        });
+
+
+        // describe("tryAddUnit", function() {
+        //     it("should get properties from the input elements", function() {
+        //     });
+        //     it("should addUnit if there are no unitsTouchingSphere", function() {
+        //     });
+        //     it("shouldn't addUnit if there are unitsTouchingSphere", function() {
+        //     });
+        // });
+
         describe("currentPlayer", function() {
                 it("retrieves the checked input's val", function() {
                         expect(palette.currentPlayer()).toEqual(editor.map.players[0]);
@@ -180,9 +207,68 @@ describe("Map Editor", function() {
     });
 
     describe("UnitSelectionPalette", function() {
+
+        var palette;
+        beforeEach(function() {
+            palette = new UnitSelectionPalette(editor);
+            editor.setPalette(palette);
+        });
+
+        describe("handleDragEnd", function() {
+            it("should set selection to the dragged area", function() {
+                editor.map.addUnit(editor.map.players[0], new THREE.Vector3(50, 50, 0));
+
+                spyOn(palette, 'setSelection').andCallThrough();
+
+                palette.handleDragEnd(1, new THREE.Vector3(), new THREE.Vector3(100, 100, 0));
+
+                expect(palette.setSelection).toHaveBeenCalled();
+
+                expect(palette.selectedUnits).toEqual([editor.map.players[0].units[0]]);
+
+            });
+        });
+        describe("renderMethod", function() {
+            it("should render the selection rectangle and selection circles", function() {
+                spyOn(editor.ui_renderer, 'renderSelectRect');
+                spyOn(editor.ui_renderer, 'renderSelectionCircles');
+
+                palette.renderMethod();
+
+                expect(editor.ui_renderer.renderSelectRect).toHaveBeenCalled();
+                expect(editor.ui_renderer.renderSelectionCircles).toHaveBeenCalled();
+            });
+        });
     });
 
     describe("ObstaclePalette", function() {
+
+        var palette;
+        beforeEach(function() {
+            palette = new ObstaclePalette(editor);
+            editor.setPalette(palette);
+        });
+
+        describe("handleDragMove", function() {
+            it("should setup the drag nodes when first dragging", function() {
+                spyOn(editor.map.obstacles, 'addNode');
+                palette.handleDragMove(1, new THREE.Vector3(), new THREE.Vector3(10, 10, 0));
+                expect(palette.startNode).toBeDefined();
+
+                expect(editor.map.obstacles.addNode.callCount).toEqual(2);
+
+                expect(palette.startNode.connections).toContain(palette.endNode);
+            });
+            it("should update the ending node when continuing to drag", function() {
+            });
+        });
+
+        describe("handleDragEnd", function() {
+            it("should delete startNode/endNode", function() {
+                palette.handleDragEnd(1, new THREE.Vector3(), new THREE.Vector3(100, 100, 0));
+                expect(palette.startNode).toBeUndefined();
+            });
+        });
     });
 
 });

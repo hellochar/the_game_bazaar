@@ -3,11 +3,13 @@
         <link href="{{ STATIC_URL }}lib/css/bootstrap.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}the_game_bazaar/css/home.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Geo|Julius+Sans+One' rel='stylesheet' type='text/css'>
+        <script>var static_url = "{{ STATIC_URL }}";</script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery.cookie.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}the_game_bazaar/js/home.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}lib/js/jquery-ui.min.js"></script>
+
 
         <title>The Game Bazaar</title>
     </head>
@@ -55,7 +57,7 @@
             <ul>
                 <!-- no need to be signed in to see -->
                 <li id="nav-home" class="link" ><h3>HOME<i class="icon-home icon-white"></i></h3></li>
-                <li id="nav-stuff" class="link" ><h3>STUFF<i class="icon-star icon-white"></i></h3></li>
+                <li id="nav-about" class="link" ><h3>ABOUT US<i class="icon-certificate icon-white"></i></h3></li>
                 <li id="nav-pivotal" class="link" ><h3>PIVOTAL<i class="icon-tasks icon-white"></i></h3></li>
                 <!-- need to be signed in to see -->
                 <div class="login_required">

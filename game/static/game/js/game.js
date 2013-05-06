@@ -238,6 +238,7 @@ Game.prototype.renderMethod = function() {
     }
     var pos = this.gs_renderer.getTarget();
     this.gs_renderer.setTarget(pos.x + delta.x, pos.y + delta.y);
+    this.ui_renderer.renderWinOrLoseText(this.gamestate.players[this.player_id]);
 };
 
 //---------------------------------------------

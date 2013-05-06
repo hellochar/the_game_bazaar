@@ -2,6 +2,8 @@ WEB_SOCKET_DEBUG = true;
 
 function Game(game_id) {
     this.game_id = parseInt(game_id, 10);
+
+    this.assetLoader = new AssetLoader();
 }
 
 // Constants
@@ -73,7 +75,7 @@ Game.prototype.init = function(gs_renderer) {
     this.scrollSpeed = 20;
 
     this.ui_renderer = new UIRenderer(document.getElementById('game-ui'));
-    this.gs_renderer = gs_renderer || new GSRenderer();
+    this.gs_renderer = gs_renderer || new GSRenderer(this.assetLoader);
     // This array is used for storing all units that are dead, and we've sent a message
     // to the server saying that they are dead, but we haven't received the deadUnit message
     // from the server yet to remove them from the gamestate.
@@ -110,7 +112,9 @@ Game.prototype.handleConnected = function () {
 
     // Set up the gamestate with an ajax call.
     // This method calls finishInitialization() once the ajax call succeeds.
-    this.instantiateGameState();
+    this.assetLoader.loadBiplane(function() {
+        this.instantiateGameState();
+    }.bind(this));
 };
 
 // Let client know someone has joined

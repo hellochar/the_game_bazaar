@@ -77,7 +77,19 @@ This will delete all your current data and update the db to have the new fields 
 
 Releasing
 ==============
-1. First tag the release branch with a descriptive name of the release with `git tag -a <tagname> -m "message"`
-1. Push it to github with `git push --tags`.
-1. Then push to heroku with `git push heroku release`.
-1. If you need to reset the database in heroku (which you most likely will), you can't `reset_db` since Heroku doesn't allow it. Instead use `heroku pg:reset DATABASE_URL`, followed by `heroku run python manage.py syncdb`.
+
+We are currently deployed on EC2 at [http://ec2-50-112-229-141.us-west-2.compute.amazonaws.com](http://ec2-50-112-229-141.us-west-2.compute.amazonaws.com); a nice aliased URL is [http://tinyurl.com/169tgb](http://tinyurl.com/169tgb)
+
+1. Update the release branch to master with `git checkout release && git merge master` (make sure your local copy is up to date).
+1. Push the released branch to github with `git push`.
+1. (optionally) Tag this commit with a descriptive name of the release with `git tag -a <tagname> -m "message"`
+1. Push the tag to github with `git push --tags`.
+1. If you don't already, get the game\_bazaar.pem (from Facebook or ask someone) and put it in `~/.ssh/`
+1. Log in to the EC2 instance with `ssh -i ~/.ssh/game_bazaar.pem ubuntu@ec2-50-112-229-141.us-west-2.compute.amazonaws.com`. (assuming the `game_bazaar.pem` is in your `~/.ssh/`)
+1. `cd the_game_bazaar`
+1. `git status` to make sure you're on the `release` branch.
+1. `git pull`
+1. Get the location and credentials of the monit server from Facebook or ask someone.
+1. Restart gunicorn by visiting the monit server, clicking on the entry for gunicorn, and clicking 'Restart service'.
+
+You're done!
